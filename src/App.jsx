@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import Header from './layouts/Header';
 import CreateShopPage from './pages/CreateShopPage';
@@ -13,6 +13,8 @@ const App = () => {
       <GlobalStyle />
       <Routes>
         <Route path='/' element={<Header />}>
+          {/* 메인 페이지로 리다이렉트 */}
+          <Route index element={<Navigate to={'/list'} replace={true} />} />
           {/* 메인 페이지 */}
           <Route path='/list' element={<MainPage />}></Route>
           {/* 상세 페이지 */}
