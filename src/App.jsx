@@ -1,5 +1,4 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-
 import Header from './layouts/Header';
 import CreateShopPage from './pages/CreateShopPage';
 import DetailShopPage from './pages/DetailShopPage';
