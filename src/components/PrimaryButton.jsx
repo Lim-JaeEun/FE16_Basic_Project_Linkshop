@@ -3,17 +3,16 @@ import styled from 'styled-components';
 import { ColorTypes } from '../styles/theme';
 
 const BaseButton = styled.button`
-  width: 98px;
-  height: 32px;
   color: #ffffff;
+  border: none;
   border-radius: 37px;
   background-color: ${({ theme }) => theme.colors[ColorTypes.PRIMARY]};
-  font-size: 15px;
-  font-weight: 600;
-  border: 0;
-  cursor: pointer;
+
+  /*기본값*/
+  width: ${({ width = '98px' }) => width};
+  height: ${({ height = '32px' }) => height};
+  font-size: ${({ fontSize = '15px' }) => fontSize};
+  font-weight: ${({ fontWeight = 600 }) => fontWeight};
 `;
-function PrimaryButton({ children }) {
-  return <BaseButton>{children}</BaseButton>;
-}
-export default PrimaryButton;
+
+export default BaseButton;
