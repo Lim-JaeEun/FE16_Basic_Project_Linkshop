@@ -8,11 +8,11 @@ const GlobalStyle = createGlobalStyle`
   }
 
   html {
-    font-size: 16px
+    font-size: 16px;
   }
 
   body {
-    font-family: 'Noto Sans KR', sans-serif,
+    font-family: 'Noto Sans KR', sans-serif;
   }
 
   a {
