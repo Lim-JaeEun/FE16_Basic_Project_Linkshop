@@ -1,107 +1,88 @@
+import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
-import searchIconPng from '../assets/icon/ic_search.png';
 
-const StyledHeader = styled.header`
+// --- Styled Components ---
+
+const Stheader = styled.header`
   display: flex;
-  flex-direction: column;
-  padding: 1.5rem;       /* 내부 여백은 그대로 유지 */
-  background-color: #fff; /* 배경색도 흰색으로 유지 */
-  gap: 1.25rem;          /* 첫 번째 줄과 두 번째 줄 사이의 간격도 유지 */
-
-  /* --- 헤더를 화면 중앙에 배치하기 위한 스타일--- */
-  max-width: 1200px;
-  width: 100%;           /* 화면 너비가 1200px보다 작을 경우에는 100%를 채워서 반응형으로 동작 */
-  margin : 0 auto;
-  
-`;
-
-const TopRow = styled.div`
-  display: flex;
-  justify-content: space-between; /* 로고는 왼쪽, 버튼은 오른쪽에 배치 */
-  align-items: center; /* 세로 중앙 정렬 */
-  width: 100%; /* 부모 너비(StyledHeader)를 꽉 채움 */
-`;
-
-const Logo = styled.h1`
-  font-size: 2rem;
-  font-weight: 900; /* 매우 굵은 글씨체 */
-  color: #000; /* 검은색 */
-  margin: 0; /* h1 태그의 기본 마진 제거 */
-`;
-
-const CreateButton = styled.button`
-  padding: 10px 20px; /* 버튼 내부 여백 */
-  background-color: #3E45EC;
-  color: white; /* 글자색 흰색 */
-  border: none; /* 테두리 없음 */
-  border-radius: 37px; /* 버튼 모서리 둥글게 */
-  cursor: pointer;
-  font-size: 0.95rem; /* 글자 크기 */
-  font-weight: 500; /* 글자 굵기 */
-
-  &:hover {
-    background-color:rgb(39, 44, 188); /* 마우스 올렸을 때 약간 어두운 파란색 */
-  }
-`;
-
-// 검색창 전체를 감싸는 컨테이너
-const SearchInputWrapper = styled.div`
-  position: relative; /* 아이콘을 absolute positioning 하기 위함 */
-  width: 100%; /* 부모 너비(StyledHeader)를 꽉 채움 */
-  display: flex; /* 내부 요소 정렬 */
-  align-items: center; /* 세로 중앙 정렬 */
-`;
-
-// 검색 아이콘 스타일
-const IconSpan = styled.span`
-  position: absolute; /* SearchInputWrapper 기준으로 절대 위치 */
-  left: 15px; /* 왼쪽에서 15px 떨어진 곳에 배치 */
-  top: 50%; /* 상단에서 50% 위치 */
-  transform: translateY(-50%); /* Y축으로 자신의 높이의 50%만큼 올려 중앙 정렬 */
-  pointer-events: none; /* 아이콘이 마우스 이벤트를 가로채지 않도록 설정 */
-`;
-
-const SearchInput = styled.input`
-  width: 100%; /* SearchInputWrapper 너비를 꽉 채움 */
-  padding: 14px 20px 14px 45px; /* 안쪽 여백: 상 14px, 우 20px, 하 14px, 좌 45px (왼쪽은 아이콘 공간 확보) */
-  border: 1px solid #DDDCDF; /* 테두리 색상 */
-  border-radius: 49px; /* 모서리 둥글게 */
-  font-size: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background-color: #fff;
   box-sizing: border-box;
-  outline: none; /* 포커스 시 기본 아웃라인 제거 */
+  margin-top : 42px;
+  margin-bottom: 32px;
+  height: 36px; /* 모든 화면 크기에서 헤더 높이 36px로 고정 */
 
-  &::placeholder {
-    color: #888790; /* placeholder 글자 색상 */
+  /* 공통: 좌우 중앙 정렬 (데스크탑) */
+  margin-left: auto;
+  margin-right: auto;
+
+  /* 데스크탑 (1024px 이상으로 가정) */
+  padding: 0 1.5rem; /* 상하 패딩 0, 좌우 패딩으로 내부 여백 확보 */
+  max-width: 1199px;
+
+  /* 태블릿 (768px ~ 1023px) */
+  @media (max-width: 1023px) {
+    padding: 0 1rem;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top:40px;
   }
 
-  &:focus {
-    border-color: #777; /* 포커스 시 테두리 색상 */
+  /* 모바일 (767px 이하) */
+  @media (max-width: 767px) {
+    margin-top:28px;
+    padding: 0 0.75rem;
   }
 `;
 
-const SearchIconImage = styled.img`
-  width: 18px;
-  height: 18px;
-  display: block; 
+// 로고
+const Logo = styled.a`
+  font-weight: 900;
+  color: #000;
+  text-decoration: none;
+  line-height: 36px; /* 헤더 높이에 맞춰 수직 중앙 정렬 */
+  margin: 0;
+  padding: 0;
+
+  /* 데스크탑 로고 글자 크기 */
+  font-size: 1.5rem;
+
+  /* 태블릿 */
+  @media (max-width: 1023px) {
+    font-size: 1.6rem;
+  }
+
+  /* 모바일 */
+  @media (max-width: 767px) {
+    font-size: 1.7rem;
+  }
 `;
 
-// --- Header Component ---
+// 버튼을 담는 컨테이너
+const ButtonContainer = styled.div`
+  display: flex;
+  align-items: center; /* 내부 버튼(들)을 수직 중앙 정렬 */
+  gap: 10px; /* 여러 버튼이 올 경우 버튼 사이의 간격 */
+  height: 100%; /* 부모 높이(36px)를 채우도록 설정 */
+`;
+
 
 const Header = () => {
   return (
-    <StyledHeader>
-      <TopRow>
-        <Logo>LINK SHOP</Logo>
-        <CreateButton>생성하기</CreateButton>
-      </TopRow>
-      
-      <SearchInputWrapper>
-        <IconSpan>
-          <SearchIconImage src={searchIconPng} alt="검색 아이콘" /> 
-        </IconSpan>
-        <SearchInput type="text" placeholder="샵 이름으로 검색해 보세요." />
-      </SearchInputWrapper>
-    </StyledHeader>
+    <>
+      <Stheader>
+        <Logo href="/list">LINK SHOP</Logo>
+        <ButtonContainer>버튼
+          {/* 다른 팀원이 여기에 버튼 컴포넌트를 추가할 예정입니다.*/}
+        </ButtonContainer>
+      </Stheader>
+      <main>
+        <Outlet />
+      </main>
+    </>
   );
 };
 
