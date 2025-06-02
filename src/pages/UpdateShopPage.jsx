@@ -1,5 +1,8 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import Header from '../layouts/Header';
+import UpdateProduct from '../components/UpdateProduct';
+import UpdateShop from '../components/UpdateShop';
 
 function UpdateShopPage({ onSuccess }) {
   const navigate = useNavigate();
@@ -18,7 +21,9 @@ function UpdateShopPage({ onSuccess }) {
 
   return (
     <div>
-      <h2>가게 수정 페이지</h2>
+      <Header />
+      <UpdateProduct />
+      <UpdateShop />
       {/* 공용 버튼 컴포넌트로 수정 필요 */}
       <button onClick={handleUpdate}>수정</button>
     </div>
