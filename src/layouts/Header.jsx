@@ -10,7 +10,7 @@ const Stheader = styled.header`
   width: 100%;
   background-color: #fff;
   box-sizing: border-box;
-  margin-top : 42px;
+  margin-top: 42px;
   margin-bottom: 32px;
   height: 36px; /* 모든 화면 크기에서 헤더 높이 36px로 고정 */
 
@@ -28,12 +28,12 @@ const Stheader = styled.header`
     max-width: 100%;
     margin-left: 0;
     margin-right: 0;
-    margin-top:40px;
+    margin-top: 40px;
   }
 
   /* 모바일 (767px 이하) */
   @media (max-width: 767px) {
-    margin-top:28px;
+    margin-top: 28px;
     padding: 0 0.75rem;
   }
 `;
@@ -69,13 +69,13 @@ const ButtonContainer = styled.div`
   height: 100%; /* 부모 높이(36px)를 채우도록 설정 */
 `;
 
-
 const Header = () => {
   return (
     <>
       <Stheader>
-        <Logo href="/list">LINK SHOP</Logo>
-        <ButtonContainer>버튼
+        <Logo href='/list'>LINK SHOP</Logo>
+        <ButtonContainer>
+          버튼
           {/* 다른 팀원이 여기에 버튼 컴포넌트를 추가할 예정입니다.*/}
         </ButtonContainer>
       </Stheader>
