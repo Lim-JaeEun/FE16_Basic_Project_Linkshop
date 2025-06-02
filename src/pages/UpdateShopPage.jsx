@@ -4,7 +4,7 @@ import Header from '../layouts/Header';
 import UpdateProduct from '../components/UpdateProduct';
 import UpdateShop from '../components/UpdateShop';
 
-function UpdateShopPage({ onSuccess }) {
+const UpdateShopPage = ({ onSuccess }) => {
   const navigate = useNavigate();
   const { URLid } = useParams();
 
@@ -28,6 +28,6 @@ function UpdateShopPage({ onSuccess }) {
       <button onClick={handleUpdate}>수정</button>
     </div>
   );
-}
+};
 
 export default UpdateShopPage;
