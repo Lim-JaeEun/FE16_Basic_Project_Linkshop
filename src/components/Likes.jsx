@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
-import emptyHeartImg from '../assets/icon/btn_empty_heart.png';
-import filledHeartImg from '../assets/icon/btn_fill_heart.png';
+import emptyHeartImg from '../assets/icon/btn_empty_heart.png'; // svg가 나을까 싶습니다.
+import filledHeartImg from '../assets/icon/btn_fill_heart.png'; // svg가 나을까 싶습니다.
 import { FontTypes } from '../styles/theme';
 import { applyFontStyles } from './../styles/mixins';
 
@@ -11,7 +11,7 @@ const StLikesWrapper = styled.div`
   display: inline-flex;
   justify-content: space-between;
   align-items: center;
-  gap: 5px;
+  gap: 0.3125rem; // 5px
   cursor: pointer;
 `;
 
