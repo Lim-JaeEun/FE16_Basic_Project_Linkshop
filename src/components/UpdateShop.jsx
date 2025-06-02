@@ -15,7 +15,7 @@ const Container = styled.div`
   padding: 28px;
   gap: 30px;
   margin: 75px auto;
-  max-width: 468px;
+  max-width: 500px;
 `;
 
 const ImageGroup = styled.div`

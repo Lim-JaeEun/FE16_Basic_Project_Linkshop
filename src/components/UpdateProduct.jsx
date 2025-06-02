@@ -7,7 +7,6 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 16px;
   margin: 0 auto;
   max-width: 500px;
 `;
@@ -24,6 +23,7 @@ const UpdateProduct = () => {
   return (
     <Container>
       <AddProduct>추가</AddProduct>
+      <UpdateItemCard />
       <UpdateItemCard />
     </Container>
   );
