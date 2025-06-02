@@ -2,7 +2,10 @@ import styled from 'styled-components';
 import { applyFontStyles } from '../styles/mixins';
 import theme, { FontTypes, ColorTypes } from '../styles/theme';
 import FileInput from './FileInput';
-import closeEye from '../assets/icon/btn_visibility_off.svg';
+import closeEyeIcon from '../assets/icon/btn_visibility_off.svg';
+import openEyeIcon from '../assets/icon/btn_visibility_on.svg';
+
+const DEFAULT_EYE_SIZE = '20px';
 
 const Container = styled.div`
   display: flex;
@@ -21,11 +24,18 @@ const ImageGroup = styled.div`
   justify-content: space-between;
 `;
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
 
-const FormGroup = styled.div``;
+const FormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 
-const Label = styled.div`
+const ShopImg = styled.div`
   ${applyFontStyles(FontTypes.SEMIBOLD14, ColorTypes.SECONDARY_BLACK)}
 `;
 
@@ -33,10 +43,16 @@ const Description = styled.div`
   ${applyFontStyles(FontTypes.REGULAR17, ColorTypes.SECONDARY_GRAY_300)}
 `;
 
+const StLabel = styled.label`
+  ${applyFontStyles(FontTypes.SEMIBOLD14, ColorTypes.SECONDARY_BLACK)}
+`;
+
+const StInput = styled.input`
+  ${applyFontStyles(FontTypes.REGULAR17, ColorTypes.SECONDARY_GRAY_300)};
+`;
+
 const CloseEyeIcon = styled.img`
-  width: 24px;
-  height: 24px;
-  margin-left: 8px;
+  aspect-ratio: 1/1;
 `;
 
 const UpdateShop = () => {
@@ -44,36 +60,44 @@ const UpdateShop = () => {
     <Container>
       <ImageGroup>
         <Wrapper>
-          <Label>상품 대표 이미지</Label>
+          <ShopImg>상품 대표 이미지</ShopImg>
           <Description>상품 이미지를 첨부해주세요.</Description>
         </Wrapper>
         <FileInput />
       </ImageGroup>
 
       <FormGroup>
-        <Label>이름</Label>
-        <Description>표시하고 싶은 이름을 적어 주세요.</Description>
+        <StLabel htmlFor='name'>이름</StLabel>
+        <StInput id='name' placeholder='표시하고 싶은 이름을 적어 주세요.' />
       </FormGroup>
 
       <FormGroup>
-        <Label>Url</Label>
-        <Description>Url을 입력해주세요.</Description>
+        <StLabel htmlFor='url'>Url</StLabel>
+        <StInput id='url' placeholder='Url을 입력해주세요.' />
       </FormGroup>
 
       <ImageGroup>
         <Wrapper>
-          <Label>유저 ID</Label>
-          <Description>유저 ID를 입력해주세요.</Description>
+          <StLabel htmlFor='userId'>유저 ID</StLabel>
+          <StInput id='userId' placeholder='유저 ID를 입력해주세요.' />
         </Wrapper>
-        <CloseEyeIcon src={closeEye} alt='유저ID 가리기 아이콘' />
+        <CloseEyeIcon
+          src={closeEyeIcon}
+          alt='유저ID 가리기 아이콘'
+          width={DEFAULT_EYE_SIZE}
+        />
       </ImageGroup>
 
       <ImageGroup>
         <Wrapper>
-          <Label>비밀번호</Label>
-          <Description>비밀번호를 입력해주세요.</Description>
+          <StLabel htmlFor='password'>비밀번호</StLabel>
+          <StInput id='password' placeholder='비밀번호를 입력해주세요.' />
         </Wrapper>
-        <CloseEyeIcon src={closeEye} alt='비밀번호 가리기 아이콘' />
+        <CloseEyeIcon
+          src={closeEyeIcon}
+          alt='비밀번호 가리기 아이콘'
+          width={DEFAULT_EYE_SIZE}
+        />
       </ImageGroup>
     </Container>
   );
