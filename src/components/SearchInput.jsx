@@ -13,12 +13,12 @@ const SearchInputContainer = styled.div`
   padding: 0 18.34px;
   gap: 13px;
 
-  /* 태블릿 (768px 이상 1023px 이하): 696px */
+  /* 태블릿 (768px 이상 1023px 이하)*/
   @media (min-width: 768px) {
     width: 696px;
   }
 
-  /* 데스크탑 (1024px 이상): 1199px */
+  /* 데스크탑 (1024px 이상)*/
   @media (min-width: 1024px) {
     width: 1199px;
   }
