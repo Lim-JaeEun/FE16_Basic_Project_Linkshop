@@ -9,6 +9,10 @@ const Container = styled.div`
   gap: 16px;
   margin: 0 auto;
   max-width: 500px;
+
+  @media (min-width: 768px) {
+    max-width: 696px;
+  }
 `;
 
 const AddItemCard = styled.button`

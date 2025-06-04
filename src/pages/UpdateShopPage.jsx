@@ -9,6 +9,10 @@ import theme from '../styles/theme';
 const BtnWrapper = styled.div`
   max-width: 500px;
   margin: 0 auto 124px;
+
+  @media (min-width: 768px) {
+    max-width: 696px;
+  }
 `;
 
 const StButton = styled(BaseButton)`
@@ -22,7 +26,7 @@ const UpdateShopPage = ({ onSuccess }) => {
   const [isDisable, setIsDisable] = useState(true);
 
   // 에러메세지 UI 확인용
-  const hasError = true;
+  const hasError = false;
 
   const navigate = useNavigate();
   const { URLid } = useParams();

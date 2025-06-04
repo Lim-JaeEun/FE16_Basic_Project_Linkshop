@@ -22,6 +22,10 @@ const Container = styled.div`
   border: 1px solid
     ${({ hasError }) =>
       hasError ? theme.colors[ColorTypes.ERROR] : 'transparent'};
+
+  @media (min-width: 768px) {
+    max-width: 696px;
+  }
 `;
 
 const ImageGroup = styled.div`
