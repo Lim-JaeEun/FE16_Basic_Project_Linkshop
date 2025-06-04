@@ -1,9 +1,10 @@
 import styled from 'styled-components';
 import { applyFontStyles } from '../styles/mixins';
 import theme, { FontTypes, ColorTypes } from '../styles/theme';
-import FileInput from './FileInput';
+import FileField from './FileField';
 import closeEyeIcon from '../assets/icon/btn_visibility_off.svg';
 import openEyeIcon from '../assets/icon/btn_visibility_on.svg';
+import Field from './Field';
 
 const DEFAULT_EYE_SIZE = '20px';
 
@@ -30,11 +31,6 @@ const Wrapper = styled.div`
   gap: 10px;
 `;
 
-const FormGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
 const ShopImg = styled.div`
   ${applyFontStyles(FontTypes.SEMIBOLD14, ColorTypes.SECONDARY_BLACK)}
 `;
@@ -55,7 +51,7 @@ const CloseEyeIcon = styled.img`
   aspect-ratio: 1/1;
 `;
 
-const UpdateShop = () => {
+const UpdateShop = ({ idKey }) => {
   return (
     <Container>
       <ImageGroup>
@@ -63,24 +59,30 @@ const UpdateShop = () => {
           <ShopImg>상품 대표 이미지</ShopImg>
           <Description>상품 이미지를 첨부해주세요.</Description>
         </Wrapper>
-        <FileInput />
+        <FileField />
       </ImageGroup>
 
-      <FormGroup>
-        <StLabel htmlFor='name'>이름</StLabel>
-        <StInput id='name' placeholder='표시하고 싶은 이름을 적어 주세요.' />
-      </FormGroup>
+      <Field
+        type='text'
+        inputId={`name${idKey}`}
+        label='이름'
+        placeholder='표시하고 싶은 이름을 적어 주세요.'
+      />
 
-      <FormGroup>
-        <StLabel htmlFor='url'>Url</StLabel>
-        <StInput id='url' placeholder='Url을 입력해주세요.' />
-      </FormGroup>
+      <Field
+        type='url'
+        inputId={`url${idKey}`}
+        label='Url'
+        placeholder='Url을 입력해주세요.'
+      />
 
       <ImageGroup>
-        <Wrapper>
-          <StLabel htmlFor='userId'>유저 ID</StLabel>
-          <StInput id='userId' placeholder='유저 ID를 입력해주세요.' />
-        </Wrapper>
+        <Field
+          type='text'
+          inputId={`userId${idKey}`}
+          label='유저 ID'
+          placeholder='유저 ID를 입력해주세요.'
+        />
         <CloseEyeIcon
           src={closeEyeIcon}
           alt='유저ID 가리기 아이콘'
@@ -89,10 +91,12 @@ const UpdateShop = () => {
       </ImageGroup>
 
       <ImageGroup>
-        <Wrapper>
-          <StLabel htmlFor='password'>비밀번호</StLabel>
-          <StInput id='password' placeholder='비밀번호를 입력해주세요.' />
-        </Wrapper>
+        <Field
+          type='password'
+          inputId={`password${idKey}`}
+          label='비밀번호'
+          placeholder='비밀번호를 입력해주세요.'
+        />
         <CloseEyeIcon
           src={closeEyeIcon}
           alt='비밀번호 가리기 아이콘'

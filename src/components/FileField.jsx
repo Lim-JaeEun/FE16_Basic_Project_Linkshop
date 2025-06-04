@@ -1,11 +1,13 @@
 import styled from 'styled-components';
 import theme, { ColorTypes } from '../styles/theme';
 
-const Wrapper = styled.div``;
+// 실제 파일 업로드 input (숨김)
+const StInput = styled.input.attrs({ type: 'file' })`
+  display: none;
+`;
 
-const Button = styled.button`
+const StLabel = styled.label`
   border: 1px solid ${theme.colors[ColorTypes.PRIMARY]};
-  background-color: transparent;
   border-radius: 8px;
   padding: 7px 12px;
 
@@ -13,14 +15,16 @@ const Button = styled.button`
   font-size: 14px;
   font-weight: 500;
   color: ${theme.colors[ColorTypes.PRIMARY]};
+  cursor: pointer;
 `;
 
-const FileInput = () => {
+const FileField = () => {
   return (
-    <Wrapper>
-      <Button>파일 첨부</Button>
-    </Wrapper>
+    <div>
+      <StLabel htmlFor='upload'>파일 첨부</StLabel>
+      <StInput id='upload' />
+    </div>
   );
 };
 
-export default FileInput;
+export default FileField;

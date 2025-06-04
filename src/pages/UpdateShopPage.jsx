@@ -1,11 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useNavigate, useParams } from 'react-router-dom';
-import Header from '../layouts/Header';
 import UpdateProduct from '../components/UpdateProduct';
 import UpdateShop from '../components/UpdateShop';
 import BaseButton from '../components/PrimaryButton';
-import theme, { ColorTypes } from '../styles/theme';
 
 const BtnWrapper = styled.div`
   max-width: 500px;
@@ -33,7 +31,6 @@ const UpdateShopPage = ({ onSuccess }) => {
 
   return (
     <div>
-      <Header />
       <UpdateProduct />
       <UpdateShop />
       <BtnWrapper>

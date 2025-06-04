@@ -11,7 +11,7 @@ const Container = styled.div`
   max-width: 500px;
 `;
 
-const AddProduct = styled.button`
+const AddItemCard = styled.button`
   text-align: right;
   top: 16px;
   right: 16px;
@@ -22,7 +22,7 @@ const AddProduct = styled.button`
 const UpdateProduct = () => {
   return (
     <Container>
-      <AddProduct>추가</AddProduct>
+      <AddItemCard>추가</AddItemCard>
       <UpdateItemCard />
       <UpdateItemCard />
     </Container>
