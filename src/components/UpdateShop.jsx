@@ -18,6 +18,10 @@ const Container = styled.div`
   gap: 30px;
   margin: 75px auto;
   max-width: 500px;
+
+  border: 1px solid
+    ${({ hasError }) =>
+      hasError ? theme.colors[ColorTypes.ERROR] : 'transparent'};
 `;
 
 const ImageGroup = styled.div`
@@ -40,19 +44,12 @@ const Description = styled.div`
   ${applyFontStyles(FontTypes.REGULAR17, ColorTypes.SECONDARY_GRAY_300)}
 `;
 
-const StLabel = styled.label`
-  ${applyFontStyles(FontTypes.SEMIBOLD14, ColorTypes.SECONDARY_BLACK)}
-`;
-
-const StInput = styled.input`
-  ${applyFontStyles(FontTypes.REGULAR17, ColorTypes.SECONDARY_GRAY_300)};
-`;
-
 const CloseEyeIcon = styled.img`
   aspect-ratio: 1/1;
+  cursor: pointer;
 `;
 
-const UpdateShop = ({ idKey }) => {
+const UpdateShop = ({ idKey, hasError }) => {
   const [openPassword, setOpenPassword] = useState(false);
 
   const togglePassword = () => {
@@ -60,7 +57,7 @@ const UpdateShop = ({ idKey }) => {
   };
 
   return (
-    <Container>
+    <Container hasError={hasError}>
       <ImageGroup>
         <Wrapper>
           <ShopImg>상품 대표 이미지</ShopImg>
@@ -74,6 +71,7 @@ const UpdateShop = ({ idKey }) => {
         inputId={`name${idKey}`}
         label='이름'
         placeholder='표시하고 싶은 이름을 적어 주세요.'
+        hasError={hasError}
       />
 
       <Field
@@ -81,6 +79,7 @@ const UpdateShop = ({ idKey }) => {
         inputId={`url${idKey}`}
         label='Url'
         placeholder='Url을 입력해주세요.'
+        hasError={hasError}
       />
 
       <Field
@@ -88,6 +87,7 @@ const UpdateShop = ({ idKey }) => {
         inputId={`userId${idKey}`}
         label='유저 ID'
         placeholder='유저 ID를 입력해주세요.'
+        hasError={hasError}
       />
 
       <ImageGroup>
@@ -96,6 +96,7 @@ const UpdateShop = ({ idKey }) => {
           inputId={`password${idKey}`}
           label='비밀번호'
           placeholder='비밀번호를 입력해주세요.'
+          hasError={hasError}
         />
         <CloseEyeIcon
           src={openPassword ? openEyeIcon : closeEyeIcon}

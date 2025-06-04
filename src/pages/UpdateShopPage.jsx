@@ -21,6 +21,9 @@ const StButton = styled(BaseButton)`
 const UpdateShopPage = ({ onSuccess }) => {
   const [isDisable, setIsDisable] = useState(true);
 
+  // 에러메세지 UI 확인용
+  const hasError = true;
+
   const navigate = useNavigate();
   const { URLid } = useParams();
 
@@ -37,8 +40,8 @@ const UpdateShopPage = ({ onSuccess }) => {
 
   return (
     <div>
-      <UpdateProduct />
-      <UpdateShop />
+      <UpdateProduct hasError={hasError} />
+      <UpdateShop hasError={hasError} />
       <BtnWrapper>
         <StButton
           onClick={handleUpdate}

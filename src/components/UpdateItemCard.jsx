@@ -11,6 +11,10 @@ const Container = styled.div`
   border-radius: 16px;
   padding: 28px;
   gap: 30px;
+
+  border: 1px solid
+    ${({ hasError }) =>
+      hasError ? theme.colors[ColorTypes.ERROR] : 'transparent'};
 `;
 
 const ImageGroup = styled.div`
@@ -33,9 +37,9 @@ const Description = styled.div`
   ${applyFontStyles(FontTypes.REGULAR17, ColorTypes.SECONDARY_GRAY_300)}
 `;
 
-const UpdateItemCard = ({ idKey }) => {
+const UpdateItemCard = ({ idKey, hasError }) => {
   return (
-    <Container>
+    <Container hasError={hasError}>
       <ImageGroup>
         <Wrapper>
           <ProductImg>상품 대표 이미지</ProductImg>
@@ -49,12 +53,14 @@ const UpdateItemCard = ({ idKey }) => {
         inputId={`productName${idKey}`}
         label='상품 이름'
         placeholder='상품 이름을 입력해 주세요.'
+        hasError={hasError}
       />
       <Field
         type='number'
         inputId={`productPrice${idKey}`}
         label='상품 가격'
         placeholder='원화로 표기해 주세요.'
+        hasError={hasError}
       />
     </Container>
   );

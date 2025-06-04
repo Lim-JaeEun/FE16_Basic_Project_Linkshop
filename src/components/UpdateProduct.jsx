@@ -19,12 +19,12 @@ const AddItemCard = styled.button`
   ${applyFontStyles(FontTypes.MEDIUM16, ColorTypes.PRIMARY)}
 `;
 
-const UpdateProduct = () => {
+const UpdateProduct = ({ hasError }) => {
   return (
     <Container>
       <AddItemCard>추가</AddItemCard>
-      <UpdateItemCard />
-      <UpdateItemCard />
+      <UpdateItemCard hasError={hasError} />
+      <UpdateItemCard hasError={hasError} />
     </Container>
   );
 };
