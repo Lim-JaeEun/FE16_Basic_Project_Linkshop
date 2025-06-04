@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 import LinkshopProductImage from './LinkshopProductImage';
-import LinkshopProfileInfo from './LinkshopProfileInfo ';
+import LinkshopProfileInfo from './LinkshopProfileInfo';
 import { applyFontStyles } from '../styles/mixins';
 import { FontTypes } from '../styles/theme';
 
@@ -29,7 +29,7 @@ const ProductImgWrapper = styled.div`
   }
 
   /* Firefox 스크롤바 숨기기 (또는 얇게 만들기) */
-  scrollbar-width: thin; /* 'none' 또는 'thin' */
+  scrollbar-width: thin;
   -ms-overflow-style: none; /* IE 및 Edge (레거시) 스크롤바 숨기기 */
 `;
 const TotalProducts = styled.div`
