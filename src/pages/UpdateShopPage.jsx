@@ -6,6 +6,10 @@ import UpdateShop from '../components/UpdateShop';
 import BaseButton from '../components/PrimaryButton';
 import theme from '../styles/theme';
 
+const Container = styled.div`
+  margin-top: 124px;
+`;
+
 const BtnWrapper = styled.div`
   max-width: 500px;
   margin: 0 auto 124px;
@@ -43,7 +47,7 @@ const UpdateShopPage = ({ onSuccess }) => {
   };
 
   return (
-    <div>
+    <Container>
       <UpdateProduct hasError={hasError} />
       <UpdateShop hasError={hasError} />
       <BtnWrapper>
@@ -56,7 +60,7 @@ const UpdateShopPage = ({ onSuccess }) => {
           수정하기
         </StButton>
       </BtnWrapper>
-    </div>
+    </Container>
   );
 };
 
