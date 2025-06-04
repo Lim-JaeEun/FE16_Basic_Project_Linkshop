@@ -29,7 +29,7 @@ const ProductImgWrapper = styled.div`
   }
 
   /* Firefox 스크롤바 숨기기 (또는 얇게 만들기) */
-  scrollbar-width: none; /* 'none' 또는 'thin' */
+  scrollbar-width: thin; /* 'none' 또는 'thin' */
   -ms-overflow-style: none; /* IE 및 Edge (레거시) 스크롤바 숨기기 */
 `;
 const TotalProducts = styled.div`
