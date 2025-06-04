@@ -114,7 +114,7 @@ const StCheckedImg = styled.img`
   right: 0;
 `;
 
-const OrderSelector = ({ order, onClick: handleClick }) => {
+const OrderSelector = ({ className, order, onClick: handleClick }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleModalOpenClick = () => {
@@ -137,7 +137,7 @@ const OrderSelector = ({ order, onClick: handleClick }) => {
 
   return (
     <>
-      <StOrderSelector onClick={handleModalOpenClick}>
+      <StOrderSelector className={className} onClick={handleModalOpenClick}>
         {order}
         <StSelectorArrowImg
           src={arrowBtn}
