@@ -126,19 +126,14 @@ const OrderSelector = ({ className, order, onClick: handleClick }) => {
   };
 
   const handleOrderClick = selectedOrder => {
-    try {
-      handleClick(selectedOrder);
-    } catch (error) {
-      console.log(error.message);
-    } finally {
-      setIsOpen(false);
-    }
+    handleClick(selectedOrder);
+    setIsOpen(false);
   };
 
   return (
     <>
       <StOrderSelector className={className} onClick={handleModalOpenClick}>
-        {order}
+        {ORDER_OPTIONS[order]}
         <StSelectorArrowImg
           src={arrowBtn}
           alt='정렬 방식 드롭다운 화살표 이미지'
@@ -152,11 +147,11 @@ const OrderSelector = ({ className, order, onClick: handleClick }) => {
             <StOptionButton
               key={key}
               $value={value}
-              $highlightKey={order}
-              onClick={() => handleOrderClick(value)}
+              $highlightKey={ORDER_OPTIONS[order]}
+              onClick={() => handleOrderClick(key)}
             >
               {value}
-              {value === order && (
+              {value === ORDER_OPTIONS[order] && (
                 <StCheckedImg src={checkedImg} alt='선택된 정렬 체크 이미지' />
               )}
             </StOptionButton>
