@@ -20,7 +20,7 @@ const ProductImgWrapper = styled.div`
   display: flex;
   gap: 12px;
   flex-wrap: nowrap;
-  overflow: scroll;
+  overflow-x: scroll;
 `;
 const TotalProducts = styled.div`
   ${({ $fontType = FontTypes.REGULAR16 }) => applyFontStyles($fontType)};
