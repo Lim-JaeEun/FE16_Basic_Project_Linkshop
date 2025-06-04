@@ -14,6 +14,7 @@ const StLabel = styled.label`
 
 const StInput = styled.input`
   ${applyFontStyles(FontTypes.REGULAR17, ColorTypes.SECONDARY_GRAY_300)}
+  color: ${props => props.theme.colors[ColorTypes.SECONDARY_BLACK]}
 `;
 
 const Field = ({ type, inputId, label, placeholder }) => {

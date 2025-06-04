@@ -5,6 +5,7 @@ import FileField from './FileField';
 import closeEyeIcon from '../assets/icon/btn_visibility_off.svg';
 import openEyeIcon from '../assets/icon/btn_visibility_on.svg';
 import Field from './Field';
+import { useState } from 'react';
 
 const DEFAULT_EYE_SIZE = '20px';
 
@@ -52,6 +53,12 @@ const CloseEyeIcon = styled.img`
 `;
 
 const UpdateShop = ({ idKey }) => {
+  const [openPassword, setOpenPassword] = useState(false);
+
+  const togglePassword = () => {
+    setOpenPassword(prev => !prev);
+  };
+
   return (
     <Container>
       <ImageGroup>
@@ -76,31 +83,25 @@ const UpdateShop = ({ idKey }) => {
         placeholder='Url을 입력해주세요.'
       />
 
-      <ImageGroup>
-        <Field
-          type='text'
-          inputId={`userId${idKey}`}
-          label='유저 ID'
-          placeholder='유저 ID를 입력해주세요.'
-        />
-        <CloseEyeIcon
-          src={closeEyeIcon}
-          alt='유저ID 가리기 아이콘'
-          width={DEFAULT_EYE_SIZE}
-        />
-      </ImageGroup>
+      <Field
+        type='text'
+        inputId={`userId${idKey}`}
+        label='유저 ID'
+        placeholder='유저 ID를 입력해주세요.'
+      />
 
       <ImageGroup>
         <Field
-          type='password'
+          type={openPassword ? 'text' : 'password'}
           inputId={`password${idKey}`}
           label='비밀번호'
           placeholder='비밀번호를 입력해주세요.'
         />
         <CloseEyeIcon
-          src={closeEyeIcon}
-          alt='비밀번호 가리기 아이콘'
+          src={openPassword ? openEyeIcon : closeEyeIcon}
+          alt='비밀번호 토글 아이콘'
           width={DEFAULT_EYE_SIZE}
+          onClick={togglePassword}
         />
       </ImageGroup>
     </Container>
