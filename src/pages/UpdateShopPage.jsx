@@ -1,9 +1,10 @@
-import React from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useParams } from 'react-router-dom';
 import UpdateProduct from '../components/UpdateProduct';
 import UpdateShop from '../components/UpdateShop';
 import BaseButton from '../components/PrimaryButton';
+import theme from '../styles/theme';
 
 const BtnWrapper = styled.div`
   max-width: 500px;
@@ -11,10 +12,15 @@ const BtnWrapper = styled.div`
 `;
 
 const StButton = styled(BaseButton)`
-  background-color: ${({ theme }) => theme.colors.secGray200};
+  background-color: ${({ theme, disabled }) =>
+    disabled ? theme.colors.secGray200 : theme.colors.primary};
+  color: ${theme.colors.secWhite100};
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
 `;
 
 const UpdateShopPage = ({ onSuccess }) => {
+  const [isDisable, setIsDisable] = useState(true);
+
   const navigate = useNavigate();
   const { URLid } = useParams();
 
@@ -34,7 +40,12 @@ const UpdateShopPage = ({ onSuccess }) => {
       <UpdateProduct />
       <UpdateShop />
       <BtnWrapper>
-        <StButton onClick={handleUpdate} width='100%' height='50px'>
+        <StButton
+          onClick={handleUpdate}
+          disabled={isDisable}
+          width='100%'
+          height='50px'
+        >
           수정하기
         </StButton>
       </BtnWrapper>
