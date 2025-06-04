@@ -21,7 +21,6 @@ const StOrderSelector = styled.button`
 
 const StSelectorArrowImg = styled.img``;
 
-// for mobile viewport
 const slideUp = keyframes`
   from {
     transform: translateY(100vh);
@@ -30,18 +29,45 @@ const slideUp = keyframes`
   }
 `;
 
+const fadeIn = keyframes`
+  from {
+    opacity: 0; 
+  }
+  to {
+    opacity: 1; 
+  }
+`;
+
 const StOrderModal = styled(BaseModal)`
   position: relative;
   width: 100%;
   height: 100vh;
+  top: 50%;
   padding: 36px 24px 24px 24px;
   border-radius: 28px;
+  background-color: ${({ theme }) =>
+    theme.colors[ColorTypes.SECONDARY_WHITE_50]};
+  z-index: 1001;
 
-  // for mobile viewport
+  // Animation for mobile viewport: slide-up (bottom sheet)
   animation-name: ${slideUp};
   animation-duration: 0.4s;
   animation-timing-function: ease-out;
   animation-fill-mode: forwards;
+
+  // Viewport: Tablet & Desktop
+  @media (min-width: 768px) {
+    width: 376px;
+    height: 300px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    // Animation for Tablet&Desktop viewport: fade-in
+    animation-name: ${fadeIn};
+    animation-duration: 0.25s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+  }
 `;
 
 const StOrderModalContent = styled.div`
@@ -118,7 +144,7 @@ const OrderSelector = ({ order, onClick: handleClick }) => {
           alt='정렬 방식 드롭다운 화살표 이미지'
         />
       </StOrderSelector>
-      <StOrderModal isOpen={isOpen} className={'custom-modal-order-content'}>
+      <StOrderModal isOpen={isOpen}>
         <StOrderModalContent>
           <StCloseImg src={closeBtn} onClick={handleModalCloseClick} />
           <StModalTitle>정렬</StModalTitle>

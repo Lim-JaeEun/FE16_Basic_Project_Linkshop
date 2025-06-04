@@ -69,15 +69,6 @@ const GlobalStyle = createGlobalStyle`
     background-color: ${theme.colors.secWhite50};
     border-radius: 30px;
   }
-
-  .custom-modal-order-content {
-    position: relative; /* 내부에 다른 요소들을 absolute로 배치할 때 기준 */
-    top: 50%; /* 수직 중앙 정렬을 위해 */
-    transform: translate(-50%, -50%); /* 정확한 중앙 정렬, 랜딩 페이지 모바일 뷰에서는 변경필요 */
-    z-index: 1001; /* 오버레이보다 높게 설정 */
-    background-color: ${theme.colors.secWhite50};
-    border-radius: 28px;
-  }
 `;
 
 export default GlobalStyle;
