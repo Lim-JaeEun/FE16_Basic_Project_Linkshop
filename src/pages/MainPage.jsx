@@ -137,7 +137,7 @@ const MainPage = () => {
       <MainPageWrapper>
         <SearchInput value={keyword} onChange={handleSearchChange} />
         <StOrderSelector order={order} onClick={handleOrderClick} />
-        <CardList cardData={linkshops} />
+        <CardList cardData={linkshops} isLoading={isLoading} />
       </MainPageWrapper>
       <LoadingIndicator isLoading={isLoading} $isInitialLoad={cursor === 0} />
       {hasMore && !isLoading && (

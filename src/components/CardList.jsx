@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 
 import Card from './Card';
+import NoSearchResult from './NoSearchResult';
+
 const CardListWrapper = styled.div`
   width: 100%;
   display: flex;
@@ -19,13 +21,9 @@ const CardListWrapper = styled.div`
   }
 `;
 
-function CardList({ cardData, onClick: handleClick }) {
-  if (cardData === null) {
-    return (
-      <CardListWrapper>
-        <div>표시할 카드가 없습니다.</div>
-      </CardListWrapper>
-    );
+function CardList({ cardData, isLoading, onClick: handleClick }) {
+  if (!isLoading && cardData.length === 0) {
+    return <NoSearchResult />;
   }
 
   return (
