@@ -1,5 +1,6 @@
 import { applyFontStyles } from '../styles/mixins';
 import { FontTypes, ColorTypes } from '../styles/theme';
+
 import styled from 'styled-components';
 import UpdateItemCard from './UpdateItemCard';
 

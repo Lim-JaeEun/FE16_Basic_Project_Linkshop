@@ -1,6 +1,8 @@
 import { useState } from 'react';
+
 import styled from 'styled-components';
 import { useNavigate, useParams } from 'react-router-dom';
+
 import UpdateProduct from '../components/UpdateProduct';
 import UpdateShop from '../components/UpdateShop';
 import BaseButton from '../components/PrimaryButton';
@@ -20,6 +22,8 @@ const BtnWrapper = styled.div`
 `;
 
 const StButton = styled(BaseButton)`
+  width: 100%;
+  height: 50px;
   background-color: ${({ theme, disabled }) =>
     disabled ? theme.colors.secGray200 : theme.colors.primary};
   color: ${theme.colors.secWhite100};
@@ -30,7 +34,7 @@ const UpdateShopPage = ({ onSuccess }) => {
   const [isDisable, setIsDisable] = useState(true);
 
   // 에러메세지 UI 확인용
-  const hasError = false;
+  const hasError = true;
 
   const navigate = useNavigate();
   const { URLid } = useParams();
@@ -51,12 +55,7 @@ const UpdateShopPage = ({ onSuccess }) => {
       <UpdateProduct hasError={hasError} />
       <UpdateShop hasError={hasError} />
       <BtnWrapper>
-        <StButton
-          onClick={handleUpdate}
-          disabled={isDisable}
-          width='100%'
-          height='50px'
-        >
+        <StButton onClick={handleUpdate} disabled={isDisable}>
           수정하기
         </StButton>
       </BtnWrapper>

@@ -1,11 +1,13 @@
+import { useState } from 'react';
 import styled from 'styled-components';
+
 import { applyFontStyles } from '../styles/mixins';
 import theme, { FontTypes, ColorTypes } from '../styles/theme';
+
 import FileField from './FileField';
+import Field from './Field';
 import closeEyeIcon from '../assets/icon/btn_visibility_off.svg';
 import openEyeIcon from '../assets/icon/btn_visibility_on.svg';
-import Field from './Field';
-import { useState } from 'react';
 
 const DEFAULT_EYE_SIZE = '20px';
 

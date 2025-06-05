@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+
 import { applyFontStyles } from '../styles/mixins';
 import theme, { FontTypes, ColorTypes } from '../styles/theme';
 
