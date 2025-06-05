@@ -37,7 +37,7 @@ const TotalProducts = styled.div`
   ${({ $fontType = FontTypes.REGULAR16 }) => applyFontStyles($fontType)};
 `;
 function Card({
-  onClick: handleClick,
+  id,
   name,
   userId,
   imageUrl,
@@ -45,11 +45,13 @@ function Card({
   isLiked,
   productsCount,
   productImageSrcs,
+  onToggleLike: handleToggleLike,
 }) {
   return (
     <CardWrapper>
       <LinkshopProfileInfo
-        onClick={handleClick}
+        onToggleLike={handleToggleLike}
+        id={id}
         userId={userId}
         name={name}
         imageUrl={imageUrl}
