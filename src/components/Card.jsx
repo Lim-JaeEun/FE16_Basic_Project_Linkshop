@@ -12,8 +12,9 @@ const CardWrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.secWhite100};
   border-radius: 25px;
   padding: 24px;
+
   @media (min-width: 1024px) {
-    width: 587px;
+    width: calc(50% - 12px);
   }
 `;
 const ProductImgWrapper = styled.div`

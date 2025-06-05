@@ -3,16 +3,19 @@ import styled from 'styled-components';
 import Card from './Card';
 const CardListWrapper = styled.div`
   width: 100%;
-  margin: 0 auto;
   display: flex;
-  padding: 15px 8px;
   flex-direction: column;
   gap: 8px;
   flex-wrap: wrap;
+
+  @media (min-width: 768px) {
+    gap: 16px;
+  }
+
   @media (min-width: 1024px) {
-    width: 1199px;
     flex-direction: row;
     justify-content: flex-start;
+    gap: 24px;
   }
 `;
 
