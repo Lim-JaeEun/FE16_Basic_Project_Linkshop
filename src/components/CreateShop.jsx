@@ -1,10 +1,11 @@
+import { useState } from 'react';
+
 import styled from 'styled-components';
 
+import Field from './CreateField';
+import FileField from './CreateFileField';
 import { FormContainer } from './CreateItemCard';
-import Field from './Field';
-import FileField from './FileField';
 import { FormTitle } from './CreateProducts';
-import { useState } from 'react';
 
 const ContainerWrapper = styled.div`
   width: 344px;

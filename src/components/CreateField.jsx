@@ -1,10 +1,11 @@
+import { useState } from 'react';
+
 import { styled } from 'styled-components';
 
 import visibilityOffIcon from '../assets/icon/btn_visibility_off.svg?url';
 import visibilityOnIcon from '../assets/icon/btn_visibility_on.svg';
 import { applyFontStyles } from '../styles/mixins';
 import { FontTypes, ColorTypes } from '../styles/theme';
-import { useState } from 'react';
 import theme from '../styles/theme';
 
 export const FieldContainer = styled.div`

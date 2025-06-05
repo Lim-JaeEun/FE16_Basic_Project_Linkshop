@@ -1,7 +1,8 @@
+import { useRef, useState } from 'react';
+
 import styled from 'styled-components';
 
 import CreateItemCard from './CreateItemCard';
-import { useRef, useState } from 'react';
 import { applyFontStyles } from '../styles/mixins';
 import { ColorTypes, FontTypes } from '../styles/theme';
 
@@ -21,7 +22,7 @@ const ProductListContainer = styled.div`
 export const FormTitle = styled.div`
   position: absolute;
   left: 0;
-  top: -36px;
+  top: -45px;
   display: none;
   ${applyFontStyles(FontTypes.SEMIBOLD16)};
 
@@ -33,7 +34,7 @@ export const FormTitle = styled.div`
 const AddButton = styled.button`
   position: absolute;
   right: 0;
-  top: -36px;
+  top: -45px;
   ${applyFontStyles(FontTypes.BOLD16, ColorTypes.PRIMARY)};
 `;
 
@@ -51,8 +52,8 @@ const CreateProducts = () => {
   const handleAddProduct = () => {
     productKey.current += 1;
     setProductList(prev => [
-      ...prev,
       { ...EMPTY_PRODUCT, id: productKey.current },
+      ...prev,
     ]);
   };
 
@@ -63,7 +64,14 @@ const CreateProducts = () => {
         추가
       </AddButton>
       {productList.map(product => {
-        return <CreateItemCard key={product.id} idKey={product.id} />; //idkey: input-label 1대1 대응 위한 키
+        return (
+          <CreateItemCard
+            key={product.id}
+            idKey={product.id}
+            onDeleteProduct={setProductList}
+            productListLength={productList.length}
+          />
+        ); //idkey: input-label 1대1 대응 위한 키
       })}
     </ProductListContainer>
   );

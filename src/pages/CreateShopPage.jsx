@@ -1,9 +1,11 @@
+import { useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+
+import ConfirmCreateModal from '../components/ConfirmCreateModal';
 import CreateProducts from '../components/CreateProducts';
 import CreateShop from '../components/CreateShop';
-import { useState } from 'react';
-import ConfirmCreateModal from '../components/ConfirmCreateModal';
-import styled from 'styled-components';
 import BaseButton from '../components/PrimaryButton';
 import theme from '../styles/theme';
 import { ColorTypes } from '../styles/theme';
@@ -33,12 +35,12 @@ const STConfirmButton = styled(BaseButton)`
 `;
 
 function CreateShopPage({ onSuccess }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
   const navigate = useNavigate();
 
   const handleConfirm = () => {
-    setIsOpen(false);
+    setIsModalOpen(false);
     navigate('/list');
   };
 
@@ -50,16 +52,13 @@ function CreateShopPage({ onSuccess }) {
     onSuccess?.();
 
     // 3. 모달 띄우기
-    setIsOpen(true);
-
-    // navigate('/list'); 요거는 모달로
+    setIsModalOpen(true);
   };
 
   return (
     <PageContainer>
       <CreateProducts />
       <CreateShop />
-      {/* 공용 버튼 컴포넌트로 수정 필요 */}
       <STConfirmButton
         type='button'
         onClick={handleCreate}
@@ -67,7 +66,7 @@ function CreateShopPage({ onSuccess }) {
       >
         생성하기
       </STConfirmButton>
-      <ConfirmCreateModal onConfirm={handleConfirm} isOpen={isOpen} />
+      <ConfirmCreateModal onConfirm={handleConfirm} isOpen={isModalOpen} />
     </PageContainer>
   );
 }

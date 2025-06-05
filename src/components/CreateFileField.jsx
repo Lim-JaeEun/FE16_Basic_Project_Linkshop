@@ -1,13 +1,14 @@
+import { useState } from 'react';
+
 import styled from 'styled-components';
 
-import { FieldContainer, NoneValidMessage } from './Field';
+import { FieldContainer, NoneValidMessage } from './CreateField';
+import closeBtn from '../assets/icon/btn_close.png';
+import defaultProductImg from '../assets/img/img_product.png';
+import defaultProfileImg from '../assets/img/img_profile_full.svg';
 import { applyFontStyles } from '../styles/mixins';
 import { FontTypes, ColorTypes } from '../styles/theme';
 import theme from '../styles/theme';
-import { useState } from 'react';
-import defaultProfileImg from '../assets/img/img_profile_full.svg';
-import defaultProductImg from '../assets/img/img_product.png';
-import closeBtn from '../assets/icon/btn_close.png';
 
 const AddFileButton = styled.label`
   position: absolute;
@@ -48,7 +49,7 @@ const PreviewImage = styled.img`
   border-radius: 15px;
 `;
 
-const DeletePreviewButton = styled.button`
+export const DeletePreviewButton = styled.button`
   position: absolute;
   top: 8px;
   right: 8px;
@@ -58,7 +59,7 @@ const DeletePreviewButton = styled.button`
   background-color: ${theme.colors.secGray300};
 `;
 
-const X = styled.img`
+export const ButtonX = styled.img`
   position: absolute;
   top: 50%;
   left: 50%;
@@ -99,7 +100,7 @@ const FileField = ({ placeholder, inputId, label }) => {
         <PreviewWrapper>
           <PreviewImage src={previewImage} alt='첨부 파일 미리보기 이미지' />
           <DeletePreviewButton onClick={handleDeletePreview}>
-            <X src={closeBtn} alt='업로드 이미지를 취소하는 x버튼' />
+            <ButtonX src={closeBtn} alt='업로드 이미지를 취소하는 x버튼' />
           </DeletePreviewButton>
         </PreviewWrapper>
       )}

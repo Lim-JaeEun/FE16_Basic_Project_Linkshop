@@ -1,8 +1,9 @@
-import BaseModal from '../layouts/BaseModal';
 import styled from 'styled-components';
+
 import BaseButton from './PrimaryButton';
-import { FontTypes, ColorTypes } from '../styles/theme';
+import BaseModal from '../layouts/BaseModal';
 import { applyFontStyles } from '../styles/mixins';
+import { FontTypes } from '../styles/theme';
 
 const FlexDiv = styled.div`
   display: flex;
