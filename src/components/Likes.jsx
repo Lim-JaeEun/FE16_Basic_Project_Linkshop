@@ -22,11 +22,11 @@ const StLikesCount = styled.p`
   ${applyFontStyles(FontTypes.BOLD16)}
 `;
 
-const Likes = ({ onClick: handleClick, likes, isLiked = false }) => {
+const Likes = ({ className, onClick: handleClick, likes, isLiked = false }) => {
   const src = isLiked ? filledHeartImg : emptyHeartImg;
 
   return (
-    <StLikesWrapper onClick={handleClick}>
+    <StLikesWrapper className={className} onClick={handleClick}>
       <StHeartImg
         src={src}
         alt={'좋아요 이미지 버튼'}
