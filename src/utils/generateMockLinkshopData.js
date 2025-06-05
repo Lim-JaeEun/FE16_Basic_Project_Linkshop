@@ -100,6 +100,17 @@ export function generateMockLinkshopData() {
     squirrel: '다람쥐',
   };
 
+  // 랜덤 배경색을 위한 매핑
+  const bgColorCategories = [
+    '3E45EC',
+    'FB545B',
+    'FE8A7A',
+    'DABA97',
+    'ACBACB',
+    '00003F',
+    '550D2F',
+  ];
+
   // 랜덤 선택 헬퍼 함수
   const getRandomElement = arr => arr[Math.floor(Math.random() * arr.length)];
   const getRandomInt = (min, max) =>
@@ -116,7 +127,7 @@ export function generateMockLinkshopData() {
 
   // 상품 생성
   const products = [];
-  const numProducts = getRandomInt(1, 5); // 1개에서 5개 사이의 상품 생성
+  const numProducts = getRandomInt(1, 8); // 1개에서 8개 사이의 상품 생성
 
   for (let i = 0; i < numProducts; i++) {
     const randomProductAdjEnglish = getRandomElement(adjectivesForProducts); // 영어 형용사 선택
@@ -134,11 +145,11 @@ export function generateMockLinkshopData() {
     const productNameEnglish = `${randomProductAdjEnglish} ${randomProductEnglish}`;
     const productNameKorean = `${randomProductAdjKorean} ${randomProductKorean}`; // 한글 형용사 + 한글 상품명
 
-    const productPrice = getRandomInt(5000, 100000); // 5천원에서 10만원 사이의 랜덤 가격
+    const productPrice = getRandomInt(50, 1000) * 100; // 5천원에서 10만원 사이의 랜덤 가격
 
     products.push({
       price: productPrice,
-      imageUrl: `https://via.placeholder.com/100x100?text=${encodeURIComponent(productNameEnglish)}`, // 영어 이름 기반의 이미지 URL 텍스트
+      imageUrl: `https://placehold.co/100x100?text=${encodeURIComponent(productNameEnglish)}`, // 영어 이름 기반의 이미지 URL 텍스트
       name: productNameKorean, // 한글 상품명 (형용사도 한글)
     });
   }
@@ -151,7 +162,7 @@ export function generateMockLinkshopData() {
 
   return {
     shop: {
-      imageUrl: 'https://via.placeholder.com/60x60?text=가게이미지', // 상점 이미지 플레이스홀더 (고정)
+      imageUrl: `https://placehold.co/80x80/${getRandomElement(bgColorCategories)}/white?text=${userId}`, // 상점 이미지 플레이스홀더 (고정)
       urlName: urlName,
       shopUrl: shopUrl,
     },
@@ -167,30 +178,151 @@ export function generateMockLinkshopData() {
 // console.log(JSON.stringify(mockData, null, 2));
 
 // 100개의 예시 데이터 생성
-// for (let i = 0; i < 100; i++) {
-//   const mockData = generateMockLinkshopData();
-//   fetch('https://linkshop-api.vercel.app/16-5/linkshops', {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json',
-//     },
-//     body: JSON.stringify(mockData, null, 2),
-//   })
-//     .then(response => {
-//       if (!response.ok) {
-//         return response.json().then(errorData => {
-//           console.error(`Request ${i + 1} API 오류 응답:`, errorData);
-//           throw new Error(
-//             `Request ${i + 1} HTTP 오류! 상태: ${response.status}, 메시지: ${JSON.stringify(errorData)}`,
-//           );
-//         });
-//       }
-//       return response.json();
+// let requestCount = 0;
+// const totalRequests = 100;
+
+// function sendPostRequestSequentially() {
+//   if (requestCount < totalRequests) {
+//     const mockData = generateMockLinkshopData();
+//     console.log(
+//       `요청 ${requestCount + 1} 준비 중:`,
+//       JSON.stringify(mockData, null, 2),
+//     );
+
+//     fetch('https://linkshop-api.vercel.app/16-5/linkshops', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify(mockData),
 //     })
-//     .then(data => {
-//       console.log(`Request ${i + 1} 성공:`, data);
-//     })
-//     .catch(error => {
-//       console.error(`Request ${i + 1} 처리 중 오류 발생:`, error);
-//     });
+//       .then(response => {
+//         if (!response.ok) {
+//           return response.json().then(errorData => {
+//             console.error(`요청 ${requestCount + 1} API 오류 응답:`, errorData);
+//             throw new Error(
+//               `요청 ${requestCount + 1} HTTP 오류! 상태: ${response.status}, 메시지: ${JSON.stringify(errorData)}`,
+//             );
+//           });
+//         }
+//         return response.json();
+//       })
+//       .then(data => {
+//         console.log(`요청 ${requestCount + 1} 성공:`, data);
+//       })
+//       .catch(error => {
+//         console.error(`요청 ${requestCount + 1} 처리 중 오류 발생:`, error);
+//       })
+//       .finally(() => {
+//         requestCount++;
+//         if (requestCount < totalRequests) {
+//           setTimeout(sendPostRequestSequentially, 1000);
+//         } else {
+//           console.log('모든 POST 요청을 완료했습니다.');
+//         }
+//       });
+//   }
 // }
+// sendPostRequestSequentially(); // 첫 번째 요청 시작
+
+//100개의 예시 데이터 삭제
+// const startId = 709; // ID 직접 입력
+// let i = startId - 99;
+
+// function sendDeleteRequest() {
+//   const password = 'bpt51234';
+
+//   if (i <= startId) {
+//     fetch(`https://linkshop-api.vercel.app/16-5/linkshops/${i}`, {
+//       method: 'DELETE',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({
+//         currentPassword: password,
+//       }),
+//     })
+//       .then(response => {
+//         if (!response.ok) {
+//           return response.json().then(errorData => {
+//             console.error(`Request ${i} API 오류 응답:`, errorData);
+//             throw new Error(
+//               `Request ${i} HTTP 오류! 상태: ${response.status}, 메시지: ${JSON.stringify(errorData)}`,
+//             );
+//           });
+//         }
+//         return response.json();
+//       })
+//       .then(data => {
+//         console.log(`Request ${i} 성공:`, data);
+//       })
+//       .catch(error => {
+//         console.error(`Request ${i} 처리 중 오류 발생:`, error);
+//       })
+//       .finally(() => {
+//         i++;
+//         if (i <= startId) {
+//           setTimeout(sendDeleteRequest, 1000); // 1초 후 다음 요청 스케줄
+//         } else {
+//           console.log('모든 삭제 요청을 완료했습니다.');
+//         }
+//       });
+//   }
+// }
+// sendDeleteRequest(); // Start the first request
+
+// 함수 사용 예시:
+// const mockData = generateMockLinkshopData();
+// console.log(JSON.stringify(mockData, null, 2));
+
+// 100개의 예시 데이터 생성
+// let requestCount = 0;
+// const totalRequests = 5000;
+
+// function sendPostRequestSequentially() {
+//   if (requestCount < totalRequests) {
+//     console.log(`좋아요 생성 요청 ${requestCount + 1} 준비 중:`);
+//     const startLinkshopId = 729;
+//     const lastLinkshopId = 793;
+
+//     const linkShopId = Math.floor(
+//       Math.random() * (lastLinkshopId - startLinkshopId + 1) + startLinkshopId,
+//     );
+
+//     fetch(`https://linkshop-api.vercel.app/16-5/linkshops/${linkShopId}/like`, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({}),
+//     })
+//       .then(response => {
+//         if (!response.ok) {
+//           return response.json().then(errorData => {
+//             console.error(`요청 ${requestCount + 1} API 오류 응답:`, errorData);
+//             throw new Error(
+//               `요청 ${requestCount + 1} HTTP 오류! 상태: ${response.status}, 메시지: ${JSON.stringify(errorData)}`,
+//             );
+//           });
+//         }
+//         return response.json();
+//       })
+//       .then(data => {
+//         console.log(
+//           `요청 ${requestCount + 1} 성공: 좋아요 생성된 링크샵 Id = ${linkShopId}`,
+//         );
+//       })
+//       .catch(error => {
+//         console.error(`요청 ${requestCount + 1} 처리 중 오류 발생:`, error);
+//       })
+//       .finally(() => {
+//         requestCount++;
+//         if (requestCount < totalRequests) {
+//           setTimeout(sendPostRequestSequentially, 50);
+//         } else {
+//           console.log('모든 POST 요청을 완료했습니다.');
+//         }
+//       });
+//   }
+// }
+// sendPostRequestSequentially(); // 첫 번째 요청 시작
