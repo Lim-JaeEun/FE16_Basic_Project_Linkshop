@@ -13,6 +13,7 @@ const CardListWrapper = styled.div`
     width: 1199px;
     flex-direction: row;
     justify-content: flex-start;
+    gap: 24px;
   }
 `;
 

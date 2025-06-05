@@ -4,11 +4,16 @@ import { useEffect, useState } from 'react'; // useState 훅 import
 import styled from 'styled-components';
 
 const DEFAULT_PRODUCT_IMG = 'https://placehold.co/95x95';
-
-const ProductImage = styled.img`
+const ProductImgWrapper = styled.div`
   width: 95px;
   height: 95px;
+  overflow: hidden;
   border-radius: 15px;
+`;
+const ProductImage = styled.img`
+  width: 100%;
+  height: 100%;
+
   object-fit: cover;
   object-position: center;
   aspect-ratio: 1/1;
@@ -29,11 +34,13 @@ function LinkshopProductImage({ src, alt }) {
   };
 
   return (
-    <ProductImage
-      src={currentSrc || DEFAULT_PRODUCT_IMG} // currentSrc가 없거나 null이면 기본 이미지 사용
-      alt={alt}
-      onError={handleImageError} // 이미지 로드 실패 시 handleImageError 함수 호출
-    />
+    <ProductImgWrapper>
+      <ProductImage
+        src={currentSrc || DEFAULT_PRODUCT_IMG} // currentSrc가 없거나 null이면 기본 이미지 사용
+        alt={alt}
+        onError={handleImageError} // 이미지 로드 실패 시 handleImageError 함수 호출
+      />
+    </ProductImgWrapper>
   );
 }
 
