@@ -28,6 +28,9 @@ const CardWrapper = styled.div`
     width: calc((100% - 24px) / 2);
     max-width: 589px;
   }
+  &:hover {
+    box-shadow: 0px 0px 5px 3px #eee;
+  }
 `;
 const ProductImgWrapper = styled.div`
   width: 100%;
@@ -40,6 +43,10 @@ const CustomSliderWrapper = styled(Slider)`
     top: 50%;
     transform: translateY(-50%);
     font-size: 0;
+  }
+  .slick-next.slick-disabled {
+    background-color: red;
+
   }
   /* 이전 버튼 */
   .slick-prev {
@@ -102,9 +109,17 @@ function Card({
     cssEase: 'linear',
     autoplay: false, // 초기 자동 재생은 false로 설정합니다.
     autoplaySpeed: 1000,
-    pauseOnHover: true, // 직접 제어하므로 false로 설정합니다.
+    centerPadding: '12px',
+    pauseOnHover: true,
     //반응형 설정 (예시)
     responsive: [
+      {
+        breakpoint: 480, // 화면 너비가 768px 이하일 때
+        settings: {
+          slidesToShow: 3,
+          infinite: false,
+        },
+      },
       {
         breakpoint: 768, // 화면 너비가 768px 이하일 때
         settings: {
@@ -113,10 +128,9 @@ function Card({
         },
       },
       {
-        breakpoint: 480, // 화면 너비가 480px 이하일 때
+        breakpoint: 1024, // 화면 너비가 480px 이하일 때
         settings: {
-          slidesToShow: 3,
-          centerPadding: '12px',
+          slidesToShow: 5,
           infinite: false,
         },
       },
