@@ -24,7 +24,7 @@ const AddItemCard = styled.button`
   ${applyFontStyles(FontTypes.MEDIUM16, ColorTypes.PRIMARY)}
 `;
 
-const UpdateProduct = ({ products, onChange, hasError }) => {
+const UpdateProduct = ({ products, onChange }) => {
   return (
     <Container>
       <AddItemCard>추가</AddItemCard>
@@ -32,7 +32,7 @@ const UpdateProduct = ({ products, onChange, hasError }) => {
         <UpdateItemCard
           key={idx}
           idKey={idx}
-          hasError={hasError}
+          // hasError={hasError}
           name={product.name}
           price={product.price}
           onChange={onChange}

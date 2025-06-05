@@ -21,9 +21,9 @@ const Container = styled.div`
   margin: 75px auto;
   max-width: 500px;
 
-  border: 1px solid
+  /* border: 1px solid
     ${({ hasError }) =>
-      hasError ? theme.colors[ColorTypes.ERROR] : 'transparent'};
+    hasError ? theme.colors[ColorTypes.ERROR] : 'transparent'}; */
 
   @media (min-width: 768px) {
     max-width: 696px;
@@ -55,15 +55,17 @@ const CloseEyeIcon = styled.img`
   cursor: pointer;
 `;
 
-const UpdateShop = ({ idKey, hasError, formData, onChange }) => {
+const UpdateShop = ({ formData, onChange }) => {
+  // 비밀번호 가시성 상태 관리
   const [openPassword, setOpenPassword] = useState(false);
 
+  // 비밀번호 가시성 토글 함수
   const togglePassword = () => {
     setOpenPassword(prev => !prev);
   };
 
   return (
-    <Container hasError={hasError}>
+    <Container>
       <ImageGroup>
         <Wrapper>
           <ShopImg>상품 대표 이미지</ShopImg>
@@ -74,30 +76,27 @@ const UpdateShop = ({ idKey, hasError, formData, onChange }) => {
 
       <Field
         type='text'
-        inputId={`name${idKey}`}
+        inputId='name'
         label='이름'
         placeholder='표시하고 싶은 이름을 적어 주세요.'
-        hasError={hasError}
         value={formData.name}
         onChange={onChange}
       />
 
       <Field
         type='url'
-        inputId={`url${idKey}`}
+        inputId='url'
         label='Url'
         placeholder='Url을 입력해주세요.'
-        hasError={hasError}
         value={formData.url}
         onChange={onChange}
       />
 
       <Field
         type='text'
-        inputId={`userId${idKey}`}
+        inputId='userId'
         label='유저 ID'
         placeholder='유저 ID를 입력해주세요.'
-        hasError={hasError}
         value={formData.userId}
         onChange={onChange}
       />
@@ -105,10 +104,9 @@ const UpdateShop = ({ idKey, hasError, formData, onChange }) => {
       <ImageGroup>
         <Field
           type={openPassword ? 'text' : 'password'}
-          inputId={`password${idKey}`}
+          inputId='password'
           label='비밀번호'
           placeholder='비밀번호를 입력해주세요.'
-          hasError={hasError}
           value={formData.password}
           onChange={onChange}
         />
