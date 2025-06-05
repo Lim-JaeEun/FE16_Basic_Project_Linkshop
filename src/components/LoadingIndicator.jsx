@@ -19,7 +19,7 @@ const Spinner = styled.div`
   border-radius: 50%; /* 원형 */
   width: 50px;
   height: 50px;
-  animation: ${rotate} 1s ease-in-out infinite; /* 1초 동안 선형(일정한 속도)으로 무한히 회전 */
+  animation: ${rotate} 1s cubic-bezier(0.9, 0.3, 0.3, 0.9) infinite;
 `;
 
 // 최초 로딩 시 블러처리
