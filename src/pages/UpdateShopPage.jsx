@@ -47,6 +47,15 @@ const UpdateShopPage = ({ onSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const [formErrors, setFormErrors] = useState({
+    name: { hasError: false, message: '' },
+    url: { hasError: false, message: '' },
+    userId: { hasError: false, message: '' },
+    password: { hasError: false, message: '' },
+  });
+  // 각 상품 필드별 유효성 검사 상태 (ex: [{ name: false, price: false }, { name: false, price: false }])
+  const [productErrors, setProductErrors] = useState([]);
+
   const navigate = useNavigate();
   const { URLid } = useParams();
 
@@ -69,7 +78,47 @@ const UpdateShopPage = ({ onSuccess }) => {
       })),
     );
     setOriginalPassword(mockData.password);
+
+    // 초기 상품 오류 상태 설정: 모든 상품 필드를 false로 초기화
+    setProductErrors(
+      mockData.products.map(() => ({
+        name: { hasError: false, message: '' },
+        price: { hasError: false, message: '' },
+      })),
+    );
   }, []);
+
+  // userId 유효성 검사 함수
+  const validateUserId = id => {
+    if (id.trim() === '') {
+      return { hasError: true, message: '필수 입력 항목입니다.' };
+    }
+    // 띄어쓰기 또는 특수기호 (알파벳, 숫자 외) 검사
+    const regex = /^[a-zA-Z0-9]+$/;
+    if (!regex.test(id)) {
+      return {
+        hasError: true,
+        message: '아이디에 띄어쓰기, 특수기호를 사용할 수 없습니다.',
+      };
+    }
+    return { hasError: false, message: '' };
+  };
+
+  // password 유효성 검사 함수
+  const validatePassword = password => {
+    if (password.trim() === '') {
+      return { hasError: true, message: '필수 입력 항목입니다.' };
+    }
+    // 영문+숫자 6자 이상
+    const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+    if (!regex.test(password)) {
+      return {
+        hasError: true,
+        message: '비밀번호는 영문+숫자 6자 이상을 입력해야 합니다.',
+      };
+    }
+    return { hasError: false, message: '' };
+  };
 
   // 상품 데이터 변경 핸들러: 특정 상품의 요소 업데이트
   const handleProductChange = (index, field, value) => {
@@ -78,14 +127,79 @@ const UpdateShopPage = ({ onSuccess }) => {
       updated[index][field] = value;
       return updated;
     });
+
+    // 상품 필드 값이 변경될 때 해당 필드의 에러 상태 초기화
+    setProductErrors(prev => {
+      const updated = [...prev];
+      if (updated[index]) {
+        // 해당 인덱스가 존재하는지 확인
+        updated[index][field] = { hasError: false, message: '' };
+      }
+      return updated;
+    });
+  };
+
+  // 상품 필드 focus out (blur) 시 유효성 검사
+  const handleProductBlur = (index, field, value) => {
+    const isEmpty = value.toString().trim() === '';
+    if (isEmpty) {
+      setProductErrors(prev => {
+        const updated = [...prev];
+        if (updated[index]) {
+          updated[index][field] = {
+            hasError: true,
+            message: '필수 입력 항목입니다.',
+          };
+        }
+        return updated;
+      });
+    }
   };
 
   // 상점 정보 변경 핸들러: 입력 필드의 ID에 따라 해당 폼 데이터 업데이트
   const handleChange = e => {
     const { id, value } = e.target;
     setFormdata(prev => ({
-      ...prev, // 이전 폼 데이터 복사
+      ...prev,
       [id]: value, // 변경된 필드 업데이트
+    }));
+
+    // 필드별 유효성 검사를 바로 적용
+    let validationResult;
+    if (id === 'userId') {
+      validationResult = validateUserId(value);
+    } else if (id === 'password') {
+      validationResult = validatePassword(value);
+    } else {
+      validationResult = { hasError: false, message: '' };
+      if (value.trim() === '') {
+        validationResult = { hasError: true, message: '필수 입력 항목입니다.' };
+      }
+    }
+
+    // 상점 필드 값이 변경될 때 해당 필드의 에러 상태 초기화
+    setFormErrors(prev => ({
+      ...prev,
+      [id]: false,
+    }));
+  };
+
+  // blur 시 필드별 유효성 검사 수행
+  const handleShopBlur = (id, value) => {
+    let validationResult;
+    if (id === 'userId') {
+      validationResult = validateUserId(value);
+    } else if (id === 'password') {
+      validationResult = validatePassword(value);
+    } else {
+      validationResult = { hasError: false, message: '' };
+      if (value.trim() === '') {
+        validationResult = { hasError: true, message: '필수 입력 항목입니다.' };
+      }
+    }
+    setFormErrors(prev => ({
+      ...prev,
+      [id]: validationResult,
     }));
   };
 
@@ -94,6 +208,59 @@ const UpdateShopPage = ({ onSuccess }) => {
 
     setError(null);
     setIsLoading(true);
+
+    let hasOverallError = false;
+    const newFormErrors = { ...formErrors };
+
+    // 상점 정보 유효성 재검사
+    for (const key in formData) {
+      let validationResult;
+      if (key === 'userId') {
+        validationResult = validateUserId(formData[key]);
+      } else if (key === 'password') {
+        validationResult = validatePassword(formData[key]);
+      } else {
+        validationResult = { hasError: false, message: '' };
+        if (formData[key].trim() === '') {
+          validationResult = {
+            hasError: true,
+            message: '필수 입력 항목입니다.',
+          };
+        }
+      }
+
+      if (validationResult.hasError) {
+        newFormErrors[key] = validationResult;
+        hasOverallError = true;
+      }
+    }
+    setFormErrors(newFormErrors);
+
+    // 상품 정보 유효성 재검사
+    const newProductErrors = [...productErrors];
+    productFormData.forEach((product, idx) => {
+      // 상품 이름 검사
+      if (product.name.trim() === '') {
+        newProductErrors[idx].name = {
+          hasError: true,
+          message: '필수 입력 항목입니다.',
+        }; // 수정된 부분: 메시지 추가
+        hasOverallError = true;
+      } else {
+        newProductErrors[idx].name = { hasError: false, message: '' };
+      }
+      // 상품 가격 검사
+      if (product.price.toString().trim() === '') {
+        newProductErrors[idx].price = {
+          hasError: true,
+          message: '필수 입력 항목입니다.',
+        }; // 수정된 부분: 메시지 추가
+        hasOverallError = true;
+      } else {
+        newProductErrors[idx].price = { hasError: false, message: '' };
+      }
+    });
+    setProductErrors(newProductErrors);
 
     if (formData.password !== originalPassword) {
       setError('비밀번호가 일치하지 않습니다. 다시 확인해주세요.');
@@ -144,24 +311,21 @@ const UpdateShopPage = ({ onSuccess }) => {
       {/* shopData가 있을 때만 자식 컴포넌트 렌더링 */}
       {shopData && (
         <>
-          {/* UpdateProduct 컴포넌트에 productFormData와 변경 핸들러 전달 */}
           <UpdateProduct
             products={productFormData}
             onChange={handleProductChange}
-            // hasError는 정적 UI 확인용이므로 제거하거나 필요한 경우 동적 로직으로 대체
-            // hasError={hasError}
+            productErrors={productErrors}
+            onBlur={handleProductBlur}
           />
-          {/* UpdateShop 컴포넌트에 formData와 변경 핸들러 전달 */}
           <UpdateShop
             formData={formData}
             onChange={handleChange}
-            // hasError는 정적 UI 확인용이므로 제거하거나 필요한 경우 동적 로직으로 대체
-            // hasError={hasError}
+            formErrors={formErrors}
+            onBlur={handleShopBlur}
           />
           <BtnWrapper>
             <StButton onClick={handleUpdate} disabled={isLoading}>
-              {/* isDisable 상태를 사용하지 않으므로 disabled를 false로 설정 */}
-              수정하기
+              {isLoading ? '수정 중...' : '수정하기'}
             </StButton>
           </BtnWrapper>
           {error && (

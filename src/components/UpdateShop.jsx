@@ -21,9 +21,9 @@ const Container = styled.div`
   margin: 75px auto;
   max-width: 500px;
 
-  /* border: 1px solid
+  border: 1px solid
     ${({ hasError }) =>
-    hasError ? theme.colors[ColorTypes.ERROR] : 'transparent'}; */
+      hasError ? theme.colors[ColorTypes.ERROR] : 'transparent'};
 
   @media (min-width: 768px) {
     max-width: 696px;
@@ -55,7 +55,7 @@ const CloseEyeIcon = styled.img`
   cursor: pointer;
 `;
 
-const UpdateShop = ({ formData, onChange }) => {
+const UpdateShop = ({ formData, onChange, formErrors, onBlur }) => {
   // 비밀번호 가시성 상태 관리
   const [openPassword, setOpenPassword] = useState(false);
 
@@ -64,8 +64,10 @@ const UpdateShop = ({ formData, onChange }) => {
     setOpenPassword(prev => !prev);
   };
 
+  const containerHasError = Object.values(formErrors).some(error => error);
+
   return (
-    <Container>
+    <Container hasError={containerHasError}>
       <ImageGroup>
         <Wrapper>
           <ShopImg>상품 대표 이미지</ShopImg>
@@ -81,6 +83,9 @@ const UpdateShop = ({ formData, onChange }) => {
         placeholder='표시하고 싶은 이름을 적어 주세요.'
         value={formData.name}
         onChange={onChange}
+        hasError={formErrors.name.hasError}
+        errorMessage={formErrors.name.message}
+        onBlur={() => onBlur('name', formData.name)}
       />
 
       <Field
@@ -90,6 +95,9 @@ const UpdateShop = ({ formData, onChange }) => {
         placeholder='Url을 입력해주세요.'
         value={formData.url}
         onChange={onChange}
+        hasError={formErrors.url.hasError}
+        errorMessage={formErrors.url.message}
+        onBlur={() => onBlur('url', formData.url)}
       />
 
       <Field
@@ -99,6 +107,9 @@ const UpdateShop = ({ formData, onChange }) => {
         placeholder='유저 ID를 입력해주세요.'
         value={formData.userId}
         onChange={onChange}
+        hasError={formErrors.userId.hasError}
+        errorMessage={formErrors.userId.message}
+        onBlur={() => onBlur('userId', formData.userId)}
       />
 
       <ImageGroup>
@@ -109,6 +120,9 @@ const UpdateShop = ({ formData, onChange }) => {
           placeholder='비밀번호를 입력해주세요.'
           value={formData.password}
           onChange={onChange}
+          hasError={formErrors.password.hasError}
+          errorMessage={formErrors.password.message}
+          onBlur={() => onBlur('password', formData.password)}
         />
         <CloseEyeIcon
           src={openPassword ? openEyeIcon : closeEyeIcon}

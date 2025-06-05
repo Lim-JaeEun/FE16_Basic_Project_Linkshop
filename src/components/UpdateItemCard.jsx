@@ -14,9 +14,9 @@ const Container = styled.div`
   padding: 28px;
   gap: 30px;
 
-  /* border: 1px solid
+  border: 1px solid
     ${({ hasError }) =>
-    hasError ? theme.colors[ColorTypes.ERROR] : 'transparent'}; */
+      hasError ? theme.colors[ColorTypes.ERROR] : 'transparent'};
 `;
 
 const ImageGroup = styled.div`
@@ -39,9 +39,17 @@ const Description = styled.div`
   ${applyFontStyles(FontTypes.REGULAR17, ColorTypes.SECONDARY_GRAY_300)}
 `;
 
-const UpdateItemCard = ({ name, price, onChange, idKey }) => {
+const UpdateItemCard = ({
+  name,
+  price,
+  onChange,
+  idKey,
+  hasError,
+  onBlur,
+  productFieldErrors,
+}) => {
   return (
-    <Container>
+    <Container hasError={hasError}>
       <ImageGroup>
         <Wrapper>
           <ProductImg>상품 대표 이미지</ProductImg>
@@ -55,18 +63,22 @@ const UpdateItemCard = ({ name, price, onChange, idKey }) => {
         inputId={`productName${idKey}`}
         label='상품 이름'
         placeholder='상품 이름을 입력해 주세요.'
-        // hasError={hasError}
         value={name}
         onChange={e => onChange?.(idKey, 'name', e.target.value)}
+        hasError={productFieldErrors.name.hasError}
+        errorMessage={productFieldErrors.name.message}
+        onBlur={() => onBlur(idKey, 'name', name)}
       />
       <Field
         type='number'
         inputId={`productPrice${idKey}`}
         label='상품 가격'
         placeholder='원화로 표기해 주세요.'
-        // hasError={hasError}
         value={price}
         onChange={e => onChange?.(idKey, 'price', e.target.value)}
+        hasError={productFieldErrors.price.hasError}
+        errorMessage={productFieldErrors.price.message}
+        onBlur={() => onBlur(idKey, 'price', price.toString())}
       />
     </Container>
   );

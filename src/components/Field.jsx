@@ -30,8 +30,10 @@ const Field = ({
   label,
   placeholder,
   hasError,
+  errorMessage,
   value,
   onChange,
+  onBlur,
 }) => {
   return (
     <FormGroup>
@@ -44,8 +46,9 @@ const Field = ({
         hasError={hasError}
         value={value}
         onChange={onChange}
+        onBlur={onBlur}
       />
-      {hasError && <ErrorMessage>오류 메세지</ErrorMessage>}
+      {hasError && <ErrorMessage>{errorMessage}</ErrorMessage>}
     </FormGroup>
   );
 };
