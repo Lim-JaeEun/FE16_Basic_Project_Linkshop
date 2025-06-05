@@ -69,6 +69,12 @@ const GlobalStyle = createGlobalStyle`
     background-color: ${theme.colors.secWhite50};
     border-radius: 30px;
   }
+
+  .confirm-create-modal {
+    width: 343px;
+    height: 172px;
+    padding-top: 54px;
+  }
 `;
 
 export default GlobalStyle;
