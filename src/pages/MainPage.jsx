@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import styled from 'styled-components';
 
 import CardList from '../components/CardList';
+import LoadingIndicator from '../components/LoadingIndicator';
 import { getLinkshops } from './../api/api';
 import OrderSelector from './../components/OrderSelector';
 import SearchInput from './../components/SearchInput';
@@ -137,12 +138,8 @@ const MainPage = () => {
         <SearchInput value={keyword} onChange={handleSearchChange} />
         <StOrderSelector order={order} onClick={handleOrderClick} />
         <CardList cardData={linkshops} />
-        {isLoading && (
-          <p style={{ width: '100%', textAlign: 'center' }}>
-            데이터 불러오는 중...
-          </p> // indicator 구현하면 예쁠듯. 임시 텍스트
-        )}
       </MainPageWrapper>
+      <LoadingIndicator isLoading={isLoading} $isInitialLoad={cursor === 0} />
       {hasMore && !isLoading && (
         <div ref={observeRef} style={{ height: '20px' }} />
       )}
