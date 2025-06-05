@@ -1,0 +1,32 @@
+import styled from 'styled-components';
+import theme, { ColorTypes } from '../styles/theme';
+
+// 실제 파일 업로드 input (숨김)
+const StInput = styled.input.attrs({ type: 'file' })`
+  display: none;
+`;
+
+const StLabel = styled.label`
+  border: 1px solid ${theme.colors[ColorTypes.PRIMARY]};
+  border-radius: 8px;
+  padding: 7px 12px;
+  width: 52px;
+  height: 17px;
+
+  // 전역스타일 변경 시 REGULAR14로 변경 필요 !
+  font-size: 14px;
+  font-weight: 500;
+  color: ${theme.colors[ColorTypes.PRIMARY]};
+  cursor: pointer;
+`;
+
+const FileField = () => {
+  return (
+    <div>
+      <StLabel htmlFor='upload'>파일 첨부</StLabel>
+      <StInput id='upload' />
+    </div>
+  );
+};
+
+export default FileField;
