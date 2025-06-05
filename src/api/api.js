@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+import { ORDER_OPTIONS } from '../constants/orderOptions';
+
 const TEAM_ID = '16-5';
 
 const instance = axios.create({
@@ -23,6 +25,16 @@ export const getLinkshops = async ({
   orderBy = 'recent',
   cursor = 0,
 }) => {
+  if (cursor < 0) {
+    throw new Error('cursor의 값이 잘못 입력되었습니다.(cursor >= 0)');
+  }
+
+  if (!Object.keys(ORDER_OPTIONS).find(e => e === orderBy)) {
+    throw new Error(
+      `orderBy의 값이 잘못 입력되었습니다.(입력된 값: ${orderBy})`,
+    );
+  }
+
   try {
     const res = await instance.get('/linkshops', {
       params: {

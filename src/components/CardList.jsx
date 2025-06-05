@@ -17,11 +17,7 @@ const CardListWrapper = styled.div`
 `;
 
 function CardList({ cardData, onClick: handleClick }) {
-  if (
-    !cardData ||
-    !Array.isArray(cardData.list) ||
-    cardData.list.length === 0
-  ) {
+  if (cardData === null) {
     return (
       <CardListWrapper>
         <div>표시할 카드가 없습니다.</div>
@@ -31,7 +27,7 @@ function CardList({ cardData, onClick: handleClick }) {
 
   return (
     <CardListWrapper>
-      {cardData.list.map(cardItem => (
+      {cardData.map(cardItem => (
         <Card
           key={cardItem.id}
           name={cardItem.name}
