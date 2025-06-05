@@ -24,12 +24,20 @@ const AddItemCard = styled.button`
   ${applyFontStyles(FontTypes.MEDIUM16, ColorTypes.PRIMARY)}
 `;
 
-const UpdateProduct = ({ hasError }) => {
+const UpdateProduct = ({ products, onChange, hasError }) => {
   return (
     <Container>
       <AddItemCard>추가</AddItemCard>
-      <UpdateItemCard hasError={hasError} />
-      <UpdateItemCard hasError={hasError} />
+      {products.map((product, idx) => (
+        <UpdateItemCard
+          key={idx}
+          idKey={idx}
+          hasError={hasError}
+          name={product.name}
+          price={product.price}
+          onChange={onChange}
+        />
+      ))}
     </Container>
   );
 };

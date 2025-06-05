@@ -24,7 +24,15 @@ const ErrorMessage = styled.div`
   color: ${theme.colors.err};
 `;
 
-const Field = ({ type, inputId, label, placeholder, hasError }) => {
+const Field = ({
+  type,
+  inputId,
+  label,
+  placeholder,
+  hasError,
+  value,
+  onChange,
+}) => {
   return (
     <FormGroup>
       <StLabel htmlFor={inputId}>{label}</StLabel>
@@ -34,6 +42,8 @@ const Field = ({ type, inputId, label, placeholder, hasError }) => {
         name={inputId}
         placeholder={placeholder}
         hasError={hasError}
+        value={value}
+        onChange={onChange}
       />
       {hasError && <ErrorMessage>오류 메세지</ErrorMessage>}
     </FormGroup>

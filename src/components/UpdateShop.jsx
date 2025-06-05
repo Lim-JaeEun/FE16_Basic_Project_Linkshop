@@ -55,7 +55,7 @@ const CloseEyeIcon = styled.img`
   cursor: pointer;
 `;
 
-const UpdateShop = ({ idKey, hasError }) => {
+const UpdateShop = ({ idKey, hasError, formData, onChange }) => {
   const [openPassword, setOpenPassword] = useState(false);
 
   const togglePassword = () => {
@@ -78,6 +78,8 @@ const UpdateShop = ({ idKey, hasError }) => {
         label='이름'
         placeholder='표시하고 싶은 이름을 적어 주세요.'
         hasError={hasError}
+        value={formData.name}
+        onChange={onChange}
       />
 
       <Field
@@ -86,6 +88,8 @@ const UpdateShop = ({ idKey, hasError }) => {
         label='Url'
         placeholder='Url을 입력해주세요.'
         hasError={hasError}
+        value={formData.url}
+        onChange={onChange}
       />
 
       <Field
@@ -94,6 +98,8 @@ const UpdateShop = ({ idKey, hasError }) => {
         label='유저 ID'
         placeholder='유저 ID를 입력해주세요.'
         hasError={hasError}
+        value={formData.userId}
+        onChange={onChange}
       />
 
       <ImageGroup>
@@ -103,6 +109,8 @@ const UpdateShop = ({ idKey, hasError }) => {
           label='비밀번호'
           placeholder='비밀번호를 입력해주세요.'
           hasError={hasError}
+          value={formData.password}
+          onChange={onChange}
         />
         <CloseEyeIcon
           src={openPassword ? openEyeIcon : closeEyeIcon}

@@ -39,7 +39,7 @@ const Description = styled.div`
   ${applyFontStyles(FontTypes.REGULAR17, ColorTypes.SECONDARY_GRAY_300)}
 `;
 
-const UpdateItemCard = ({ idKey, hasError }) => {
+const UpdateItemCard = ({ name, price, onChange, idKey, hasError }) => {
   return (
     <Container hasError={hasError}>
       <ImageGroup>
@@ -56,6 +56,8 @@ const UpdateItemCard = ({ idKey, hasError }) => {
         label='상품 이름'
         placeholder='상품 이름을 입력해 주세요.'
         hasError={hasError}
+        value={name}
+        onChange={e => onChange?.(idKey, 'name', e.target.value)}
       />
       <Field
         type='number'
@@ -63,6 +65,8 @@ const UpdateItemCard = ({ idKey, hasError }) => {
         label='상품 가격'
         placeholder='원화로 표기해 주세요.'
         hasError={hasError}
+        value={price}
+        onChange={e => onChange?.(idKey, 'price', e.target.value)}
       />
     </Container>
   );

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import styled from 'styled-components';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -7,6 +7,7 @@ import UpdateProduct from '../components/UpdateProduct';
 import UpdateShop from '../components/UpdateShop';
 import BaseButton from '../components/PrimaryButton';
 import theme from '../styles/theme';
+import { generateMockLinkshopData } from '../utils/generateMockLinkshopData';
 
 const Container = styled.div`
   margin-top: 124px;
@@ -31,18 +32,66 @@ const StButton = styled(BaseButton)`
 `;
 
 const UpdateShopPage = ({ onSuccess }) => {
-  const [isDisable, setIsDisable] = useState(true);
+  // 버튼 활성화 여부 확인
+  const [isDisable, setIsDisable] = useState(false);
+
+  const [shopData, setShopData] = useState(null);
+  const [productFormData, setProductFormData] = useState([]);
+  const [formData, setFormdata] = useState({
+    name: '',
+    url: '',
+    userId: '',
+    password: '',
+  });
 
   // 에러메세지 UI 확인용
-  const hasError = true;
+  const hasError = false;
 
   const navigate = useNavigate();
   const { URLid } = useParams();
 
+  // mockData 사용
+  useEffect(() => {
+    const mockData = generateMockLinkshopData();
+    setShopData(mockData);
+    setFormdata({
+      name: mockData.name,
+      url: mockData.shop.shopUrl,
+      userId: mockData.userId,
+      password: mockData.password,
+    });
+    setProductFormData(
+      mockData.products.map(p => ({
+        name: p.name,
+        price: p.price,
+      })),
+    );
+  }, []);
+
+  const handleProductChange = (index, field, value) => {
+    setProductFormData(prev => {
+      const updated = [...prev];
+      updated[index][field] = value;
+      return updated;
+    });
+  };
+
   const handleUpdate = () => {
     // 1. 업데이트 로직 수행 (예: API 호출)
     // await updateShop(URLid, updatedData);
+    console.log('수정된 데이터:', {
+      ...shopData,
+      name: formData.name,
+      userId: formData.userId,
+      password: formData.password,
+      shop: {
+        ...shopData.shop,
+        shopUrl: formData.url,
+      },
+    });
 
+    // 수정 확인
+    alert('Mock 데이터 수정 완료 (콘솔 확인)');
     // 2. 성공 시 토스트 띄우기
     onSuccess?.();
 
@@ -50,15 +99,35 @@ const UpdateShopPage = ({ onSuccess }) => {
     navigate(`/link/${URLid}`);
   };
 
+  const handleChange = e => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value,
+    }));
+  };
+
   return (
     <Container>
-      <UpdateProduct hasError={hasError} />
-      <UpdateShop hasError={hasError} />
-      <BtnWrapper>
-        <StButton onClick={handleUpdate} disabled={isDisable}>
-          수정하기
-        </StButton>
-      </BtnWrapper>
+      {shopData && (
+        <>
+          <UpdateProduct
+            products={productFormData}
+            onChange={handleProductChange}
+            hasError={hasError}
+          />
+          <UpdateShop
+            formData={formData}
+            onChange={handleChange}
+            hasError={hasError}
+          />
+          <BtnWrapper>
+            <StButton onClick={handleUpdate} disabled={isDisable}>
+              수정하기
+            </StButton>
+          </BtnWrapper>
+        </>
+      )}
     </Container>
   );
 };
