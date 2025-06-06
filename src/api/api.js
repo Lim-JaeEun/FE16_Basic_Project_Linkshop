@@ -117,16 +117,24 @@ export const updateLinkshop = async (linkshopId, formData) => {
   }
 };
 
+const IMAGE_UPLOAD_FULL_URL = 'https://linkshop-api.vercel.app/images/upload';
+
+const imageUploadInstance = axios.create({
+  baseURL: 'https://linkshop-api.vercel.app',
+  timeout: 15000,
+});
+
 /**
  * 이미지를 업로드하는 함수
  * @param {File} file
- * @returns {string}
+ * @returns {string} 업로드된 이미지의 URL
  */
 export const uploadImage = async file => {
   const formData = new FormData();
   formData.append('image', file);
+
   try {
-    const res = await instance.post('/image', formData, {
+    const res = await imageUploadInstance.post('/images/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

@@ -1,11 +1,11 @@
 import styled from 'styled-components';
+import { useState, useEffect } from 'react';
 
 import { applyFontStyles } from '../styles/mixins';
 import theme, { FontTypes, ColorTypes } from '../styles/theme';
 
 import FileField from './FileField';
 import Field from './Field';
-import SampleImg from '../assets/img/Img_product.png';
 import DeleteImg from '../assets/icon/btn_close.png';
 import {
   TextGroup,
@@ -46,8 +46,48 @@ const UpdateItemCard = ({
   currentImage,
   onImageChange,
 }) => {
-  const handleRemoveImage = () => {
+  const [localItemImageUrl, setLocalItemImageUrl] = useState(null);
+  const [displayImageUrl, setDisplayImageUrl] = useState(currentImage);
+
+  // currentImage 또는 localItemImageUrl이 변경될 때 displayImageUrl 업데이트
+  useEffect(() => {
+    setDisplayImageUrl(localItemImageUrl || currentImage);
+  }, [currentImage, localItemImageUrl]);
+
+  // 컴포넌트 언마운트 또는 localItemImageUrl 변경 시 이전 로컬 URL 해제
+  useEffect(() => {
+    return () => {
+      if (localItemImageUrl) {
+        URL.revokeObjectURL(localItemImageUrl);
+      }
+    };
+  }, [localItemImageUrl]);
+
+  /** 파일 선택 핸들러 */
+  const handleFileSelect = async file => {
+    if (localItemImageUrl) {
+      URL.revokeObjectURL(localItemImageUrl);
+    }
+    if (file) {
+      const newLocalUrl = URL.createObjectURL(file);
+      setLocalItemImageUrl(newLocalUrl);
+      onImageChange(idKey, file);
+      onBlur(idKey, 'productImage', newLocalUrl);
+    } else {
+      setLocalItemImageUrl(null);
+      onImageChange(idKey, null);
+      onBlur(idKey, 'productImage', null);
+    }
+  };
+
+  /** 이미지 삭제 핸들러 */
+  const handleDeleteImage = () => {
+    if (localItemImageUrl) {
+      URL.revokeObjectURL(localItemImageUrl);
+    }
+    setLocalItemImageUrl(null);
     onImageChange(idKey, null);
+    onBlur(idKey, 'productImage', null);
   };
 
   return (
@@ -58,14 +98,12 @@ const UpdateItemCard = ({
             <ProductImg>상품 대표 이미지</ProductImg>
             <Description>상품 이미지를 첨부해주세요.</Description>
           </Wrapper>
-          <FileField
-            onFileChange={e => onImageChange(idKey, e.target.files[0])}
-          />{' '}
+          <FileField onFileChange={handleFileSelect} />
         </TextGroup>
-        {currentImage && (
+        {displayImageUrl && (
           <ImgGroup>
-            <PreviewImg src={currentImage} alt='상품 이미지' />
-            <DeleteBtn onClick={handleRemoveImage}>
+            <PreviewImg src={displayImageUrl} alt='상품 이미지' />
+            <DeleteBtn onClick={handleDeleteImage}>
               <ButtonX src={DeleteImg} alt='이미지 삭제' />
             </DeleteBtn>
           </ImgGroup>

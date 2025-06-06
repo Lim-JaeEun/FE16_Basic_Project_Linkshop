@@ -21,6 +21,12 @@ const StLabel = styled.label`
 `;
 
 const FileField = ({ onFileChange }) => {
+  const handleChange = e => {
+    if (onFileChange) {
+      onFileChange(e.target.files[0]);
+    }
+  };
+
   return (
     <div>
       <StLabel htmlFor='upload'>파일 첨부</StLabel>
@@ -28,7 +34,7 @@ const FileField = ({ onFileChange }) => {
         id='upload'
         type='file'
         accept='image/*'
-        onChange={onFileChange}
+        onChange={handleChange}
       />
     </div>
   );

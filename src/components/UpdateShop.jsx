@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import { applyFontStyles } from '../styles/mixins';
@@ -8,7 +8,6 @@ import FileField from './FileField';
 import Field from './Field';
 import closeEyeIcon from '../assets/icon/btn_visibility_off.svg';
 import openEyeIcon from '../assets/icon/btn_visibility_on.svg';
-import SampleImg from '../assets/img/Img_product.png';
 import DeleteImg from '../assets/icon/btn_close.png';
 
 const DEFAULT_EYE_SIZE = '20px';
@@ -129,10 +128,58 @@ const UpdateShop = ({
 }) => {
   // 비밀번호 가시성 상태 관리
   const [openPassword, setOpenPassword] = useState(false);
+  const [localShopImageUrl, setLocalShopImageUrl] = useState(null);
+  const [displayImageUrl, setDisplayImageUrl] = useState(shopImageUrl);
+
+  // shopImageUrl이 변경될 때 (예: API에서 이미지 로딩 완료 또는 삭제 시) displayImageUrl 업데이트
+  useEffect(() => {
+    setDisplayImageUrl(localShopImageUrl || shopImageUrl);
+  }, [shopImageUrl, localShopImageUrl]); // localShopImageUrl도 의존성에 추가
+
+  // 컴포넌트 언마운트 시 또는 이미지 URL이 변경될 때 이전 로컬 URL 해제
+  useEffect(() => {
+    return () => {
+      if (localShopImageUrl) {
+        URL.revokeObjectURL(localShopImageUrl);
+      }
+    };
+  }, [localShopImageUrl]); // localShopImageUrl이 변경될 때마다 이전 URL 해제
 
   // 비밀번호 가시성 토글 함수
   const togglePassword = () => {
     setOpenPassword(prev => !prev);
+  };
+
+  /** 파일 선택 핸들러 */
+  const handleFileSelect = async file => {
+    if (localShopImageUrl) {
+      URL.revokeObjectURL(localShopImageUrl);
+    }
+
+    if (file) {
+      const newLocalUrl = URL.createObjectURL(file);
+      setLocalShopImageUrl(newLocalUrl);
+      setDisplayImageUrl(newLocalUrl);
+
+      onShopImageChange(file);
+      onBlur('shopImage', newLocalUrl);
+    } else {
+      // 파일 선택 취소 또는 파일 없음
+      setLocalShopImageUrl(null);
+      setDisplayImageUrl(shopImageUrl);
+      onShopImageChange(null);
+    }
+  };
+
+  /** 이미지 삭제 핸들러 */
+  const handleDeleteImage = () => {
+    if (localShopImageUrl) {
+      URL.revokeObjectURL(localShopImageUrl);
+    }
+    setLocalShopImageUrl(null);
+    setDisplayImageUrl(null);
+    onRemoveShopImage();
+    onBlur('shopImage', null);
   };
 
   const containerHasError = Object.values(formErrors).some(
@@ -149,14 +196,12 @@ const UpdateShop = ({
               <ShopImg>상품 대표 이미지</ShopImg>
               <Description>상품 이미지를 첨부해주세요.</Description>
             </Wrapper>
-            <FileField
-              onFileChange={e => onShopImageChange(e.target.files[0])}
-            />
+            <FileField onFileChange={handleFileSelect} />
           </TextGroup>
-          {shopImageUrl && (
+          {displayImageUrl && (
             <ImgGroup>
-              <PreviewImg src={shopImageUrl} alt='상점 이미지' />
-              <DeleteBtn onClick={onRemoveShopImage}>
+              <PreviewImg src={displayImageUrl} alt='상점 이미지' />
+              <DeleteBtn onClick={handleDeleteImage}>
                 <ButtonX src={DeleteImg} alt='이미지 삭제' />
               </DeleteBtn>
             </ImgGroup>

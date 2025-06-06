@@ -51,6 +51,7 @@ const UpdateShopPage = ({ onSuccess }) => {
     url: { hasError: false, message: '' },
     userId: { hasError: false, message: '' },
     password: { hasError: false, message: '' },
+    shopImage: { hasError: false, message: '' },
   });
   const [productErrors, setProductErrors] = useState([]);
   const [isFormValid, setIsFormValid] = useState(false);
@@ -66,6 +67,7 @@ const UpdateShopPage = ({ onSuccess }) => {
       {
         name: { hasError: false, message: '' },
         price: { hasError: false, message: '' },
+        productImage: { hasError: false, message: '' },
       },
     ]);
     setProductImages(prev => [...prev, null]);
@@ -79,6 +81,7 @@ const UpdateShopPage = ({ onSuccess }) => {
         updated[index] = null;
         return updated;
       });
+      handleProductBlur(index, 'productImage', null);
       return;
     }
 
@@ -93,6 +96,7 @@ const UpdateShopPage = ({ onSuccess }) => {
         return updated;
       });
       console.log(`상품 ${index} 이미지 업로드 성공:`, imageUrl);
+      handleProductBlur(index, 'productImage', imageUrl);
     } catch (err) {
       console.error(`상품 ${index} 이미지 업로드 실패:`, err);
       setError(err.message || '이미지 업로드에 실패했습니다.');
@@ -101,6 +105,7 @@ const UpdateShopPage = ({ onSuccess }) => {
         updated[index] = null;
         return updated;
       });
+      handleProductBlur(index, 'productImage', null);
     } finally {
       setIsLoading(false);
     }
@@ -110,6 +115,7 @@ const UpdateShopPage = ({ onSuccess }) => {
   const handleShopImageChange = async file => {
     if (!file) {
       setShopImageUrl(null);
+      handleShopBlur('shopImage', null);
       return;
     }
 
@@ -120,10 +126,12 @@ const UpdateShopPage = ({ onSuccess }) => {
       const imageUrl = await uploadImage(file);
       setShopImageUrl(imageUrl);
       console.log('상점 이미지 업로드 성공:', imageUrl);
+      handleShopBlur('shopImage', imageUrl);
     } catch (err) {
       console.error('상점 이미지 업로드 실패:', err);
       setError(err.message || '상점 이미지 업로드에 실패했습니다.');
       setShopImageUrl(null);
+      handleShopBlur('shopImage', null);
     } finally {
       setIsLoading(false);
     }
@@ -132,6 +140,7 @@ const UpdateShopPage = ({ onSuccess }) => {
   /** 상점 대표 이미지 삭제 핸들러 */
   const handleRemoveShopImage = () => {
     setShopImageUrl(null);
+    handleShopBlur('shopImage', null);
   };
 
   /** 유저 ID 유효성 검사 */
@@ -162,47 +171,123 @@ const UpdateShopPage = ({ onSuccess }) => {
     return { hasError: false, message: '' };
   };
 
-  /** 폼 전체 유효성 검사 */
+  /** 폼 전체 유효성 검사 (순수 함수) */
   const checkFormValidity = (
     currentFormData,
     currentProductFormData,
     currentOriginalPassword,
+    currentShopImageUrl,
+    currentProductImages,
+    currentFormErrors,
+    currentProductErrors,
   ) => {
     let overallValid = true;
 
-    if (validateUserId(currentFormData.userId).hasError) overallValid = false;
-    if (
-      currentFormData.password.trim() !== '' &&
-      validatePassword(currentFormData.password).hasError
-    )
-      overallValid = false;
-    if (!currentFormData.name.trim()) {
-      overallValid = false;
-    }
-    if (!currentFormData.url.trim()) {
-      overallValid = false;
-    }
+    console.log('--- checkFormValidity 시작 ---');
+    console.log('초기 overallValid:', overallValid);
 
-    currentProductFormData.forEach(product => {
-      if (!product.name.trim() || !product.price.toString().trim()) {
+    // 1. 기본 폼 필드 유효성 검사
+    // name
+    if (!currentFormData.name.trim()) {
+      console.log('폼 에러: name이 비어있음');
+      overallValid = false;
+    }
+    console.log('name 검사 후 overallValid:', overallValid);
+
+    // url
+    if (!currentFormData.url.trim()) {
+      console.log('폼 에러: url이 비어있음');
+      overallValid = false;
+    }
+    console.log('url 검사 후 overallValid:', overallValid);
+
+    // userId
+    const userIdValidation = validateUserId(currentFormData.userId);
+    if (userIdValidation.hasError) {
+      console.log('폼 에러: userId 유효성 실패 -', userIdValidation.message);
+      overallValid = false;
+    }
+    console.log('userId 검사 후 overallValid:', overallValid);
+
+    // password (새 비밀번호가 입력된 경우에만 유효성 검사)
+    if (currentFormData.password.trim() !== '') {
+      const passwordValidation = validatePassword(currentFormData.password);
+      if (passwordValidation.hasError) {
+        console.log(
+          '폼 에러: password 유효성 실패 -',
+          passwordValidation.message,
+        );
+        overallValid = false;
+      }
+    }
+    console.log('password 검사 후 overallValid:', overallValid);
+
+    // 2. 상품 폼 필드 유효성 검사
+    currentProductFormData.forEach((product, index) => {
+      if (!product.name.trim()) {
+        console.log(`상품 ${index} 에러: name이 비어있음`);
+        overallValid = false;
+      }
+      if (!product.price.toString().trim()) {
+        // price는 숫자일 수 있으므로 toString()
+        console.log(`상품 ${index} 에러: price가 비어있음`);
         overallValid = false;
       }
     });
+    console.log('상품 필드 검사 후 overallValid:', overallValid);
 
     if (
       currentFormData.password.trim() !== '' &&
       currentFormData.password !== currentOriginalPassword
     ) {
+      console.log('폼 에러: 새로운 비밀번호가 원본 비밀번호와 일치하지 않음');
       overallValid = false;
     }
+    console.log('비밀번호 일치 확인 후 overallValid:', overallValid);
 
-    const hasFormErrors = Object.values(formErrors).some(err => err.hasError);
-    const hasProductErrors = productErrors.some(prodErr =>
-      Object.values(prodErr).some(err => err.hasError),
+    // 4. 이미지 필드 유효성 검사
+    // 상점 이미지가 필수로 요구된다면:
+    if (!currentShopImageUrl) {
+      console.log('폼 에러: 상점 이미지가 없음');
+      overallValid = false;
+    }
+    console.log('상점 이미지 검사 후 overallValid:', overallValid);
+
+    // 각 상품 이미지가 필수로 요구된다면:
+    currentProductImages.forEach((imageUrl, index) => {
+      if (!imageUrl) {
+        console.log(`상품 ${index} 에러: 이미지가 없음`);
+        overallValid = false;
+      }
+    });
+    console.log('상품 이미지 검사 후 overallValid:', overallValid);
+
+    // 5. 현재 `formErrors`와 `productErrors` 객체 자체에 `hasError: true`가 있는지 확인
+    const hasFormErrorsInState = Object.values(currentFormErrors).some(err => {
+      if (err.hasError) {
+        console.log('formErrors 상태에 에러 발견:', err);
+        return true;
+      }
+      return false;
+    });
+    const hasProductErrorsInState = currentProductErrors.some(prodErr =>
+      Object.values(prodErr).some(err => {
+        if (err.hasError) {
+          console.log('productErrors 상태에 에러 발견:', err);
+          return true;
+        }
+        return false;
+      }),
     );
 
-    if (hasFormErrors || hasProductErrors) overallValid = false;
+    if (hasFormErrorsInState || hasProductErrorsInState) {
+      console.log('상태에 저장된 에러 발견!');
+      overallValid = false;
+    }
+    console.log('상태 에러 확인 후 overallValid:', overallValid);
 
+    console.log('--- checkFormValidity 종료 ---');
+    console.log('최종 overallValid:', overallValid);
     return overallValid;
   };
 
@@ -238,6 +323,7 @@ const UpdateShopPage = ({ onSuccess }) => {
           (data.products || []).map(() => ({
             name: { hasError: false, message: '' },
             price: { hasError: false, message: '' },
+            productImage: { hasError: false, message: '' },
           })),
         );
         setProductImages((data.products || []).map(p => p.imageUrl || null));
@@ -261,7 +347,12 @@ const UpdateShopPage = ({ onSuccess }) => {
         formData,
         productFormData,
         originalPassword,
+        shopImageUrl,
+        productImages,
+        formErrors,
+        productErrors,
       );
+      console.log('isFormValid:', isValid);
       setIsFormValid(isValid);
     }
   }, [
@@ -269,6 +360,8 @@ const UpdateShopPage = ({ onSuccess }) => {
     productFormData,
     originalPassword,
     shopData,
+    shopImageUrl,
+    productImages,
     formErrors,
     productErrors,
   ]);
@@ -290,13 +383,27 @@ const UpdateShopPage = ({ onSuccess }) => {
 
   /** 상품 필드 blur 시 유효성 검사 */
   const handleProductBlur = (index, field, value) => {
-    const isEmpty = value.toString().trim() === '';
+    let errorResult = { hasError: false, message: '' };
+
+    if (field === 'productImage') {
+      // 이미지 필드 유효성 검사
+      if (!value) {
+        errorResult = {
+          hasError: true,
+          message: '상품 이미지를 첨부해주세요.',
+        };
+      }
+    } else {
+      // 일반 텍스트 필드 유효성 검사
+      const isEmpty = value.toString().trim() === '';
+      errorResult = isEmpty
+        ? { hasError: true, message: '필수 입력 항목입니다.' }
+        : { hasError: false, message: '' };
+    }
     setProductErrors(prev => {
       const updated = [...prev];
       if (updated[index]) {
-        updated[index][field] = isEmpty
-          ? { hasError: true, message: '필수 입력 항목입니다.' }
-          : { hasError: false, message: '' };
+        updated[index][field] = errorResult;
       }
       return updated;
     });
@@ -320,15 +427,23 @@ const UpdateShopPage = ({ onSuccess }) => {
 
   /** 상점 필드 blur 시 유효성 검사 */
   const handleShopBlur = (id, value) => {
-    let result =
-      id === 'userId'
-        ? validateUserId(value)
-        : id === 'password'
-          ? validatePassword(value)
-          : {
-              hasError: value.trim() === '',
-              message: value.trim() === '' ? '필수 입력 항목입니다.' : '',
-            };
+    let result;
+    if (id === 'userId') {
+      result = validateUserId(value);
+    } else if (id === 'password') {
+      result = validatePassword(value);
+    } else if (id === 'shopImage') {
+      if (!value) {
+        result = { hasError: true, message: '상점 이미지를 첨부해주세요.' };
+      } else {
+        result = { hasError: false, message: '' };
+      }
+    } else {
+      result = {
+        hasError: value.trim() === '',
+        message: value.trim() === '' ? '필수 입력 항목입니다.' : '',
+      };
+    }
     setFormErrors(prev => ({ ...prev, [id]: result }));
   };
 
@@ -339,8 +454,10 @@ const UpdateShopPage = ({ onSuccess }) => {
     setIsLoading(true);
 
     let overallValidForSubmission = true;
-    const newFormErrors = { ...formErrors };
+    const tempFormErrors = { ...formErrors };
+    const tempProductErrors = [...productErrors];
 
+    // 1. 기본 폼 필드 유효성 검사 (제출 시점에 한 번 더)
     for (const key in formData) {
       const value = formData[key];
       let result;
@@ -349,43 +466,71 @@ const UpdateShopPage = ({ onSuccess }) => {
       } else if (key === 'password') {
         result = validatePassword(value);
       } else {
+        // name, url
         result = {
           hasError: value.trim() === '',
           message: value.trim() === '' ? '필수 입력 항목입니다.' : '',
         };
       }
-      newFormErrors[key] = result;
+      tempFormErrors[key] = result;
       if (result.hasError) overallValidForSubmission = false;
     }
-    setFormErrors(newFormErrors);
+    // 상점 이미지도 제출 시점에 유효성 검사
+    if (!shopImageUrl) {
+      tempFormErrors.shopImage = {
+        hasError: true,
+        message: '상점 이미지를 첨부해주세요.',
+      };
+      overallValidForSubmission = false;
+    } else {
+      tempFormErrors.shopImage = { hasError: false, message: '' };
+    }
+    // 제출 시점에만 최종 formErrors 업데이트
+    setFormErrors(tempFormErrors);
 
-    const newProductErrors = [...productErrors];
+    // 2. 상품 폼 필드 유효성 검사 (제출 시점에 한 번 더)
     productFormData.forEach((product, idx) => {
       const itemErrors = {
         name: { hasError: false, message: '' },
         price: { hasError: false, message: '' },
+        productImage: { hasError: false, message: '' }, // 이미지 에러 필드 포함
       };
       if (!product.name.trim())
         itemErrors.name = { hasError: true, message: '필수 입력 항목입니다.' };
       if (!product.price.toString().trim())
         itemErrors.price = { hasError: true, message: '필수 입력 항목입니다.' };
-      if (itemErrors.name.hasError || itemErrors.price.hasError)
-        overallValidForSubmission = false;
-      newProductErrors[idx] = itemErrors;
-    });
-    setProductErrors(newProductErrors);
 
+      // 상품 이미지 유효성 검사
+      if (!productImages[idx]) {
+        itemErrors.productImage = {
+          hasError: true,
+          message: '상품 이미지를 첨부해주세요.',
+        };
+      }
+
+      if (
+        itemErrors.name.hasError ||
+        itemErrors.price.hasError ||
+        itemErrors.productImage.hasError
+      )
+        overallValidForSubmission = false;
+      tempProductErrors[idx] = itemErrors;
+    });
+    // 제출 시점에만 최종 productErrors 업데이트
+    setProductErrors(tempProductErrors);
+
+    // 3. 비밀번호 일치 여부 확인 (새 비밀번호가 입력된 경우만)
     if (
       formData.password.trim() !== '' &&
       formData.password !== originalPassword
     ) {
       overallValidForSubmission = false;
       setError('현재 비밀번호가 일치하지 않습니다. 다시 확인해주세요.');
-    } else if (!overallValidForSubmission) {
-      setError('입력값을 다시 확인해주세요.');
     }
 
+    // 4. 최종 유효성 검사 결과에 따라 처리
     if (!overallValidForSubmission) {
+      setError('입력값을 다시 확인해주세요.');
       setIsLoading(false);
       return;
     }
@@ -455,7 +600,7 @@ const UpdateShopPage = ({ onSuccess }) => {
           <BtnWrapper>
             <StButton
               onClick={handleUpdate}
-              disabled={isLoading || !isFormValid}
+              disabled={isLoading || !isFormValid} // isFormValid 상태를 정확히 활용
             >
               {isLoading ? '수정 중...' : '수정하기'}
             </StButton>
@@ -467,6 +612,7 @@ const UpdateShopPage = ({ onSuccess }) => {
           )}
         </>
       ) : (
+        // 로딩 중이 아니고 에러가 있을 때만 에러 메시지 표시
         !isLoading &&
         error && (
           <p style={{ color: 'red', textAlign: 'center', marginTop: '20px' }}>
