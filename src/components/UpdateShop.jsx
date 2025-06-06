@@ -11,6 +11,27 @@ import openEyeIcon from '../assets/icon/btn_visibility_on.svg';
 
 const DEFAULT_EYE_SIZE = '20px';
 
+const ShopSectionWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  max-width: 696px;
+  margin: 75px auto;
+
+  @media (min-width: 768px) {
+    gap: 16px;
+  }
+`;
+
+const ShopTitle = styled.h2`
+  ${applyFontStyles(FontTypes.SEMIBOLD16, ColorTypes.SECONDARY_BLACK)};
+  display: none;
+  text-align: left;
+
+  @media (min-width: 768px) {
+    display: block;
+  }
+`;
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -18,16 +39,11 @@ const Container = styled.div`
   border-radius: 16px;
   padding: 28px;
   gap: 30px;
-  margin: 75px auto;
-  max-width: 500px;
+  width: 100%;
 
   border: 1px solid
     ${({ hasError }) =>
       hasError ? theme.colors[ColorTypes.ERROR] : 'transparent'};
-
-  @media (min-width: 768px) {
-    max-width: 696px;
-  }
 `;
 
 const ImageGroup = styled.div`
@@ -64,74 +80,79 @@ const UpdateShop = ({ formData, onChange, formErrors, onBlur }) => {
     setOpenPassword(prev => !prev);
   };
 
-  const containerHasError = Object.values(formErrors).some(error => error);
+  const containerHasError = Object.values(formErrors).some(
+    error => error.hasError,
+  );
 
   return (
-    <Container hasError={containerHasError}>
-      <ImageGroup>
-        <Wrapper>
-          <ShopImg>상품 대표 이미지</ShopImg>
-          <Description>상품 이미지를 첨부해주세요.</Description>
-        </Wrapper>
-        <FileField />
-      </ImageGroup>
+    <ShopSectionWrapper>
+      <ShopTitle>내 쇼핑몰</ShopTitle>
+      <Container hasError={containerHasError}>
+        <ImageGroup>
+          <Wrapper>
+            <ShopImg>상품 대표 이미지</ShopImg>
+            <Description>상품 이미지를 첨부해주세요.</Description>
+          </Wrapper>
+          <FileField />
+        </ImageGroup>
 
-      <Field
-        type='text'
-        inputId='name'
-        label='이름'
-        placeholder='표시하고 싶은 이름을 적어 주세요.'
-        value={formData.name}
-        onChange={onChange}
-        hasError={formErrors.name.hasError}
-        errorMessage={formErrors.name.message}
-        onBlur={() => onBlur('name', formData.name)}
-      />
-
-      <Field
-        type='url'
-        inputId='url'
-        label='Url'
-        placeholder='Url을 입력해주세요.'
-        value={formData.url}
-        onChange={onChange}
-        hasError={formErrors.url.hasError}
-        errorMessage={formErrors.url.message}
-        onBlur={() => onBlur('url', formData.url)}
-      />
-
-      <Field
-        type='text'
-        inputId='userId'
-        label='유저 ID'
-        placeholder='유저 ID를 입력해주세요.'
-        value={formData.userId}
-        onChange={onChange}
-        hasError={formErrors.userId.hasError}
-        errorMessage={formErrors.userId.message}
-        onBlur={() => onBlur('userId', formData.userId)}
-      />
-
-      <ImageGroup>
         <Field
-          type={openPassword ? 'text' : 'password'}
-          inputId='password'
-          label='비밀번호'
-          placeholder='비밀번호를 입력해주세요.'
-          value={formData.password}
+          type='text'
+          inputId='name'
+          label='이름'
+          placeholder='표시하고 싶은 이름을 적어 주세요.'
+          value={formData.name}
           onChange={onChange}
-          hasError={formErrors.password.hasError}
-          errorMessage={formErrors.password.message}
-          onBlur={() => onBlur('password', formData.password)}
+          hasError={formErrors.name.hasError}
+          errorMessage={formErrors.name.message}
+          onBlur={() => onBlur('name', formData.name)}
         />
-        <CloseEyeIcon
-          src={openPassword ? openEyeIcon : closeEyeIcon}
-          alt='비밀번호 토글 아이콘'
-          width={DEFAULT_EYE_SIZE}
-          onClick={togglePassword}
+
+        <Field
+          type='url'
+          inputId='url'
+          label='Url'
+          placeholder='Url을 입력해주세요.'
+          value={formData.url}
+          onChange={onChange}
+          hasError={formErrors.url.hasError}
+          errorMessage={formErrors.url.message}
+          onBlur={() => onBlur('url', formData.url)}
         />
-      </ImageGroup>
-    </Container>
+
+        <Field
+          type='text'
+          inputId='userId'
+          label='유저 ID'
+          placeholder='유저 ID를 입력해주세요.'
+          value={formData.userId}
+          onChange={onChange}
+          hasError={formErrors.userId.hasError}
+          errorMessage={formErrors.userId.message}
+          onBlur={() => onBlur('userId', formData.userId)}
+        />
+
+        <ImageGroup>
+          <Field
+            type={openPassword ? 'text' : 'password'}
+            inputId='password'
+            label='비밀번호'
+            placeholder='비밀번호를 입력해주세요.'
+            value={formData.password}
+            onChange={onChange}
+            hasError={formErrors.password.hasError}
+            errorMessage={formErrors.password.message}
+            onBlur={() => onBlur('password', formData.password)}
+          />
+          <CloseEyeIcon
+            src={openPassword ? openEyeIcon : closeEyeIcon}
+            alt='비밀번호 토글 아이콘'
+            width={DEFAULT_EYE_SIZE}
+            onClick={togglePassword}
+          />
+        </ImageGroup>
+      </Container>
+    </ShopSectionWrapper>
   );
 };
 

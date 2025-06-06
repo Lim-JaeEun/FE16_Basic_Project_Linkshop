@@ -9,25 +9,45 @@ const Container = styled.div`
   flex-direction: column;
   gap: 16px;
   margin: 0 auto;
-  max-width: 500px;
+  max-width: 696px;
 
   @media (min-width: 768px) {
     max-width: 696px;
   }
 `;
 
+const ProductGroupHeader = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+
+  @media (min-width: 768px) {
+    justify-content: space-between;
+  }
+`;
+
+const ProductListTitle = styled.h2`
+  ${applyFontStyles(FontTypes.SEMIBOLD16, ColorTypes.SECONDARY_BLACK)}
+  display: none;
+
+  @media (min-width: 768px) {
+    display: block;
+  }
+`;
+
 const AddItemCard = styled.button`
   text-align: right;
-  top: 16px;
-  right: 16px;
-
   ${applyFontStyles(FontTypes.MEDIUM16, ColorTypes.PRIMARY)}
 `;
 
 const UpdateProduct = ({ products, onChange, productErrors, onBlur }) => {
   return (
     <Container>
-      <AddItemCard>추가</AddItemCard>
+      <ProductGroupHeader>
+        <ProductListTitle>대표 상품</ProductListTitle>
+        <AddItemCard>추가</AddItemCard>
+      </ProductGroupHeader>
       {products.map((product, idx) => (
         <UpdateItemCard
           key={idx}
