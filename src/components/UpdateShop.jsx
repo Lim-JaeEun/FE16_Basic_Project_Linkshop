@@ -78,18 +78,21 @@ export const ImgGroup = styled.div`
   position: relative;
   width: 95px;
   height: 95px;
+  border-radius: 15px;
+  overflow: hidden;
 `;
 
 export const PreviewImg = styled.img`
   width: 100%;
   aspect-ratio: 1/1;
+  object-fit: cover;
   border-radius: 15px;
 `;
 
-export const BgButton = styled.button`
+export const DeleteBtn = styled.button`
   position: absolute;
-  top: 2px;
-  right: 2px;
+  top: 6px;
+  right: 7px;
   width: 16px;
   height: 16px;
   border-radius: 9999px;
@@ -102,8 +105,8 @@ export const BgButton = styled.button`
 
 export const ButtonX = styled.img`
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 3px;
+  right: 3px;
   width: 10px;
   filter: invert(99%) sepia(0%) saturate(0%) hue-rotate(262deg) brightness(110%)
     contrast(101%);
@@ -115,7 +118,15 @@ const CloseEyeIcon = styled.img`
   cursor: pointer;
 `;
 
-const UpdateShop = ({ formData, onChange, formErrors, onBlur }) => {
+const UpdateShop = ({
+  formData,
+  onChange,
+  formErrors,
+  onBlur,
+  shopImageUrl,
+  onShopImageChange,
+  onRemoveShopImage,
+}) => {
   // 비밀번호 가시성 상태 관리
   const [openPassword, setOpenPassword] = useState(false);
 
@@ -138,13 +149,18 @@ const UpdateShop = ({ formData, onChange, formErrors, onBlur }) => {
               <ShopImg>상품 대표 이미지</ShopImg>
               <Description>상품 이미지를 첨부해주세요.</Description>
             </Wrapper>
-            <FileField />
+            <FileField
+              onFileChange={e => onShopImageChange(e.target.files[0])}
+            />
           </TextGroup>
-          <ImgGroup>
-            <PreviewImg src={SampleImg} alt='상점 이미지' />
-            <BgButton />
-            <ButtonX src={DeleteImg} alt='이미지 삭제' />
-          </ImgGroup>
+          {shopImageUrl && (
+            <ImgGroup>
+              <PreviewImg src={shopImageUrl} alt='상점 이미지' />
+              <DeleteBtn onClick={onRemoveShopImage}>
+                <ButtonX src={DeleteImg} alt='이미지 삭제' />
+              </DeleteBtn>
+            </ImgGroup>
+          )}
         </PreviewGroup>
 
         <Field

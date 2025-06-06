@@ -14,7 +14,7 @@ import {
   PreviewGroup,
   ImgGroup,
   PreviewImg,
-  BgButton,
+  DeleteBtn,
   ButtonX,
 } from './UpdateShop';
 
@@ -43,7 +43,13 @@ const UpdateItemCard = ({
   hasError,
   onBlur,
   productFieldErrors,
+  currentImage,
+  onImageChange,
 }) => {
+  const handleRemoveImage = () => {
+    onImageChange(idKey, null);
+  };
+
   return (
     <Container hasError={hasError}>
       <PreviewGroup>
@@ -52,13 +58,18 @@ const UpdateItemCard = ({
             <ProductImg>상품 대표 이미지</ProductImg>
             <Description>상품 이미지를 첨부해주세요.</Description>
           </Wrapper>
-          <FileField />
+          <FileField
+            onFileChange={e => onImageChange(idKey, e.target.files[0])}
+          />{' '}
         </TextGroup>
-        <ImgGroup>
-          <PreviewImg src={SampleImg} alt='상품 이미지' />
-          <BgButton />
-          <ButtonX src={DeleteImg} alt='이미지 삭제' />
-        </ImgGroup>
+        {currentImage && (
+          <ImgGroup>
+            <PreviewImg src={currentImage} alt='상품 이미지' />
+            <DeleteBtn onClick={handleRemoveImage}>
+              <ButtonX src={DeleteImg} alt='이미지 삭제' />
+            </DeleteBtn>
+          </ImgGroup>
+        )}
       </PreviewGroup>
 
       <Field

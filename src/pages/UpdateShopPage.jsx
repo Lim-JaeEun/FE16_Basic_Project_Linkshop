@@ -35,6 +35,7 @@ const UpdateShopPage = ({ onSuccess }) => {
   const [shopData, setShopData] = useState(null);
   const [productFormData, setProductFormData] = useState([]);
   const [productImages, setProductImages] = useState([]);
+  const [shopImageUrl, setShopImageUrl] = useState(null);
 
   const [formData, setFormdata] = useState({
     name: '',
@@ -103,6 +104,34 @@ const UpdateShopPage = ({ onSuccess }) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  /** 상점 대표 이미지 변경 및 업로드 핸들러 */
+  const handleShopImageChange = async file => {
+    if (!file) {
+      setShopImageUrl(null);
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const imageUrl = await uploadImage(file);
+      setShopImageUrl(imageUrl);
+      console.log('상점 이미지 업로드 성공:', imageUrl);
+    } catch (err) {
+      console.error('상점 이미지 업로드 실패:', err);
+      setError(err.message || '상점 이미지 업로드에 실패했습니다.');
+      setShopImageUrl(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /** 상점 대표 이미지 삭제 핸들러 */
+  const handleRemoveShopImage = () => {
+    setShopImageUrl(null);
   };
 
   /** 유저 ID 유효성 검사 */
@@ -203,6 +232,7 @@ const UpdateShopPage = ({ onSuccess }) => {
           data.products?.map(p => ({ name: p.name, price: p.price })) || [],
         );
         setOriginalPassword(data.password);
+        setShopImageUrl(data.shop?.imageUrl || null);
 
         setProductErrors(
           (data.products || []).map(() => ({
@@ -366,6 +396,7 @@ const UpdateShopPage = ({ onSuccess }) => {
       password: formData.password.trim() !== '' ? formData.password : undefined,
       shop: {
         shopUrl: formData.url,
+        imageUrl: shopImageUrl || undefined,
       },
       products: productFormData.map((p, index) => ({
         name: p.name,
@@ -417,6 +448,9 @@ const UpdateShopPage = ({ onSuccess }) => {
             onChange={handleChange}
             formErrors={formErrors}
             onBlur={handleShopBlur}
+            shopImageUrl={shopImageUrl}
+            onShopImageChange={handleShopImageChange}
+            onRemoveShopImage={handleRemoveShopImage}
           />
           <BtnWrapper>
             <StButton
