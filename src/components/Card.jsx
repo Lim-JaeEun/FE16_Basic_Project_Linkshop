@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 
 import Slider from 'react-slick';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 import 'slick-carousel/slick/slick.css';
 
@@ -10,6 +10,17 @@ import LinkshopProfileInfo from './LinkshopProfileInfo';
 import btn_back from '../assets/icon/btn_back.png';
 import { applyFontStyles } from '../styles/mixins';
 import { FontTypes } from '../styles/theme';
+
+const fadeInShadow = keyframes`
+  from {
+    transform: scale(1);
+    box-shadow: 0px 0px 0px rgba(0, 0, 0, 0); 
+  }
+  to {
+    transform: scale(1.01);
+    box-shadow: 0px 0px 5px 5px #eee;
+  }
+`;
 
 const CardWrapper = styled.div`
   display: flex;
@@ -30,7 +41,8 @@ const CardWrapper = styled.div`
     max-width: 589px;
   }
   &:hover {
-    box-shadow: 0px 0px 5px 3px #eee;
+    animation: ${fadeInShadow} 0.6s forwards;
+    cursor: pointer;
   }
 `;
 
@@ -84,6 +96,7 @@ const CustomSliderWrapper = styled(Slider)`
   }
 }
 `;
+
 const TotalProducts = styled.div`
   ${({ $fontType = FontTypes.REGULAR16 }) => applyFontStyles($fontType)};
 `;
