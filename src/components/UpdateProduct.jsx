@@ -1,7 +1,7 @@
+import styled from 'styled-components';
+
 import { applyFontStyles } from '../styles/mixins';
 import { FontTypes, ColorTypes } from '../styles/theme';
-
-import styled from 'styled-components';
 import UpdateItemCard from './UpdateItemCard';
 
 const Container = styled.div`
@@ -41,13 +41,20 @@ const AddItemCard = styled.button`
   ${applyFontStyles(FontTypes.MEDIUM16, ColorTypes.PRIMARY)}
 `;
 
-const UpdateProduct = ({ products, onChange, productErrors, onBlur }) => {
+const UpdateProduct = ({
+  products,
+  onChange,
+  productErrors,
+  onBlur,
+  onAddProduct,
+}) => {
   return (
     <Container>
       <ProductGroupHeader>
         <ProductListTitle>대표 상품</ProductListTitle>
-        <AddItemCard>추가</AddItemCard>
+        <AddItemCard onClick={onAddProduct}>추가</AddItemCard>
       </ProductGroupHeader>
+      {/* 각 상품 입력 카드 렌더링 */}
       {products.map((product, idx) => (
         <UpdateItemCard
           key={idx}
@@ -56,10 +63,8 @@ const UpdateProduct = ({ products, onChange, productErrors, onBlur }) => {
           price={product.price}
           onChange={onChange}
           hasError={
-            productErrors[idx]
-              ? productErrors[idx].name.hasError ||
-                productErrors[idx].price.hasError
-              : false
+            productErrors[idx]?.name.hasError ||
+            productErrors[idx]?.price.hasError
           }
           productFieldErrors={productErrors[idx]}
           onBlur={onBlur}
