@@ -6,7 +6,7 @@ import UpdateProduct from '../components/UpdateProduct';
 import UpdateShop from '../components/UpdateShop';
 import BaseButton from '../components/PrimaryButton';
 import theme from '../styles/theme';
-import { generateMockLinkshopData } from '../utils/generateMockLinkshopData';
+import { getLinkshopDetail, updateLinkshop, uploadImage } from '../api/api';
 
 const Container = styled.div`
   margin-top: 124px;
@@ -34,6 +34,8 @@ const StButton = styled(BaseButton)`
 const UpdateShopPage = ({ onSuccess }) => {
   const [shopData, setShopData] = useState(null);
   const [productFormData, setProductFormData] = useState([]);
+  const [productImages, setProductImages] = useState([]);
+
   const [formData, setFormdata] = useState({
     name: '',
     url: '',
@@ -55,7 +57,7 @@ const UpdateShopPage = ({ onSuccess }) => {
   const navigate = useNavigate();
   const { URLid } = useParams();
 
-  // Product 카드 추가 버튼
+  /** 상품 추가 핸들러 */
   const handleAddProduct = () => {
     setProductFormData(prev => [...prev, { name: '', price: '' }]);
     setProductErrors(prev => [
@@ -65,9 +67,45 @@ const UpdateShopPage = ({ onSuccess }) => {
         price: { hasError: false, message: '' },
       },
     ]);
+    setProductImages(prev => [...prev, null]);
   };
 
-  // 유저 ID 유효성 검사
+  /** 이미지 파일 변경 및 업로드 핸들러 */
+  const handleImageChange = async (index, file) => {
+    if (!file) {
+      setProductImages(prev => {
+        const updated = [...prev];
+        updated[index] = null;
+        return updated;
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const imageUrl = await uploadImage(file);
+      setProductImages(prev => {
+        const updated = [...prev];
+        updated[index] = imageUrl;
+        return updated;
+      });
+      console.log(`상품 ${index} 이미지 업로드 성공:`, imageUrl);
+    } catch (err) {
+      console.error(`상품 ${index} 이미지 업로드 실패:`, err);
+      setError(err.message || '이미지 업로드에 실패했습니다.');
+      setProductImages(prev => {
+        const updated = [...prev];
+        updated[index] = null;
+        return updated;
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /** 유저 ID 유효성 검사 */
   const validateUserId = id => {
     if (id.trim() === '')
       return { hasError: true, message: '필수 입력 항목입니다.' };
@@ -81,7 +119,7 @@ const UpdateShopPage = ({ onSuccess }) => {
     return { hasError: false, message: '' };
   };
 
-  // 비밀번호 유효성 검사
+  /** 비밀번호 유효성 검사 */
   const validatePassword = password => {
     if (password.trim() === '')
       return { hasError: true, message: '필수 입력 항목입니다.' };
@@ -95,52 +133,98 @@ const UpdateShopPage = ({ onSuccess }) => {
     return { hasError: false, message: '' };
   };
 
-  // 폼 유효성 종합 검사
+  /** 폼 전체 유효성 검사 */
   const checkFormValidity = (
     currentFormData,
     currentProductFormData,
     currentOriginalPassword,
   ) => {
     let overallValid = true;
-    Object.entries(currentFormData).forEach(([key, value]) => {
-      if (key === 'userId' && validateUserId(value).hasError)
-        overallValid = false;
-      else if (key === 'password' && validatePassword(value).hasError)
-        overallValid = false;
-      else if (value.trim() === '') overallValid = false;
-    });
-    currentProductFormData.forEach(product => {
-      if (!product.name.trim() || !product.price.toString().trim())
-        overallValid = false;
-    });
-    if (currentFormData.password !== currentOriginalPassword)
+
+    if (validateUserId(currentFormData.userId).hasError) overallValid = false;
+    if (
+      currentFormData.password.trim() !== '' &&
+      validatePassword(currentFormData.password).hasError
+    )
       overallValid = false;
+    if (!currentFormData.name.trim()) {
+      overallValid = false;
+    }
+    if (!currentFormData.url.trim()) {
+      overallValid = false;
+    }
+
+    currentProductFormData.forEach(product => {
+      if (!product.name.trim() || !product.price.toString().trim()) {
+        overallValid = false;
+      }
+    });
+
+    if (
+      currentFormData.password.trim() !== '' &&
+      currentFormData.password !== currentOriginalPassword
+    ) {
+      overallValid = false;
+    }
+
+    const hasFormErrors = Object.values(formErrors).some(err => err.hasError);
+    const hasProductErrors = productErrors.some(prodErr =>
+      Object.values(prodErr).some(err => err.hasError),
+    );
+
+    if (hasFormErrors || hasProductErrors) overallValid = false;
+
     return overallValid;
   };
 
-  // 초기 데이터 로드
+  /** 초기 데이터 로드 */
   useEffect(() => {
-    const mockData = generateMockLinkshopData();
-    setShopData(mockData);
-    setFormdata({
-      name: mockData.name,
-      url: mockData.shop.shopUrl,
-      userId: mockData.userId,
-      password: '',
-    });
-    setProductFormData(
-      mockData.products.map(p => ({ name: p.name, price: p.price })),
-    );
-    setOriginalPassword(mockData.password);
-    setProductErrors(
-      mockData.products.map(() => ({
-        name: { hasError: false, message: '' },
-        price: { hasError: false, message: '' },
-      })),
-    );
-  }, []);
+    const fetchDetail = async () => {
+      setError(null);
+      setIsLoading(true);
 
-  // 유효성 자동 확인
+      try {
+        if (!URLid) {
+          setError(
+            '상세 정보를 불러올 수 없습니다: 페이지 ID가 누락되었습니다.',
+          );
+          return;
+        }
+
+        const data = await getLinkshopDetail(URLid);
+        setShopData(data);
+        setFormdata({
+          name: data.name,
+          url: data.shop?.shopUrl || '',
+          userId: data.userId,
+          password: '',
+        });
+        setProductFormData(
+          data.products?.map(p => ({ name: p.name, price: p.price })) || [],
+        );
+        setOriginalPassword(data.password);
+
+        setProductErrors(
+          (data.products || []).map(() => ({
+            name: { hasError: false, message: '' },
+            price: { hasError: false, message: '' },
+          })),
+        );
+        setProductImages((data.products || []).map(p => p.imageUrl || null));
+      } catch (e) {
+        console.error('상세 정보 로드 실패:', e);
+        setError(
+          e.response?.data?.message ||
+            '상세 정보를 불러오지 못했습니다. 네트워크 또는 서버 문제일 수 있습니다.',
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchDetail();
+  }, [URLid]);
+
+  /** 폼 유효성 자동 확인 */
   useEffect(() => {
     if (shopData) {
       const isValid = checkFormValidity(
@@ -150,9 +234,16 @@ const UpdateShopPage = ({ onSuccess }) => {
       );
       setIsFormValid(isValid);
     }
-  }, [formData, productFormData, originalPassword, shopData]);
+  }, [
+    formData,
+    productFormData,
+    originalPassword,
+    shopData,
+    formErrors,
+    productErrors,
+  ]);
 
-  // 상품 변경 처리
+  /** 상품 정보 변경 핸들러 */
   const handleProductChange = (index, field, value) => {
     setProductFormData(prev => {
       const updated = [...prev];
@@ -167,7 +258,7 @@ const UpdateShopPage = ({ onSuccess }) => {
     });
   };
 
-  // 상품 blur 유효성 검사
+  /** 상품 필드 blur 시 유효성 검사 */
   const handleProductBlur = (index, field, value) => {
     const isEmpty = value.toString().trim() === '';
     setProductErrors(prev => {
@@ -181,7 +272,7 @@ const UpdateShopPage = ({ onSuccess }) => {
     });
   };
 
-  // 상점 정보 변경 핸들러
+  /** 상점 정보 변경 핸들러 */
   const handleChange = e => {
     const { id, value } = e.target;
     setFormdata(prev => ({ ...prev, [id]: value }));
@@ -197,7 +288,7 @@ const UpdateShopPage = ({ onSuccess }) => {
     setFormErrors(prev => ({ ...prev, [id]: result }));
   };
 
-  // 상점 blur 시 유효성 검사
+  /** 상점 필드 blur 시 유효성 검사 */
   const handleShopBlur = (id, value) => {
     let result =
       id === 'userId'
@@ -211,7 +302,7 @@ const UpdateShopPage = ({ onSuccess }) => {
     setFormErrors(prev => ({ ...prev, [id]: result }));
   };
 
-  // 최종 제출 처리
+  /** 링크샵 수정 최종 제출 핸들러 */
   const handleUpdate = async () => {
     if (isLoading) return;
     setError(null);
@@ -219,17 +310,20 @@ const UpdateShopPage = ({ onSuccess }) => {
 
     let overallValidForSubmission = true;
     const newFormErrors = { ...formErrors };
+
     for (const key in formData) {
       const value = formData[key];
-      const result =
-        key === 'userId'
-          ? validateUserId(value)
-          : key === 'password'
-            ? validatePassword(value)
-            : {
-                hasError: value.trim() === '',
-                message: value.trim() === '' ? '필수 입력 항목입니다.' : '',
-              };
+      let result;
+      if (key === 'userId') {
+        result = validateUserId(value);
+      } else if (key === 'password') {
+        result = validatePassword(value);
+      } else {
+        result = {
+          hasError: value.trim() === '',
+          message: value.trim() === '' ? '필수 입력 항목입니다.' : '',
+        };
+      }
       newFormErrors[key] = result;
       if (result.hasError) overallValidForSubmission = false;
     }
@@ -251,36 +345,50 @@ const UpdateShopPage = ({ onSuccess }) => {
     });
     setProductErrors(newProductErrors);
 
-    if (formData.password !== originalPassword) {
+    if (
+      formData.password.trim() !== '' &&
+      formData.password !== originalPassword
+    ) {
       overallValidForSubmission = false;
-      setError('비밀번호가 일치하지 않습니다. 다시 확인해주세요.');
+      setError('현재 비밀번호가 일치하지 않습니다. 다시 확인해주세요.');
     } else if (!overallValidForSubmission) {
       setError('입력값을 다시 확인해주세요.');
     }
 
-    if (!overallValidForSubmission) return setIsLoading(false);
+    if (!overallValidForSubmission) {
+      setIsLoading(false);
+      return;
+    }
 
     const dataToSubmit = {
       name: formData.name,
       userId: formData.userId,
-      password: formData.password,
-      shop: { shopUrl: formData.url, ...(shopData && shopData.shop) },
-      products: productFormData,
+      password: formData.password.trim() !== '' ? formData.password : undefined,
+      shop: {
+        shopUrl: formData.url,
+      },
+      products: productFormData.map((p, index) => ({
+        name: p.name,
+        price: Number(p.price),
+        imageUrl: productImages[index] || undefined,
+      })),
     };
 
     try {
       console.log(
-        `[Mock Data Update] ${URLid}번 링크샵 데이터 업데이트 요청:`,
+        `[API Update] ${URLid}번 링크샵 데이터 업데이트 요청:`,
         dataToSubmit,
       );
-      await new Promise(resolve => setTimeout(resolve, 500));
-      alert('Mock 데이터 수정 완료! (콘솔 확인)');
+      await updateLinkshop(URLid, dataToSubmit);
+
+      alert('링크샵 수정 완료!');
       onSuccess?.();
       navigate(`/link/${URLid}`);
     } catch (err) {
-      console.error('데이터 업데이트 중 예상치 못한 오류:', err);
+      console.error('링크샵 수정 실패 (API 응답):', err);
       setError(
-        '데이터 수정 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+        err.response?.data?.message ||
+          '링크샵 수정 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
       );
     } finally {
       setIsLoading(false);
@@ -289,7 +397,11 @@ const UpdateShopPage = ({ onSuccess }) => {
 
   return (
     <Container>
-      {shopData && (
+      {isLoading && !shopData ? (
+        <p style={{ textAlign: 'center', marginTop: '20px' }}>
+          데이터를 불러오는 중...
+        </p>
+      ) : shopData ? (
         <>
           <UpdateProduct
             products={productFormData}
@@ -297,6 +409,8 @@ const UpdateShopPage = ({ onSuccess }) => {
             productErrors={productErrors}
             onBlur={handleProductBlur}
             onAddProduct={handleAddProduct}
+            productImages={productImages}
+            onImageChange={handleImageChange}
           />
           <UpdateShop
             formData={formData}
@@ -318,6 +432,13 @@ const UpdateShopPage = ({ onSuccess }) => {
             </p>
           )}
         </>
+      ) : (
+        !isLoading &&
+        error && (
+          <p style={{ color: 'red', textAlign: 'center', marginTop: '20px' }}>
+            {error}
+          </p>
+        )
       )}
     </Container>
   );

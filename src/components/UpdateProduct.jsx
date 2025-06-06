@@ -28,8 +28,10 @@ const ProductGroupHeader = styled.div`
 `;
 
 const ProductListTitle = styled.h2`
-  ${applyFontStyles(FontTypes.SEMIBOLD16, ColorTypes.SECONDARY_BLACK)}
-  display: none;
+  ${applyFontStyles(
+    FontTypes.SEMIBOLD16,
+    ColorTypes.SECONDARY_BLACK,
+  )} display: none;
 
   @media (min-width: 768px) {
     display: block;
@@ -42,11 +44,13 @@ const AddItemCard = styled.button`
 `;
 
 const UpdateProduct = ({
-  products,
-  onChange,
-  productErrors,
-  onBlur,
-  onAddProduct,
+  products, // 상품 데이터 배열
+  onChange, // 상품 정보 변경 핸들러
+  productErrors, // 상품별 에러 상태
+  onBlur, // 상품 필드 blur 시 유효성 검사 핸들러
+  onAddProduct, // 새 상품 추가 핸들러
+  productImages, // 각 상품의 이미지 URL
+  onImageChange, // 이미지 파일 변경 핸들러
 }) => {
   return (
     <Container>
@@ -54,7 +58,6 @@ const UpdateProduct = ({
         <ProductListTitle>대표 상품</ProductListTitle>
         <AddItemCard onClick={onAddProduct}>추가</AddItemCard>
       </ProductGroupHeader>
-      {/* 각 상품 입력 카드 렌더링 */}
       {products.map((product, idx) => (
         <UpdateItemCard
           key={idx}
@@ -68,6 +71,8 @@ const UpdateProduct = ({
           }
           productFieldErrors={productErrors[idx]}
           onBlur={onBlur}
+          currentImage={productImages[idx]}
+          onImageChange={onImageChange}
         />
       ))}
     </Container>
