@@ -4,7 +4,7 @@ import searchIcon from '../assets/icon/ic_search.png';
 
 const SearchInputContainer = styled.div`
   position: relative;
-  width: 100%;
+  min-width: 344px;
   height: 50px;
   border: 1px solid #dddcdf;
   border-radius: 49px;
@@ -12,6 +12,16 @@ const SearchInputContainer = styled.div`
   align-items: center;
   padding: 0 18.34px;
   gap: 13px;
+
+  /* 태블릿 (768px 이상 1023px 이하) : 696px */
+  @media (min-width: 768px) {
+    min-width: 696px;
+  }
+
+  /* 데스크탑 (1024px 이상) : 1199px */
+  @media (min-width: 1024px) {
+    min-width: 1199px;
+  }
 `;
 
 const StyledInput = styled.input`
