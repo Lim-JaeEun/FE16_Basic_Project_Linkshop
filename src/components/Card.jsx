@@ -114,6 +114,7 @@ function Card({
     autoplaySpeed: 1000,
     centerPadding: '12px',
     pauseOnHover: true,
+    lazyLoad: 'ondemand',
     //반응형 설정 (예시)
     responsive: [
       {

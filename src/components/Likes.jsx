@@ -41,6 +41,7 @@ const Likes = ({
         src={src}
         alt={'좋아요 이미지 버튼'}
         width={DEFAULT_HEART_SIZE}
+        loading='lazy'
       />
       <StLikesCount>{likes}</StLikesCount>
     </StLikesWrapper>

@@ -38,6 +38,7 @@ function LinkshopProductImage({ src, alt }) {
       <ProductImage
         src={currentSrc || DEFAULT_PRODUCT_IMG} // currentSrc가 없거나 null이면 기본 이미지 사용
         alt={alt}
+        loading='lazy'
         onError={handleImageError} // 이미지 로드 실패 시 handleImageError 함수 호출
       />
     </ProductImgWrapper>
