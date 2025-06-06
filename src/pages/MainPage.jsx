@@ -80,7 +80,7 @@ const MainPage = () => {
   // 초기 데이터 및 검색과 정렬 변경 시 데이터 로드
   useEffect(() => {
     const loadOptions = {
-      keyword: keyword,
+      keyword: keyword.trim(),
       orderBy: order,
       cursor: 0,
     };
@@ -94,7 +94,7 @@ const MainPage = () => {
     if (isLoading || !hasMore) return;
 
     const loadOptions = {
-      keyword: keyword,
+      keyword: keyword.trim(),
       orderBy: order,
       cursor: cursor,
     };
@@ -120,8 +120,8 @@ const MainPage = () => {
     };
   }, [loadLinkshops, cursor]);
 
-  const handleSearchChange = e => {
-    setKeyword(e.target.value);
+  const handleSearchChange = keyword => {
+    setKeyword(keyword);
   };
 
   const handleOrderClick = selectedOrder => {
@@ -135,7 +135,7 @@ const MainPage = () => {
   return (
     <>
       <MainPageWrapper>
-        <SearchInput value={keyword} onChange={handleSearchChange} />
+        <SearchInput onChange={handleSearchChange} />
         <StOrderSelector order={order} onClick={handleOrderClick} />
         <CardList cardData={linkshops} isLoading={isLoading} />
       </MainPageWrapper>

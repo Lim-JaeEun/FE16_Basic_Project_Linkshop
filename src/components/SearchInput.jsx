@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 import styled from 'styled-components';
 
 import searchIcon from '../assets/icon/ic_search.png';
@@ -46,15 +48,31 @@ const SearchIconWrapper = styled.div`
   flex-shrink: 0;
 `;
 
-function SearchInput({ value, onChange }) {
+function SearchInput({ onChange: handleSearchChange }) {
+  const [debouncedValue, setDebouncedValue] = useState('');
+
+  const handleDebouncedValue = e => {
+    setDebouncedValue(e.target.value);
+  };
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      handleSearchChange(debouncedValue);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [debouncedValue]);
+
   return (
     <SearchInputContainer>
       <SearchIconWrapper />
       <StyledInput
         type='text'
         placeholder='이름으로 검색해보세요'
-        value={value}
-        onChange={onChange}
+        value={debouncedValue}
+        onChange={handleDebouncedValue}
       />
     </SearchInputContainer>
   );
