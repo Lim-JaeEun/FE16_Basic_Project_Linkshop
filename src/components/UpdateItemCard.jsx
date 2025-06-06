@@ -1,5 +1,5 @@
-import styled from 'styled-components';
 import { useState, useEffect } from 'react';
+import styled from 'styled-components';
 
 import { applyFontStyles } from '../styles/mixins';
 import theme, { FontTypes, ColorTypes } from '../styles/theme';
@@ -19,6 +19,7 @@ import {
 } from './UpdateShop';
 
 const Container = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   background-color: ${theme.colors[ColorTypes.SECONDARY_WHITE_100]};
@@ -29,6 +30,21 @@ const Container = styled.div`
   border: 1px solid
     ${({ hasError }) =>
       hasError ? theme.colors[ColorTypes.ERROR] : 'transparent'};
+`;
+
+const DeleteProduct = styled(DeleteBtn)`
+  top: -5px;
+  right: -5px;
+  width: 24px;
+  height: 24px;
+`;
+
+const XImg = styled(ButtonX)`
+  top: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
 `;
 
 const ProductImg = styled.div`
@@ -45,6 +61,7 @@ const UpdateItemCard = ({
   productFieldErrors,
   currentImage,
   onImageChange,
+  onDelete,
 }) => {
   const [localItemImageUrl, setLocalItemImageUrl] = useState(null);
   const [displayImageUrl, setDisplayImageUrl] = useState(currentImage);
@@ -90,6 +107,14 @@ const UpdateItemCard = ({
     onBlur(idKey, 'productImage', null);
   };
 
+  /** 개별 상품 삭제 핸들러 */
+  const handleDeleteProduct = () => {
+    onDelete?.(idKey);
+    if (localItemImageUrl) {
+      URL.revokeObjectURL(localItemImageUrl);
+    }
+  };
+
   return (
     <Container hasError={hasError}>
       <PreviewGroup>
@@ -121,6 +146,7 @@ const UpdateItemCard = ({
         errorMessage={productFieldErrors.name.message}
         onBlur={() => onBlur(idKey, 'name', name)}
       />
+
       <Field
         type='number'
         inputId={`productPrice${idKey}`}
@@ -132,6 +158,8 @@ const UpdateItemCard = ({
         errorMessage={productFieldErrors.price.message}
         onBlur={() => onBlur(idKey, 'price', price.toString())}
       />
+      <DeleteProduct onClick={handleDeleteProduct} />
+      <XImg onClick={handleDeleteProduct} src={DeleteImg} alt='품목 삭제' />
     </Container>
   );
 };

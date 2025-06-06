@@ -1,8 +1,9 @@
 import styled from 'styled-components';
 
 import { applyFontStyles } from '../styles/mixins';
-import { FontTypes, ColorTypes } from '../styles/theme';
+import theme, { FontTypes, ColorTypes } from '../styles/theme';
 import UpdateItemCard from './UpdateItemCard';
+import PrimaryButton from './PrimaryButton';
 
 const Container = styled.div`
   display: flex;
@@ -28,19 +29,23 @@ const ProductGroupHeader = styled.div`
 `;
 
 const ProductListTitle = styled.h2`
-  ${applyFontStyles(
-    FontTypes.SEMIBOLD16,
-    ColorTypes.SECONDARY_BLACK,
-  )} display: none;
+  ${applyFontStyles(FontTypes.SEMIBOLD16, ColorTypes.SECONDARY_BLACK)}
+  display: none;
 
   @media (min-width: 768px) {
     display: block;
   }
 `;
 
-const AddItemCard = styled.button`
+const AddItemCard = styled(PrimaryButton)`
+  // PrimaryButton을 상속받아 스타일 적용
   text-align: right;
   ${applyFontStyles(FontTypes.MEDIUM16, ColorTypes.PRIMARY)}
+  background-color: transparent; // 배경색 투명하게
+  color: ${theme.colors[ColorTypes.PRIMARY]}; // 텍스트 색상 설정
+  padding: 0; // 패딩 제거
+  height: auto; // 높이 자동
+  width: auto; // 너비 자동
 `;
 
 const UpdateProduct = ({
@@ -51,6 +56,7 @@ const UpdateProduct = ({
   onAddProduct, // 새 상품 추가 핸들러
   productImages, // 각 상품의 이미지 URL
   onImageChange, // 이미지 파일 변경 핸들러
+  onDeleteProduct, // 상품 목록 삭제 핸들러
 }) => {
   return (
     <Container>
@@ -58,21 +64,23 @@ const UpdateProduct = ({
         <ProductListTitle>대표 상품</ProductListTitle>
         <AddItemCard onClick={onAddProduct}>추가</AddItemCard>
       </ProductGroupHeader>
-      {products.map((product, idx) => (
+      {products.map((product, index) => (
         <UpdateItemCard
-          key={idx}
-          idKey={idx}
+          key={index}
+          idKey={index}
           name={product.name}
           price={product.price}
           onChange={onChange}
           hasError={
-            productErrors[idx]?.name.hasError ||
-            productErrors[idx]?.price.hasError
+            productErrors[index]?.name.hasError ||
+            productErrors[index]?.price.hasError ||
+            productErrors[index]?.productImage.hasError
           }
-          productFieldErrors={productErrors[idx]}
           onBlur={onBlur}
-          currentImage={productImages[idx]}
+          productFieldErrors={productErrors[index]}
+          currentImage={productImages[index]}
           onImageChange={onImageChange}
+          onDelete={onDeleteProduct}
         />
       ))}
     </Container>

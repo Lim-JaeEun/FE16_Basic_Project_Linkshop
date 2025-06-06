@@ -1,3 +1,5 @@
+// src/pages/UpdateShopPage.jsx
+
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -159,8 +161,10 @@ const UpdateShopPage = ({ onSuccess }) => {
 
   /** 비밀번호 유효성 검사 */
   const validatePassword = password => {
-    if (password.trim() === '')
-      return { hasError: true, message: '필수 입력 항목입니다.' };
+    // 비밀번호 필드가 비어있으면 유효성 에러를 발생시키지 않음
+    if (password.trim() === '') {
+      return { hasError: false, message: '' };
+    }
     const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
     if (!regex.test(password)) {
       return {
@@ -183,111 +187,62 @@ const UpdateShopPage = ({ onSuccess }) => {
   ) => {
     let overallValid = true;
 
-    console.log('--- checkFormValidity 시작 ---');
-    console.log('초기 overallValid:', overallValid);
-
     // 1. 기본 폼 필드 유효성 검사
-    // name
     if (!currentFormData.name.trim()) {
-      console.log('폼 에러: name이 비어있음');
       overallValid = false;
     }
-    console.log('name 검사 후 overallValid:', overallValid);
-
-    // url
     if (!currentFormData.url.trim()) {
-      console.log('폼 에러: url이 비어있음');
       overallValid = false;
     }
-    console.log('url 검사 후 overallValid:', overallValid);
-
-    // userId
     const userIdValidation = validateUserId(currentFormData.userId);
     if (userIdValidation.hasError) {
-      console.log('폼 에러: userId 유효성 실패 -', userIdValidation.message);
       overallValid = false;
     }
-    console.log('userId 검사 후 overallValid:', overallValid);
-
-    // password (새 비밀번호가 입력된 경우에만 유효성 검사)
+    // 비밀번호가 입력된 경우에만 유효성 검사 수행
     if (currentFormData.password.trim() !== '') {
       const passwordValidation = validatePassword(currentFormData.password);
       if (passwordValidation.hasError) {
-        console.log(
-          '폼 에러: password 유효성 실패 -',
-          passwordValidation.message,
-        );
         overallValid = false;
       }
     }
-    console.log('password 검사 후 overallValid:', overallValid);
 
     // 2. 상품 폼 필드 유효성 검사
-    currentProductFormData.forEach((product, index) => {
-      if (!product.name.trim()) {
-        console.log(`상품 ${index} 에러: name이 비어있음`);
-        overallValid = false;
-      }
-      if (!product.price.toString().trim()) {
-        // price는 숫자일 수 있으므로 toString()
-        console.log(`상품 ${index} 에러: price가 비어있음`);
+    currentProductFormData.forEach(product => {
+      if (!product.name.trim() || !product.price.toString().trim()) {
         overallValid = false;
       }
     });
-    console.log('상품 필드 검사 후 overallValid:', overallValid);
 
+    // 3. 비밀번호 변경 시 원본 비밀번호 불일치 확인 (새 비밀번호가 입력된 경우만)
     if (
       currentFormData.password.trim() !== '' &&
       currentFormData.password !== currentOriginalPassword
     ) {
-      console.log('폼 에러: 새로운 비밀번호가 원본 비밀번호와 일치하지 않음');
       overallValid = false;
     }
-    console.log('비밀번호 일치 확인 후 overallValid:', overallValid);
 
     // 4. 이미지 필드 유효성 검사
-    // 상점 이미지가 필수로 요구된다면:
     if (!currentShopImageUrl) {
-      console.log('폼 에러: 상점 이미지가 없음');
       overallValid = false;
     }
-    console.log('상점 이미지 검사 후 overallValid:', overallValid);
-
-    // 각 상품 이미지가 필수로 요구된다면:
-    currentProductImages.forEach((imageUrl, index) => {
+    currentProductImages.forEach(imageUrl => {
       if (!imageUrl) {
-        console.log(`상품 ${index} 에러: 이미지가 없음`);
         overallValid = false;
       }
     });
-    console.log('상품 이미지 검사 후 overallValid:', overallValid);
 
-    // 5. 현재 `formErrors`와 `productErrors` 객체 자체에 `hasError: true`가 있는지 확인
-    const hasFormErrorsInState = Object.values(currentFormErrors).some(err => {
-      if (err.hasError) {
-        console.log('formErrors 상태에 에러 발견:', err);
-        return true;
-      }
-      return false;
-    });
+    // 5. 현재 formErrors와 productErrors 객체 자체에 hasError: true가 있는지 확인
+    const hasFormErrorsInState = Object.values(currentFormErrors).some(
+      err => err.hasError,
+    );
     const hasProductErrorsInState = currentProductErrors.some(prodErr =>
-      Object.values(prodErr).some(err => {
-        if (err.hasError) {
-          console.log('productErrors 상태에 에러 발견:', err);
-          return true;
-        }
-        return false;
-      }),
+      Object.values(prodErr).some(err => err.hasError),
     );
 
     if (hasFormErrorsInState || hasProductErrorsInState) {
-      console.log('상태에 저장된 에러 발견!');
       overallValid = false;
     }
-    console.log('상태 에러 확인 후 overallValid:', overallValid);
 
-    console.log('--- checkFormValidity 종료 ---');
-    console.log('최종 overallValid:', overallValid);
     return overallValid;
   };
 
@@ -352,7 +307,6 @@ const UpdateShopPage = ({ onSuccess }) => {
         formErrors,
         productErrors,
       );
-      console.log('isFormValid:', isValid);
       setIsFormValid(isValid);
     }
   }, [
@@ -386,7 +340,6 @@ const UpdateShopPage = ({ onSuccess }) => {
     let errorResult = { hasError: false, message: '' };
 
     if (field === 'productImage') {
-      // 이미지 필드 유효성 검사
       if (!value) {
         errorResult = {
           hasError: true,
@@ -394,7 +347,6 @@ const UpdateShopPage = ({ onSuccess }) => {
         };
       }
     } else {
-      // 일반 텍스트 필드 유효성 검사
       const isEmpty = value.toString().trim() === '';
       errorResult = isEmpty
         ? { hasError: true, message: '필수 입력 항목입니다.' }
@@ -431,7 +383,12 @@ const UpdateShopPage = ({ onSuccess }) => {
     if (id === 'userId') {
       result = validateUserId(value);
     } else if (id === 'password') {
-      result = validatePassword(value);
+      // 비밀번호가 비어있으면 유효성 에러를 발생시키지 않음 (수정 안 함으로 간주)
+      if (value.trim() === '') {
+        result = { hasError: false, message: '' };
+      } else {
+        result = validatePassword(value);
+      }
     } else if (id === 'shopImage') {
       if (!value) {
         result = { hasError: true, message: '상점 이미지를 첨부해주세요.' };
@@ -445,6 +402,22 @@ const UpdateShopPage = ({ onSuccess }) => {
       };
     }
     setFormErrors(prev => ({ ...prev, [id]: result }));
+  };
+
+  /** 개별 상품 삭제 핸들러 */
+  const handleDeleteProduct = indexToDelete => {
+    if (!window.confirm('정말로 이 상품을 삭제하시겠습니까?')) {
+      return;
+    }
+    setProductFormData(prev =>
+      prev.filter((_, index) => index !== indexToDelete),
+    );
+    setProductImages(prev =>
+      prev.filter((_, index) => index !== indexToDelete),
+    );
+    setProductErrors(prev =>
+      prev.filter((_, index) => index !== indexToDelete),
+    );
   };
 
   /** 링크샵 수정 최종 제출 핸들러 */
@@ -464,7 +437,12 @@ const UpdateShopPage = ({ onSuccess }) => {
       if (key === 'userId') {
         result = validateUserId(value);
       } else if (key === 'password') {
-        result = validatePassword(value);
+        // 비밀번호가 비어있으면 유효성 에러를 발생시키지 않음 (수정 안 함으로 간주)
+        if (value.trim() === '') {
+          result = { hasError: false, message: '' };
+        } else {
+          result = validatePassword(value);
+        }
       } else {
         // name, url
         result = {
@@ -587,6 +565,7 @@ const UpdateShopPage = ({ onSuccess }) => {
             onAddProduct={handleAddProduct}
             productImages={productImages}
             onImageChange={handleImageChange}
+            onDeleteProduct={handleDeleteProduct}
           />
           <UpdateShop
             formData={formData}
@@ -600,7 +579,7 @@ const UpdateShopPage = ({ onSuccess }) => {
           <BtnWrapper>
             <StButton
               onClick={handleUpdate}
-              disabled={isLoading || !isFormValid} // isFormValid 상태를 정확히 활용
+              disabled={isLoading || !isFormValid}
             >
               {isLoading ? '수정 중...' : '수정하기'}
             </StButton>
@@ -612,7 +591,6 @@ const UpdateShopPage = ({ onSuccess }) => {
           )}
         </>
       ) : (
-        // 로딩 중이 아니고 에러가 있을 때만 에러 메시지 표시
         !isLoading &&
         error && (
           <p style={{ color: 'red', textAlign: 'center', marginTop: '20px' }}>
