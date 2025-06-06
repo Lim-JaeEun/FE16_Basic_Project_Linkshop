@@ -5,6 +5,18 @@ import theme, { FontTypes, ColorTypes } from '../styles/theme';
 
 import FileField from './FileField';
 import Field from './Field';
+import SampleImg from '../assets/img/Img_product.png';
+import DeleteImg from '../assets/icon/btn_close.png';
+import {
+  TextGroup,
+  Wrapper,
+  Description,
+  PreviewGroup,
+  ImgGroup,
+  PreviewImg,
+  BgButton,
+  ButtonX,
+} from './UpdateShop';
 
 const Container = styled.div`
   display: flex;
@@ -19,24 +31,8 @@ const Container = styled.div`
       hasError ? theme.colors[ColorTypes.ERROR] : 'transparent'};
 `;
 
-const ImageGroup = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
 const ProductImg = styled.div`
   ${applyFontStyles(FontTypes.SEMIBOLD14, ColorTypes.SECONDARY_BLACK)}
-`;
-
-const Description = styled.div`
-  ${applyFontStyles(FontTypes.REGULAR17, ColorTypes.SECONDARY_GRAY_300)}
 `;
 
 const UpdateItemCard = ({
@@ -50,13 +46,20 @@ const UpdateItemCard = ({
 }) => {
   return (
     <Container hasError={hasError}>
-      <ImageGroup>
-        <Wrapper>
-          <ProductImg>상품 대표 이미지</ProductImg>
-          <Description>상품 이미지를 첨부해주세요.</Description>
-        </Wrapper>
-        <FileField />
-      </ImageGroup>
+      <PreviewGroup>
+        <TextGroup>
+          <Wrapper>
+            <ProductImg>상품 대표 이미지</ProductImg>
+            <Description>상품 이미지를 첨부해주세요.</Description>
+          </Wrapper>
+          <FileField />
+        </TextGroup>
+        <ImgGroup>
+          <PreviewImg src={SampleImg} alt='상품 이미지' />
+          <BgButton />
+          <ButtonX src={DeleteImg} alt='이미지 삭제' />
+        </ImgGroup>
+      </PreviewGroup>
 
       <Field
         type='text'

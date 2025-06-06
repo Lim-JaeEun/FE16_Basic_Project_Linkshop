@@ -8,6 +8,8 @@ import FileField from './FileField';
 import Field from './Field';
 import closeEyeIcon from '../assets/icon/btn_visibility_off.svg';
 import openEyeIcon from '../assets/icon/btn_visibility_on.svg';
+import SampleImg from '../assets/img/Img_product.png';
+import DeleteImg from '../assets/icon/btn_close.png';
 
 const DEFAULT_EYE_SIZE = '20px';
 
@@ -46,13 +48,13 @@ const Container = styled.div`
       hasError ? theme.colors[ColorTypes.ERROR] : 'transparent'};
 `;
 
-const ImageGroup = styled.div`
+export const TextGroup = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
 `;
 
-const Wrapper = styled.div`
+export const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -62,8 +64,50 @@ const ShopImg = styled.div`
   ${applyFontStyles(FontTypes.SEMIBOLD14, ColorTypes.SECONDARY_BLACK)}
 `;
 
-const Description = styled.div`
+export const Description = styled.div`
   ${applyFontStyles(FontTypes.REGULAR17, ColorTypes.SECONDARY_GRAY_300)}
+`;
+
+export const PreviewGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+export const ImgGroup = styled.div`
+  position: relative;
+  width: 95px;
+  height: 95px;
+`;
+
+export const PreviewImg = styled.img`
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 15px;
+`;
+
+export const BgButton = styled.button`
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background-color: ${theme.colors.secGray300};
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 1;
+`;
+
+export const ButtonX = styled.img`
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 10px;
+  filter: invert(99%) sepia(0%) saturate(0%) hue-rotate(262deg) brightness(110%)
+    contrast(101%);
+  z-index: 2;
 `;
 
 const CloseEyeIcon = styled.img`
@@ -88,13 +132,20 @@ const UpdateShop = ({ formData, onChange, formErrors, onBlur }) => {
     <ShopSectionWrapper>
       <ShopTitle>내 쇼핑몰</ShopTitle>
       <Container hasError={containerHasError}>
-        <ImageGroup>
-          <Wrapper>
-            <ShopImg>상품 대표 이미지</ShopImg>
-            <Description>상품 이미지를 첨부해주세요.</Description>
-          </Wrapper>
-          <FileField />
-        </ImageGroup>
+        <PreviewGroup>
+          <TextGroup>
+            <Wrapper>
+              <ShopImg>상품 대표 이미지</ShopImg>
+              <Description>상품 이미지를 첨부해주세요.</Description>
+            </Wrapper>
+            <FileField />
+          </TextGroup>
+          <ImgGroup>
+            <PreviewImg src={SampleImg} alt='상점 이미지' />
+            <BgButton />
+            <ButtonX src={DeleteImg} alt='이미지 삭제' />
+          </ImgGroup>
+        </PreviewGroup>
 
         <Field
           type='text'
@@ -132,7 +183,7 @@ const UpdateShop = ({ formData, onChange, formErrors, onBlur }) => {
           onBlur={() => onBlur('userId', formData.userId)}
         />
 
-        <ImageGroup>
+        <TextGroup>
           <Field
             type={openPassword ? 'text' : 'password'}
             inputId='password'
@@ -150,7 +201,7 @@ const UpdateShop = ({ formData, onChange, formErrors, onBlur }) => {
             width={DEFAULT_EYE_SIZE}
             onClick={togglePassword}
           />
-        </ImageGroup>
+        </TextGroup>
       </Container>
     </ShopSectionWrapper>
   );
