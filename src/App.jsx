@@ -1,14 +1,16 @@
 import { useState } from 'react';
+
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
+
 import Header from './layouts/Header';
 import CreateShopPage from './pages/CreateShopPage';
 import DetailShopPage from './pages/DetailShopPage';
 import MainPage from './pages/MainPage';
 import UpdateShopPage from './pages/UpdateShopPage';
 import GlobalStyle from './styles/GlobalStyle';
-import Toast from './Toast';
 import theme from './styles/theme';
-import { ThemeProvider } from 'styled-components';
+import Toast from './Toast';
 
 const App = () => {
   const [toastMessage, setToastMessage] = useState('');
@@ -50,7 +52,6 @@ const App = () => {
 
           {/* 상세 페이지 */}
           <Route path='/link/:URLid' element={<DetailShopPage />} />
-
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
