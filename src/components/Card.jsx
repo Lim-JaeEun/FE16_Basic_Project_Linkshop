@@ -18,6 +18,7 @@ const CardWrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.secWhite100};
   border-radius: 25px;
   padding: 24px;
+
   width: 100%;
   min-width: 344px;
   @media (min-width: 768px) {
@@ -32,6 +33,7 @@ const CardWrapper = styled.div`
     box-shadow: 0px 0px 5px 3px #eee;
   }
 `;
+
 const ProductImgWrapper = styled.div`
   width: 100%;
 `;
@@ -86,7 +88,7 @@ const TotalProducts = styled.div`
   ${({ $fontType = FontTypes.REGULAR16 }) => applyFontStyles($fontType)};
 `;
 function Card({
-  onClick: handleClick,
+  id,
   name,
   userId,
   imageUrl,
@@ -94,6 +96,7 @@ function Card({
   isLiked,
   productsCount,
   productImageSrcs,
+  onToggleLike: handleToggleLike,
 }) {
   const sliderRef = useRef(null);
   const [isLargeScreen, setIsLargeScreen] = useState(false);
@@ -170,7 +173,8 @@ function Card({
       })}
     >
       <LinkshopProfileInfo
-        onClick={handleClick}
+        onToggleLike={handleToggleLike}
+        id={id}
         userId={userId}
         name={name}
         imageUrl={imageUrl}

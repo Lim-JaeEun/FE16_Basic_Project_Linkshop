@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 
 import styled from 'styled-components';
 
 import CardList from '../components/CardList';
+import LoadingIndicator from '../components/LoadingIndicator';
 import { getLinkshops } from './../api/api';
 import OrderSelector from './../components/OrderSelector';
 import SearchInput from './../components/SearchInput';
@@ -45,13 +46,38 @@ const StOrderSelector = styled(OrderSelector)`
 `;
 
 const MainPage = () => {
-  const [isPending, setIsPending] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [keyword, setKeyword] = useState('');
   const [order, setOrder] = useState('recent');
   const [cursor, setCursor] = useState(0);
-  const [linkshops, setListshops] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [linkshops, setLinkshops] = useState([]);
 
+  const observeRef = useRef();
+
+  const loadLinkshops = useCallback(async loadOptions => {
+    if (loadOptions.cursor === null) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const { list: newList, nextCursor } = await getLinkshops(loadOptions);
+
+      if (loadOptions.cursor === 0) setLinkshops(newList);
+      else setLinkshops(prev => [...prev, ...newList]);
+
+      nextCursor !== null ? setHasMore(true) : setHasMore(false);
+      setCursor(nextCursor);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // 초기 데이터 및 검색과 정렬 변경 시 데이터 로드
   useEffect(() => {
     const loadOptions = {
       keyword: keyword,
@@ -59,33 +85,47 @@ const MainPage = () => {
       cursor: 0,
     };
 
-    const loadLinkshops = async loadOptions => {
-      setIsPending(true);
-      setError(null);
+    setLinkshops([]);
+    loadLinkshops(loadOptions);
+  }, [loadLinkshops, order, keyword]);
 
-      try {
-        const data = await getLinkshops(loadOptions);
-        if (cursor === 0) setListshops(data.list);
-        else setListshops(prev => setListshops([...prev, ...data.list]));
-        setCursor(data.nextCursor);
-      } catch (error) {
-        setError(error);
-      } finally {
-        setIsPending(false);
-      }
+  // 무한 스크롤
+  useEffect(() => {
+    if (isLoading || !hasMore) return;
+
+    const loadOptions = {
+      keyword: keyword,
+      orderBy: order,
+      cursor: cursor,
     };
 
-    loadLinkshops(loadOptions);
-  }, [order, keyword]);
+    const intersectionOptions = {
+      root: null, // 뷰포트를 기준으로 관찰 (기본값)
+      rootMargin: '0px',
+      threshold: 0.1, // 타겟 요소의 10%가 뷰포트에 들어오면 콜백 실행
+    };
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && hasMore) {
+          loadLinkshops(loadOptions);
+        }
+      });
+    }, intersectionOptions);
+
+    if (observeRef.current) observer.observe(observeRef.current);
+
+    return () => {
+      if (observeRef.current) observer.unobserve(observeRef.current);
+    };
+  }, [loadLinkshops, cursor]);
 
   const handleSearchChange = e => {
     setKeyword(e.target.value);
-    setCursor(0);
   };
 
   const handleOrderClick = selectedOrder => {
     setOrder(selectedOrder);
-    setCursor(0);
   };
 
   if (error) {
@@ -93,15 +133,17 @@ const MainPage = () => {
   }
 
   return (
-    <MainPageWrapper>
-      <SearchInput value={keyword} onChange={handleSearchChange} />
-      <StOrderSelector order={order} onClick={handleOrderClick} />
-      {isPending ? (
-        <p>pending상태</p> // indicator 구현하면 예쁠듯
-      ) : (
-        <CardList cardData={linkshops} />
+    <>
+      <MainPageWrapper>
+        <SearchInput value={keyword} onChange={handleSearchChange} />
+        <StOrderSelector order={order} onClick={handleOrderClick} />
+        <CardList cardData={linkshops} isLoading={isLoading} />
+      </MainPageWrapper>
+      <LoadingIndicator isLoading={isLoading} $isInitialLoad={cursor === 0} />
+      {hasMore && !isLoading && (
+        <div ref={observeRef} style={{ height: '20px' }} />
       )}
-    </MainPageWrapper>
+    </>
   );
 };
 

@@ -37,7 +37,8 @@ const StLikes = styled(Likes)`
 `;
 
 const LinkshopProfileInfo = ({
-  onClick: handleClick,
+  onToggleLike: handleToggleLike,
+  id,
   name,
   userId,
   imageUrl,
@@ -51,7 +52,12 @@ const LinkshopProfileInfo = ({
         <StName>{name}</StName>
         <StUserId>{'@' + userId}</StUserId>
       </StLinkshopNameAndIdWrapper>
-      <StLikes onClick={handleClick} likes={likes} isLiked={isLiked} />
+      <StLikes
+        onToggleLike={handleToggleLike}
+        id={id}
+        likes={likes}
+        isLiked={isLiked}
+      />
     </StLinkshopProfileInfoWrapper>
   );
 };
