@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 
 import CardList from '../components/CardList';
 import LoadingIndicator from '../components/LoadingIndicator';
 import { useAsync } from '../hooks/useAsync';
+import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 import { getLinkshops } from './../api/api';
 import OrderSelector from './../components/OrderSelector';
 import SearchInput from './../components/SearchInput';
@@ -65,8 +66,6 @@ const MainPage = () => {
     error,
   } = useAsync(getLinkshops, { delayLoadingTransition: true });
 
-  const observerTargetRef = useRef();
-
   // 초기 데이터 및 검색과 정렬 변경 시 데이터 로드
   useEffect(() => {
     setLinkshops([]);
@@ -105,29 +104,12 @@ const MainPage = () => {
     }
   }, [keyword, order, cursor, isLoading, hasMore]);
 
-  // Intersection API를 활용한 무한 스크롤
-  useEffect(() => {
-    if (!observerTargetRef.current) return;
-
-    const observer = new IntersectionObserver(
-      entries => {
-        if (entries[0].isIntersecting && hasMore && !isLoading) {
-          handleLoadMore();
-        }
-      },
-      {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1,
-      },
-    );
-
-    observer.observe(observerTargetRef.current);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [isLoading, hasMore, handleLoadMore]);
+  // Intersection을 활용한 무한 스크롤
+  const observerTargetRef = useInfiniteScroll(
+    handleLoadMore,
+    hasMore,
+    isLoading,
+  );
 
   const handleSearchChange = keyword => {
     setKeyword(keyword);
