@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import ProductCard from './ProductCard'; // ProductCard 컴포넌트 import
 
 const StyledProductListSection = styled.section`
-  padding: 0 16px 16px;
+  padding: 0 0 16px 0;
   margin-top: 24px;
 `;
 
@@ -14,7 +14,6 @@ const SectionTitle = styled.h2`
   font-weight: 600;
   color: #2c2c2e;
   margin-bottom: 16px;
-  padding: 0 16px;
 `;
 
 const StyledProductList = styled.div`

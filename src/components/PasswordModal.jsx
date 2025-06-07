@@ -2,8 +2,7 @@ import { useState } from 'react';
 
 import styled, { css } from 'styled-components';
 
-import CloseIcon from '../assets/icon/btn_close.png'; // 닫기 아이콘 import (경로 확인)
-
+import CloseIcon from '../assets/icon/btn_close.png';
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -21,7 +20,7 @@ const ModalContent = styled.div`
   position: relative; /* 닫기 버튼의 위치 기준점 */
   background-color: white;
   padding: 32px 24px 24px;
-  border-radius: 16px; /* 이미지와 유사하게 변경 */
+  border-radius: 30px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
   width: 360px; /* 너비 조정 */
   max-width: 90%;
@@ -60,20 +59,29 @@ const DescriptionText = styled.p`
 
 const InputWrapper = styled.div`
   width: 100%;
+  background-color: #fafafb;
+  padding: 20px 28px;
+  box-sizing: border-box;
+  border-radius: 25px;
 `;
 
+const InputLabel = styled.label`
+  display: block;
+  font-size: 14px; /* 라벨 폰트 크기 */
+  font-weight: 600; /* 굵은 글씨 */
+  color: #333;
+  margin-bottom: 8px; /* 입력창과의 간격 */
+`;
 const InputField = styled.input`
   width: 100%;
-  padding: 12px 10px;
-  border: 1px solid #ddd; /* 테두리 색상 연하게 */
-  border-radius: 8px; /* radius 조정 */
-  font-size: 16px;
-  box-sizing: border-box;
+  font-size: 17px;
+  font-weight: 400;
   transition: border-color 0.2s;
 
-  &:focus {
-    border-color: #555; /* 포커스 시 테두리 색상 예시 */
+ &:focus {
+    border-color: #555;
     outline: none;
+  }
   }
 
   ${({ hasError }) =>
@@ -97,8 +105,8 @@ const ErrorText = styled.p`
 const SubmitButton = styled.button`
   width: 100%;
   padding: 14px 16px; /* 패딩 조정 */
-  margin-top: 8px;
-  border-radius: 8px; /* radius 조정 */
+  margin-top: 35px;
+  border-radius: 37px;
   border: none;
   font-size: 16px;
   font-weight: 600; /* 굵게 */
@@ -108,7 +116,7 @@ const SubmitButton = styled.button`
   color: white;
 
   &:hover {
-    opacity: 0.85;
+    opacity: 0.9;
   }
 `;
 
@@ -145,16 +153,18 @@ const PasswordModal = ({
 
         <form onSubmit={handleSubmit}>
           <InputWrapper>
+            <InputLabel htmlFor='password-input'>비밀번호</InputLabel>
             <InputField
+              id='password-input'
               type='password'
               value={password}
               onChange={e => setPassword(e.target.value)}
-              placeholder='비밀번호'
+              placeholder='비밀번호를 입력해 주세요.'
               autoFocus
-              hasError={!!error}
+              $hasError={!!error}
             />
-            {error && <ErrorText>{error}</ErrorText>}
           </InputWrapper>
+          {error && <ErrorText>{error}</ErrorText>}
 
           <SubmitButton type='submit'>{submitButtonText}</SubmitButton>
         </form>

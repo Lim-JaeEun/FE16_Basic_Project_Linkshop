@@ -33,8 +33,9 @@ const HeroSection = styled.div`
   width: 100%;
   height: 80px;
   background-image: url(${BackgroundImg});
-  background-size: cover;
-  background-position: center;
+  background-size: 100%;
+  background-repeat: repeat-x;
+  background-position: top center;
   @media (min-width: 768px) {
     background-image: url(${TabletBackgroundImg});
   }
@@ -113,7 +114,7 @@ const DetailShopPage = () => {
   ];
 
   const handleGoBack = () => {
-    navigate(-1);
+    navigate('/list');
   };
   const handleShareLink = async () => {
     try {
