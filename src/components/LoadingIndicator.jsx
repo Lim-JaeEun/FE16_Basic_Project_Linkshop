@@ -63,13 +63,20 @@ const NoMoreDataContainer = styled.div`
   ${applyFontStyles(FontTypes.REGULAR16, ColorTypes.SECONDARY_GRAY_200)}
 `;
 
-const LoadingIndicator = ({ $isLoading, $hasMore, $isInitialLoad }) => {
+const LoadingIndicator = ({
+  $isLoading,
+  $hasMore,
+  $isEmptyList,
+  $isInitialLoad,
+}) => {
   return $hasMore ? (
     <IndicatorContainer $isLoading={$isLoading} $isInitialLoad={$isInitialLoad}>
       <Spinner />
     </IndicatorContainer>
   ) : (
-    <NoMoreDataContainer>모든 데이터를 불러왔습니다</NoMoreDataContainer>
+    !$isEmptyList && (
+      <NoMoreDataContainer>모든 데이터를 불러왔습니다</NoMoreDataContainer>
+    )
   );
 };
 

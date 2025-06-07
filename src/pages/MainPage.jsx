@@ -91,6 +91,7 @@ const MainPage = () => {
       <LoadingIndicator
         $isLoading={isLoading}
         $hasMore={hasMore}
+        $isEmptyList={linkshops.length === 0}
         $isInitialLoad={cursor === 0}
       />
       {hasMore && <StObserveContainer ref={observerTargetRef} />}

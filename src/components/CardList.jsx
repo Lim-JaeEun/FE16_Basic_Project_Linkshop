@@ -24,7 +24,7 @@ const CardListWrapper = styled.div`
   }
 `;
 
-function CardList({ cardData: initialCardData, isLoading }) {
+function CardList({ cardData: initialCardData, $isLoading }) {
   const [cards, setCards] = useState(initialCardData); // 카드 리스트 상태 관리
 
   useEffect(() => {
@@ -65,7 +65,7 @@ function CardList({ cardData: initialCardData, isLoading }) {
     }
   }, []);
 
-  if (!isLoading && cards.length === 0) {
+  if (!$isLoading && cards.length === 0) {
     return <NoSearchResult />;
   }
 
