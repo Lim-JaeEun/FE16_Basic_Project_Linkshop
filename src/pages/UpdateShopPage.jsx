@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import UpdateModal from '../components/ConfirmCreateModal';
 import UpdateProduct from '../components/UpdateProduct';
 import UpdateShop from '../components/UpdateShop';
 import BaseButton from '../components/PrimaryButton';
@@ -54,6 +55,7 @@ const UpdateShopPage = ({ onSuccess }) => {
   });
   const [productErrors, setProductErrors] = useState([]);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const navigate = useNavigate();
   const { URLid } = useParams();
@@ -398,6 +400,13 @@ const UpdateShopPage = ({ onSuccess }) => {
     );
   };
 
+  /** 모달 확인 버튼 핸들러 */
+  const handleConfirm = () => {
+    setIsModalOpen(false);
+    onSuccess?.();
+    navigate(`/link/${URLid}`);
+  };
+
   /** 링크샵 수정 최종 제출 핸들러 */
   const handleUpdate = async () => {
     if (isLoading) return;
@@ -509,9 +518,7 @@ const UpdateShopPage = ({ onSuccess }) => {
       );
       await updateLinkshop(URLid, dataToSubmit);
 
-      alert('링크샵 수정 완료!');
-      onSuccess?.();
-      navigate(`/link/${URLid}`);
+      setIsModalOpen(true);
     } catch (err) {
       console.error('링크샵 수정 실패 (API 응답):', err);
     } finally {
@@ -563,6 +570,11 @@ const UpdateShopPage = ({ onSuccess }) => {
           </BtnWrapper>
         </>
       )}
+      <UpdateModal
+        onConfirm={handleConfirm}
+        isOpen={isModalOpen}
+        message='수정이 완료되었습니다.'
+      />
     </Container>
   );
 };
