@@ -75,7 +75,7 @@ const LoadingIndicator = ({
     </IndicatorContainer>
   ) : (
     !$isEmptyList && (
-      <NoMoreDataContainer>모든 데이터를 불러왔습니다</NoMoreDataContainer>
+      <NoMoreDataContainer>{'모든 콘텐츠를 불러왔어요 :)'}</NoMoreDataContainer>
     )
   );
 };
