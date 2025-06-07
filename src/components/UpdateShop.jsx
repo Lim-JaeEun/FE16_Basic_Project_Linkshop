@@ -255,6 +255,7 @@ const UpdateShop = ({
             hasError={formErrors.password.hasError}
             errorMessage={formErrors.password.message}
             onBlur={() => onBlur('password', formData.password)}
+            autocomplete={openPassword ? 'off' : 'current-password'}
           />
           <CloseEyeIcon
             src={openPassword ? openEyeIcon : closeEyeIcon}

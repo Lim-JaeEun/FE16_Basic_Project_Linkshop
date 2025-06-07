@@ -10,7 +10,7 @@ import BaseButton from '../components/PrimaryButton';
 import theme from '../styles/theme';
 import { getLinkshopDetail, updateLinkshop, uploadImage } from '../api/api';
 
-const Container = styled.div`
+const Container = styled.form`
   margin-top: 124px;
   padding: 0 0.75rem;
 `;
@@ -45,7 +45,6 @@ const UpdateShopPage = ({ onSuccess }) => {
     userId: '',
     password: '',
   });
-  const [originalPassword, setOriginalPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [formErrors, setFormErrors] = useState({
@@ -179,7 +178,6 @@ const UpdateShopPage = ({ onSuccess }) => {
   const checkFormValidity = (
     currentFormData,
     currentProductFormData,
-    currentOriginalPassword,
     currentShopImageUrl,
     currentProductImages,
     currentFormErrors,
@@ -198,13 +196,6 @@ const UpdateShopPage = ({ onSuccess }) => {
     if (userIdValidation.hasError) {
       overallValid = false;
     }
-    // 비밀번호가 입력된 경우에만 유효성 검사 수행
-    if (currentFormData.password.trim() !== '') {
-      const passwordValidation = validatePassword(currentFormData.password);
-      if (passwordValidation.hasError) {
-        overallValid = false;
-      }
-    }
 
     // 2. 상품 폼 필드 유효성 검사
     currentProductFormData.forEach(product => {
@@ -212,14 +203,6 @@ const UpdateShopPage = ({ onSuccess }) => {
         overallValid = false;
       }
     });
-
-    // 3. 비밀번호 변경 시 원본 비밀번호 불일치 확인 (새 비밀번호가 입력된 경우만)
-    if (
-      currentFormData.password.trim() !== '' &&
-      currentFormData.password !== currentOriginalPassword
-    ) {
-      overallValid = false;
-    }
 
     // 4. 이미지 필드 유효성 검사
     if (!currentShopImageUrl) {
@@ -269,9 +252,12 @@ const UpdateShopPage = ({ onSuccess }) => {
           password: '',
         });
         setProductFormData(
-          data.products?.map(p => ({ name: p.name, price: p.price })) || [],
+          (data.products || [])
+            .filter(
+              p => p && typeof p === 'object' && 'name' in p && 'price' in p,
+            )
+            .map(p => ({ name: p.name, price: p.price })) || [],
         );
-        setOriginalPassword(data.password);
         setShopImageUrl(data.shop?.imageUrl || null);
 
         setProductErrors(
@@ -301,7 +287,6 @@ const UpdateShopPage = ({ onSuccess }) => {
       const isValid = checkFormValidity(
         formData,
         productFormData,
-        originalPassword,
         shopImageUrl,
         productImages,
         formErrors,
@@ -312,7 +297,6 @@ const UpdateShopPage = ({ onSuccess }) => {
   }, [
     formData,
     productFormData,
-    originalPassword,
     shopData,
     shopImageUrl,
     productImages,
@@ -437,12 +421,7 @@ const UpdateShopPage = ({ onSuccess }) => {
       if (key === 'userId') {
         result = validateUserId(value);
       } else if (key === 'password') {
-        // 비밀번호가 비어있으면 유효성 에러를 발생시키지 않음 (수정 안 함으로 간주)
-        if (value.trim() === '') {
-          result = { hasError: false, message: '' };
-        } else {
-          result = validatePassword(value);
-        }
+        result = { hasError: false, message: '' };
       } else {
         // name, url
         result = {
@@ -453,6 +432,7 @@ const UpdateShopPage = ({ onSuccess }) => {
       tempFormErrors[key] = result;
       if (result.hasError) overallValidForSubmission = false;
     }
+
     // 상점 이미지도 제출 시점에 유효성 검사
     if (!shopImageUrl) {
       tempFormErrors.shopImage = {
@@ -463,8 +443,6 @@ const UpdateShopPage = ({ onSuccess }) => {
     } else {
       tempFormErrors.shopImage = { hasError: false, message: '' };
     }
-    // 제출 시점에만 최종 formErrors 업데이트
-    setFormErrors(tempFormErrors);
 
     // 2. 상품 폼 필드 유효성 검사 (제출 시점에 한 번 더)
     productFormData.forEach((product, idx) => {
@@ -494,17 +472,16 @@ const UpdateShopPage = ({ onSuccess }) => {
         overallValidForSubmission = false;
       tempProductErrors[idx] = itemErrors;
     });
-    // 제출 시점에만 최종 productErrors 업데이트
-    setProductErrors(tempProductErrors);
+    const currentPasswordValidation =
+      formData.password.trim() === ''
+        ? { hasError: true, message: '현재 비밀번호를 입력해주세요.' }
+        : validatePassword(formData.password);
+    tempFormErrors.password = currentPasswordValidation;
+    if (currentPasswordValidation.hasError) overallValidForSubmission = false;
 
-    // 3. 비밀번호 일치 여부 확인 (새 비밀번호가 입력된 경우만)
-    if (
-      formData.password.trim() !== '' &&
-      formData.password !== originalPassword
-    ) {
-      overallValidForSubmission = false;
-      setError('현재 비밀번호가 일치하지 않습니다. 다시 확인해주세요.');
-    }
+    // 최종 formErrors와 productErrors 상태 업데이트
+    setFormErrors(tempFormErrors);
+    setProductErrors(tempProductErrors);
 
     // 4. 최종 유효성 검사 결과에 따라 처리
     if (!overallValidForSubmission) {
@@ -516,15 +493,16 @@ const UpdateShopPage = ({ onSuccess }) => {
     const dataToSubmit = {
       name: formData.name,
       userId: formData.userId,
-      password: formData.password.trim() !== '' ? formData.password : undefined,
+      currentPassword: formData.password,
       shop: {
         shopUrl: formData.url,
-        imageUrl: shopImageUrl || undefined,
+        urlName: formData.url,
+        imageUrl: shopImageUrl || null,
       },
       products: productFormData.map((p, index) => ({
         name: p.name,
         price: Number(p.price),
-        imageUrl: productImages[index] || undefined,
+        imageUrl: productImages[index] || null,
       })),
     };
 
@@ -533,6 +511,7 @@ const UpdateShopPage = ({ onSuccess }) => {
         `[API Update] ${URLid}번 링크샵 데이터 업데이트 요청:`,
         dataToSubmit,
       );
+      // API 호출
       await updateLinkshop(URLid, dataToSubmit);
 
       alert('링크샵 수정 완료!');
@@ -540,6 +519,7 @@ const UpdateShopPage = ({ onSuccess }) => {
       navigate(`/link/${URLid}`);
     } catch (err) {
       console.error('링크샵 수정 실패 (API 응답):', err);
+      // 서버 응답에서 에러 메시지를 정확히 추출하여 사용자에게 보여줍니다.
       setError(
         err.response?.data?.message ||
           '링크샵 수정 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
@@ -550,7 +530,12 @@ const UpdateShopPage = ({ onSuccess }) => {
   };
 
   return (
-    <Container>
+    <Container
+      onSubmit={e => {
+        e.preventDefault();
+        handleUpdate();
+      }}
+    >
       {isLoading && !shopData ? (
         <p style={{ textAlign: 'center', marginTop: '20px' }}>
           데이터를 불러오는 중...
@@ -578,6 +563,7 @@ const UpdateShopPage = ({ onSuccess }) => {
           />
           <BtnWrapper>
             <StButton
+              type='submit'
               onClick={handleUpdate}
               disabled={isLoading || !isFormValid}
             >

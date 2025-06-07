@@ -106,9 +106,7 @@ export const getLinkshopDetail = async linkshopId => {
 export const updateLinkshop = async (linkshopId, formData) => {
   try {
     const res = await instance.put(`/linkshops/${linkshopId}`, formData, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {},
     });
     return res.data;
   } catch (error) {
