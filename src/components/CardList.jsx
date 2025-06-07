@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 import Card from './Card';
@@ -21,6 +22,20 @@ const CardListWrapper = styled.div`
     flex-direction: row;
     justify-content: flex-start;
     gap: 24px;
+  }
+`;
+
+const StyledLink = styled(Link)`
+  display: block;
+  width: 100%;
+  min-width: 344px;
+  @media (min-width: 768px) {
+    width: calc(100% - 8px);
+    min-width: 342px;
+  }
+  @media (min-width: 1024px) {
+    width: calc((100% - 24px) / 2);
+    max-width: 589px;
   }
 `;
 
@@ -72,18 +87,21 @@ function CardList({ cardData: initialCardData, $isLoading }) {
   return (
     <CardListWrapper>
       {cards.map(cardItem => (
-        <Card
-          key={cardItem.id}
-          id={cardItem.id}
-          name={cardItem.name}
-          userId={cardItem.userId}
-          imageUrl={cardItem.shop.imageUrl}
-          likes={cardItem.likes}
-          isLiked={cardItem.isLiked}
-          productsCount={cardItem.productsCount}
-          productImageSrcs={cardItem.products.map(product => product.imageUrl)}
-          onToggleLike={handleToggleLike}
-        />
+        <StyledLink key={cardItem.id} to={`/link/${cardItem.userId}`}>
+          <Card
+            id={cardItem.id}
+            name={cardItem.name}
+            userId={cardItem.userId}
+            imageUrl={cardItem.shop.imageUrl}
+            likes={cardItem.likes}
+            isLiked={cardItem.isLiked}
+            productsCount={cardItem.productsCount}
+            productImageSrcs={cardItem.products.map(
+              product => product.imageUrl,
+            )}
+            onToggleLike={handleToggleLike}
+          />
+        </StyledLink>
       ))}
     </CardListWrapper>
   );

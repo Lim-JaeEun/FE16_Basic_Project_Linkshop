@@ -26,23 +26,12 @@ const CardWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: 100%;
   background-color: ${({ theme }) => theme.colors.secWhite100};
   border-radius: 25px;
   padding: 24px;
-
-  width: 100%;
-  min-width: 344px;
-  @media (min-width: 768px) {
-    width: calc(100% - 8px);
-    min-width: 342px;
-  }
-  @media (min-width: 1024px) {
-    width: calc((100% - 24px) / 2);
-    max-width: 589px;
-  }
   &:hover {
     animation: ${fadeInShadow} 0.6s forwards;
-    cursor: pointer;
   }
 `;
 
