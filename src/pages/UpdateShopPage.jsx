@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import LoadingIndicator from '../components/LoadingIndicator';
 import UpdateModal from '../components/ConfirmCreateModal';
 import UpdateProduct from '../components/UpdateProduct';
 import UpdateShop from '../components/UpdateShop';
@@ -37,7 +38,6 @@ const UpdateShopPage = ({ onSuccess }) => {
   const [productFormData, setProductFormData] = useState([]);
   const [productImages, setProductImages] = useState([]);
   const [shopImageUrl, setShopImageUrl] = useState(null);
-
   const [formData, setFormdata] = useState({
     name: '',
     url: '',
@@ -45,7 +45,8 @@ const UpdateShopPage = ({ onSuccess }) => {
     password: '',
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null); // 이 스테이트는 여전히 API 에러를 잡는 용도로 유지합니다.
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
   const [formErrors, setFormErrors] = useState({
     name: { hasError: false, message: '' },
     url: { hasError: false, message: '' },
@@ -409,9 +410,10 @@ const UpdateShopPage = ({ onSuccess }) => {
 
   /** 링크샵 수정 최종 제출 핸들러 */
   const handleUpdate = async () => {
-    if (isLoading) return;
+    if (isSubmitting || isLoading) return;
+
     setError(null);
-    setIsLoading(true);
+    setIsSubmitting(true);
 
     let overallValidForSubmission = true;
     const tempFormErrors = { ...formErrors };
@@ -491,7 +493,7 @@ const UpdateShopPage = ({ onSuccess }) => {
 
     // 4. 최종 유효성 검사 결과에 따라 처리
     if (!overallValidForSubmission) {
-      setIsLoading(false);
+      setIsSubmitting(false);
       return;
     }
 
@@ -522,7 +524,7 @@ const UpdateShopPage = ({ onSuccess }) => {
     } catch (err) {
       console.error('링크샵 수정 실패 (API 응답):', err);
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -534,9 +536,7 @@ const UpdateShopPage = ({ onSuccess }) => {
       }}
     >
       {isLoading && !shopData && (
-        <p style={{ textAlign: 'center', marginTop: '20px' }}>
-          데이터를 불러오는 중...
-        </p>
+        <LoadingIndicator isLoading={isLoading} $isInitialLoad={true} />
       )}
       {!isLoading && shopData && (
         <>
@@ -563,9 +563,9 @@ const UpdateShopPage = ({ onSuccess }) => {
             <StButton
               type='submit'
               onClick={handleUpdate}
-              disabled={isLoading || !isFormValid}
+              disabled={isLoading || isSubmitting || !isFormValid}
             >
-              {isLoading ? '수정 중...' : '수정하기'}
+              {isSubmitting ? '수정 중...' : '수정하기'}
             </StButton>
           </BtnWrapper>
         </>

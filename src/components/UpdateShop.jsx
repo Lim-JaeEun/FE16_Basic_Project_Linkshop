@@ -134,7 +134,7 @@ const UpdateShop = ({
   // shopImageUrl이 변경될 때 (예: API에서 이미지 로딩 완료 또는 삭제 시) displayImageUrl 업데이트
   useEffect(() => {
     setDisplayImageUrl(localShopImageUrl || shopImageUrl);
-  }, [shopImageUrl, localShopImageUrl]); // localShopImageUrl도 의존성에 추가
+  }, [shopImageUrl, localShopImageUrl]);
 
   // 컴포넌트 언마운트 시 또는 이미지 URL이 변경될 때 이전 로컬 URL 해제
   useEffect(() => {

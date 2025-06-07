@@ -38,11 +38,10 @@ const ProductListTitle = styled.h2`
 `;
 
 const AddItemCard = styled(PrimaryButton)`
-  // PrimaryButton을 상속받아 스타일 적용
   text-align: right;
   ${applyFontStyles(FontTypes.MEDIUM16, ColorTypes.PRIMARY)}
-  background-color: transparent; // 배경색 투명하게
-  color: ${theme.colors[ColorTypes.PRIMARY]}; // 텍스트 색상 설정
+  background-color: transparent;
+  color: ${theme.colors[ColorTypes.PRIMARY]};
   padding: 0;
   height: auto;
   width: auto;
