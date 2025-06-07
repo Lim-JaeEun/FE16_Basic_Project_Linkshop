@@ -97,7 +97,6 @@ const UpdateShopPage = ({ onSuccess }) => {
         updated[index] = imageUrl;
         return updated;
       });
-      console.log(`상품 ${index} 이미지 업로드 성공:`, imageUrl);
       handleProductBlur(index, 'productImage', imageUrl);
     } catch (err) {
       console.error(`상품 ${index} 이미지 업로드 실패:`, err);
@@ -127,7 +126,6 @@ const UpdateShopPage = ({ onSuccess }) => {
     try {
       const imageUrl = await uploadImage(file);
       setShopImageUrl(imageUrl);
-      console.log('상점 이미지 업로드 성공:', imageUrl);
       handleShopBlur('shopImage', imageUrl);
     } catch (err) {
       console.error('상점 이미지 업로드 실패:', err);
@@ -514,12 +512,7 @@ const UpdateShopPage = ({ onSuccess }) => {
     };
 
     try {
-      console.log(
-        `[API Update] ${URLid}번 링크샵 데이터 업데이트 요청:`,
-        dataToSubmit,
-      );
       await updateLinkshop(URLid, dataToSubmit);
-
       setIsModalOpen(true);
     } catch (err) {
       console.error('링크샵 수정 실패 (API 응답):', err);
