@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import styled from 'styled-components';
 
 import CardList from '../components/CardList';
 import LoadingIndicator from '../components/LoadingIndicator';
+import { useAsync } from '../hooks/useAsync';
 import { getLinkshops } from './../api/api';
 import OrderSelector from './../components/OrderSelector';
 import SearchInput from './../components/SearchInput';
@@ -45,80 +46,88 @@ const StOrderSelector = styled(OrderSelector)`
   }
 `;
 
+const StObserveContainer = styled.div`
+  height: 20px;
+  margin-bottom: -20px;
+`;
+
 const MainPage = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [linkshops, setLinkshops] = useState([]);
   const [keyword, setKeyword] = useState('');
   const [order, setOrder] = useState('recent');
   const [cursor, setCursor] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  const [linkshops, setLinkshops] = useState([]);
 
-  const observeRef = useRef();
+  const {
+    execute: loadLinkshops,
+    data: pageData = {},
+    isLoading,
+    error,
+  } = useAsync(getLinkshops, { delayLoadingTransition: true });
 
-  const loadLinkshops = useCallback(async loadOptions => {
-    if (loadOptions.cursor === null) return;
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const { list: newList, nextCursor } = await getLinkshops(loadOptions);
-
-      if (loadOptions.cursor === 0) setLinkshops(newList);
-      else setLinkshops(prev => [...prev, ...newList]);
-
-      nextCursor !== null ? setHasMore(true) : setHasMore(false);
-      setCursor(nextCursor);
-    } catch (error) {
-      setError(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const observerTargetRef = useRef();
 
   // 초기 데이터 및 검색과 정렬 변경 시 데이터 로드
   useEffect(() => {
-    const loadOptions = {
+    setLinkshops([]);
+    setCursor(0);
+    setHasMore(true);
+
+    const initialLoadOptions = {
       keyword: keyword.trim(),
       orderBy: order,
       cursor: 0,
     };
+    loadLinkshops(initialLoadOptions);
+  }, [loadLinkshops, keyword, order]);
 
-    setLinkshops([]);
-    loadLinkshops(loadOptions);
-  }, [loadLinkshops, order, keyword]);
-
-  // 무한 스크롤
+  // 로드된 데이터로 상태를 업데이트
   useEffect(() => {
-    if (isLoading || !hasMore) return;
+    if (pageData && pageData.list) {
+      cursor
+        ? setLinkshops(prev => [...prev, ...pageData.list])
+        : setLinkshops(pageData.list);
 
-    const loadOptions = {
-      keyword: keyword.trim(),
-      orderBy: order,
-      cursor: cursor,
-    };
+      setCursor(pageData.nextCursor);
+      setHasMore(pageData.nextCursor !== null);
+    }
+  }, [pageData]);
 
-    const intersectionOptions = {
-      root: null, // 뷰포트를 기준으로 관찰 (기본값)
-      rootMargin: '0px',
-      threshold: 0.1, // 타겟 요소의 10%가 뷰포트에 들어오면 콜백 실행
-    };
+  // 데이터를 더 불러오는 함수
+  const handleLoadMore = useCallback(() => {
+    if (!isLoading && hasMore) {
+      const nextLoadOptions = {
+        keyword: keyword.trim(),
+        orderBy: order,
+        cursor: cursor,
+      };
+      loadLinkshops(nextLoadOptions);
+    }
+  }, [keyword, order, cursor, isLoading, hasMore]);
 
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting && hasMore) {
-          loadLinkshops(loadOptions);
+  // Intersection API를 활용한 무한 스크롤
+  useEffect(() => {
+    if (!observerTargetRef.current) return;
+
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasMore && !isLoading) {
+          handleLoadMore();
         }
-      });
-    }, intersectionOptions);
+      },
+      {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1,
+      },
+    );
 
-    if (observeRef.current) observer.observe(observeRef.current);
+    observer.observe(observerTargetRef.current);
 
     return () => {
-      if (observeRef.current) observer.unobserve(observeRef.current);
+      observer.disconnect();
     };
-  }, [loadLinkshops, cursor, hasMore]);
+  }, [isLoading, hasMore, handleLoadMore]);
 
   const handleSearchChange = keyword => {
     setKeyword(keyword);
@@ -139,10 +148,12 @@ const MainPage = () => {
         <StOrderSelector order={order} onClick={handleOrderClick} />
         <CardList cardData={linkshops} isLoading={isLoading} />
       </MainPageWrapper>
-      <LoadingIndicator isLoading={isLoading} $isInitialLoad={cursor === 0} />
-      {hasMore && !isLoading && (
-        <div ref={observeRef} style={{ height: '20px' }} />
-      )}
+      <LoadingIndicator
+        $isLoading={isLoading}
+        $hasMore={hasMore}
+        $isInitialLoad={cursor === 0}
+      />
+      {hasMore && <StObserveContainer ref={observerTargetRef} />}
     </>
   );
 };

@@ -1,6 +1,7 @@
 import styled, { css, keyframes } from 'styled-components';
 
-import { ColorTypes } from '../styles/theme';
+import { applyFontStyles } from '../styles/mixins';
+import { ColorTypes, FontTypes } from '../styles/theme';
 
 const rotate = keyframes`
   from {
@@ -40,19 +41,35 @@ const IndicatorContainer = styled.div`
   justify-content: center;
   align-items: center;
 
+  ${({ $isLoading }) => {
+    return (
+      !$isLoading &&
+      css`
+        visibility: hidden;
+      `
+    );
+  }}
+
   ${({ $isInitialLoad }) => $isInitialLoad && centerIndicatorStyles}
-  padding: ${({ $isInitialLoad }) => ($isInitialLoad ? 0 : '32px 0 10vh')};
+  padding: ${({ $isInitialLoad }) => ($isInitialLoad ? 0 : '32px 0')};
 `;
 
-const LoadingIndicator = ({ isLoading, $isInitialLoad }) => {
-  if (!isLoading) {
-    return null;
-  }
+const NoMoreDataContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 114px;
 
-  return (
-    <IndicatorContainer $isInitialLoad={$isInitialLoad}>
+  ${applyFontStyles(FontTypes.REGULAR16, ColorTypes.SECONDARY_GRAY_200)}
+`;
+
+const LoadingIndicator = ({ $isLoading, $hasMore, $isInitialLoad }) => {
+  return $hasMore ? (
+    <IndicatorContainer $isLoading={$isLoading} $isInitialLoad={$isInitialLoad}>
       <Spinner />
     </IndicatorContainer>
+  ) : (
+    <NoMoreDataContainer>모든 데이터를 불러왔습니다</NoMoreDataContainer>
   );
 };
 
