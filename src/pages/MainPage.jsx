@@ -1,12 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
-
 import styled from 'styled-components';
 
 import CardList from '../components/CardList';
 import LoadingIndicator from '../components/LoadingIndicator';
-import { useAsync } from '../hooks/useAsync';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
-import { getLinkshops } from './../api/api';
+import { useLinkshopsData } from '../hooks/useLinkshopsData';
 import OrderSelector from './../components/OrderSelector';
 import SearchInput from './../components/SearchInput';
 
@@ -53,56 +50,17 @@ const StObserveContainer = styled.div`
 `;
 
 const MainPage = () => {
-  const [linkshops, setLinkshops] = useState([]);
-  const [keyword, setKeyword] = useState('');
-  const [order, setOrder] = useState('recent');
-  const [cursor, setCursor] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-
   const {
-    execute: loadLinkshops,
-    data: pageData = {},
+    linkshops,
+    setKeyword,
+    order,
+    setOrder,
+    cursor,
     isLoading,
     error,
-  } = useAsync(getLinkshops, { delayLoadingTransition: true });
-
-  // 초기 데이터 및 검색과 정렬 변경 시 데이터 로드
-  useEffect(() => {
-    setLinkshops([]);
-    setCursor(0);
-    setHasMore(true);
-
-    const initialLoadOptions = {
-      keyword: keyword.trim(),
-      orderBy: order,
-      cursor: 0,
-    };
-    loadLinkshops(initialLoadOptions);
-  }, [loadLinkshops, keyword, order]);
-
-  // 로드된 데이터로 상태를 업데이트
-  useEffect(() => {
-    if (pageData && pageData.list) {
-      cursor
-        ? setLinkshops(prev => [...prev, ...pageData.list])
-        : setLinkshops(pageData.list);
-
-      setCursor(pageData.nextCursor);
-      setHasMore(pageData.nextCursor !== null);
-    }
-  }, [pageData]);
-
-  // 데이터를 더 불러오는 함수
-  const handleLoadMore = useCallback(() => {
-    if (!isLoading && hasMore) {
-      const nextLoadOptions = {
-        keyword: keyword.trim(),
-        orderBy: order,
-        cursor: cursor,
-      };
-      loadLinkshops(nextLoadOptions);
-    }
-  }, [keyword, order, cursor, isLoading, hasMore]);
+    hasMore,
+    handleLoadMore,
+  } = useLinkshopsData();
 
   // Intersection을 활용한 무한 스크롤
   const observerTargetRef = useInfiniteScroll(
