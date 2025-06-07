@@ -36,6 +36,7 @@ const Field = ({
   value,
   onChange,
   onBlur,
+  autoComplete,
 }) => {
   // 입력 필드에 표시될 값을 관리하는 내부 상태
   const [displayValue, setDisplayValue] = useState('');
@@ -102,6 +103,7 @@ const Field = ({
         onBlur={isPriceField ? handleBlur : onBlur} // 가격 필드면 블러 핸들러 추가
         inputMode={isPriceField ? 'numeric' : undefined} // 모바일 키패드 숫자 우선
         pattern={isPriceField ? '[0-9]*' : undefined} // 숫자만 입력되도록 패턴 지정
+        autoComplete={autoComplete}
       />
       {hasError && <ErrorMessage>{errorMessage}</ErrorMessage>}
     </FormGroup>

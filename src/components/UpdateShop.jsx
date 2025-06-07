@@ -143,7 +143,7 @@ const UpdateShop = ({
         URL.revokeObjectURL(localShopImageUrl);
       }
     };
-  }, [localShopImageUrl]); // localShopImageUrl이 변경될 때마다 이전 URL 해제
+  }, [shopImageUrl, localShopImageUrl]);
 
   // 비밀번호 가시성 토글 함수
   const togglePassword = () => {
@@ -196,7 +196,10 @@ const UpdateShop = ({
               <ShopImg>상품 대표 이미지</ShopImg>
               <Description>상품 이미지를 첨부해주세요.</Description>
             </Wrapper>
-            <FileField onFileChange={handleFileSelect} />
+            <FileField
+              onFileChange={handleFileSelect}
+              inputId='shop-image-upload'
+            />
           </TextGroup>
           {displayImageUrl && (
             <ImgGroup>
@@ -242,6 +245,7 @@ const UpdateShop = ({
           hasError={formErrors.userId.hasError}
           errorMessage={formErrors.userId.message}
           onBlur={() => onBlur('userId', formData.userId)}
+          autoComplete='username'
         />
 
         <TextGroup>
@@ -255,7 +259,7 @@ const UpdateShop = ({
             hasError={formErrors.password.hasError}
             errorMessage={formErrors.password.message}
             onBlur={() => onBlur('password', formData.password)}
-            autocomplete={openPassword ? 'off' : 'current-password'}
+            autoComplete={openPassword ? 'off' : 'current-password'}
           />
           <CloseEyeIcon
             src={openPassword ? openEyeIcon : closeEyeIcon}

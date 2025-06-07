@@ -1,5 +1,3 @@
-// src/pages/UpdateShopPage.jsx
-
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -46,7 +44,7 @@ const UpdateShopPage = ({ onSuccess }) => {
     password: '',
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(null); // 이 스테이트는 여전히 API 에러를 잡는 용도로 유지합니다.
   const [formErrors, setFormErrors] = useState({
     name: { hasError: false, message: '' },
     url: { hasError: false, message: '' },
@@ -270,10 +268,6 @@ const UpdateShopPage = ({ onSuccess }) => {
         setProductImages((data.products || []).map(p => p.imageUrl || null));
       } catch (e) {
         console.error('상세 정보 로드 실패:', e);
-        setError(
-          e.response?.data?.message ||
-            '상세 정보를 불러오지 못했습니다. 네트워크 또는 서버 문제일 수 있습니다.',
-        );
       } finally {
         setIsLoading(false);
       }
@@ -421,9 +415,10 @@ const UpdateShopPage = ({ onSuccess }) => {
       if (key === 'userId') {
         result = validateUserId(value);
       } else if (key === 'password') {
+        // password는 currentPassword이므로, 여기서는 에러 없도록 처리하고
+        // 아래 currentPasswordValidation에서 필수 검사를 진행합니다.
         result = { hasError: false, message: '' };
       } else {
-        // name, url
         result = {
           hasError: value.trim() === '',
           message: value.trim() === '' ? '필수 입력 항목입니다.' : '',
@@ -433,7 +428,7 @@ const UpdateShopPage = ({ onSuccess }) => {
       if (result.hasError) overallValidForSubmission = false;
     }
 
-    // 상점 이미지도 제출 시점에 유효성 검사
+    // 상점 이미지 유효성 검사
     if (!shopImageUrl) {
       tempFormErrors.shopImage = {
         hasError: true,
@@ -449,7 +444,7 @@ const UpdateShopPage = ({ onSuccess }) => {
       const itemErrors = {
         name: { hasError: false, message: '' },
         price: { hasError: false, message: '' },
-        productImage: { hasError: false, message: '' }, // 이미지 에러 필드 포함
+        productImage: { hasError: false, message: '' },
       };
       if (!product.name.trim())
         itemErrors.name = { hasError: true, message: '필수 입력 항목입니다.' };
@@ -472,6 +467,8 @@ const UpdateShopPage = ({ onSuccess }) => {
         overallValidForSubmission = false;
       tempProductErrors[idx] = itemErrors;
     });
+
+    // 3. currentPassword 유효성 검사
     const currentPasswordValidation =
       formData.password.trim() === ''
         ? { hasError: true, message: '현재 비밀번호를 입력해주세요.' }
@@ -485,7 +482,6 @@ const UpdateShopPage = ({ onSuccess }) => {
 
     // 4. 최종 유효성 검사 결과에 따라 처리
     if (!overallValidForSubmission) {
-      setError('입력값을 다시 확인해주세요.');
       setIsLoading(false);
       return;
     }
@@ -511,7 +507,6 @@ const UpdateShopPage = ({ onSuccess }) => {
         `[API Update] ${URLid}번 링크샵 데이터 업데이트 요청:`,
         dataToSubmit,
       );
-      // API 호출
       await updateLinkshop(URLid, dataToSubmit);
 
       alert('링크샵 수정 완료!');
@@ -519,11 +514,6 @@ const UpdateShopPage = ({ onSuccess }) => {
       navigate(`/link/${URLid}`);
     } catch (err) {
       console.error('링크샵 수정 실패 (API 응답):', err);
-      // 서버 응답에서 에러 메시지를 정확히 추출하여 사용자에게 보여줍니다.
-      setError(
-        err.response?.data?.message ||
-          '링크샵 수정 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-      );
     } finally {
       setIsLoading(false);
     }
@@ -536,11 +526,12 @@ const UpdateShopPage = ({ onSuccess }) => {
         handleUpdate();
       }}
     >
-      {isLoading && !shopData ? (
+      {isLoading && !shopData && (
         <p style={{ textAlign: 'center', marginTop: '20px' }}>
           데이터를 불러오는 중...
         </p>
-      ) : shopData ? (
+      )}
+      {!isLoading && shopData && (
         <>
           <UpdateProduct
             products={productFormData}
@@ -570,19 +561,7 @@ const UpdateShopPage = ({ onSuccess }) => {
               {isLoading ? '수정 중...' : '수정하기'}
             </StButton>
           </BtnWrapper>
-          {error && (
-            <p style={{ color: 'red', textAlign: 'center', marginTop: '20px' }}>
-              {error}
-            </p>
-          )}
         </>
-      ) : (
-        !isLoading &&
-        error && (
-          <p style={{ color: 'red', textAlign: 'center', marginTop: '20px' }}>
-            {error}
-          </p>
-        )
       )}
     </Container>
   );
