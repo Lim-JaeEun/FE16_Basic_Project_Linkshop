@@ -118,7 +118,7 @@ const MainPage = () => {
     return () => {
       if (observeRef.current) observer.unobserve(observeRef.current);
     };
-  }, [loadLinkshops, cursor]);
+  }, [loadLinkshops, cursor, hasMore]);
 
   const handleSearchChange = keyword => {
     setKeyword(keyword);
