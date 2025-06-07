@@ -3,53 +3,52 @@ import { useCallback, useEffect, useState } from 'react';
 import { useOptimisticUpdate } from './useOptimisticUpdate';
 import { createLike, deleteLike } from '../api/api';
 
-export const useCardsData = initialCardData => {
-  const [cards, setCards] = useState(initialCardData);
+export const useCardData = cardData => {
+  const [card, setCard] = useState(cardData);
+  const productImageSrcs = cardData.products.map(product => product.imageUrl);
 
   const { execute: addLike } = useOptimisticUpdate(
     createLike,
-    useCallback(id => {
-      setCards(prevCards =>
-        prevCards.map(cardItem =>
-          cardItem.id === id
-            ? { ...cardItem, isLiked: true, likes: cardItem.likes + 1 }
-            : cardItem,
-        ),
-      );
-    }, []),
-
-    useCallback(id => {
-      setCards(prevCards =>
-        prevCards.map(cardItem =>
-          cardItem.id === id
-            ? { ...cardItem, isLiked: false, likes: cardItem.likes - 1 }
-            : cardItem,
-        ),
-      );
-    }, []),
+    useCallback(
+      id =>
+        setCard(prevCard => ({
+          ...prevCard,
+          isLiked: true,
+          likes: prevCard.likes + 1,
+        })),
+      [],
+    ),
+    useCallback(
+      id =>
+        setCard(prevCard => ({
+          ...prevCard,
+          isLiked: false,
+          likes: prevCard.likes - 1,
+        })),
+      [],
+    ),
   );
 
   const { execute: removeLike } = useOptimisticUpdate(
     deleteLike,
-    useCallback(id => {
-      setCards(prevCards =>
-        prevCards.map(cardItem =>
-          cardItem.id === id
-            ? { ...cardItem, isLiked: false, likes: cardItem.likes - 1 }
-            : cardItem,
-        ),
-      );
-      console.log(cards);
-    }, []),
-    useCallback(id => {
-      setCards(prevCards =>
-        prevCards.map(cardItem =>
-          cardItem.id === id
-            ? { ...cardItem, isLiked: true, likes: cardItem.likes + 1 }
-            : cardItem,
-        ),
-      );
-    }, []),
+    useCallback(
+      id =>
+        setCard(prevCard => ({
+          ...prevCard,
+          isLiked: false,
+          likes: prevCard.likes - 1,
+        })),
+      [],
+    ),
+    useCallback(
+      id =>
+        setCard(prevCard => ({
+          ...prevCard,
+          isLiked: true,
+          likes: prevCard.likes + 1,
+        })),
+      [],
+    ),
   );
 
   const handleToggleLike = useCallback(
@@ -68,11 +67,11 @@ export const useCardsData = initialCardData => {
   );
 
   useEffect(() => {
-    setCards(initialCardData);
-  }, [initialCardData]);
+    setCard(cardData);
+  }, [cardData]);
 
   return {
-    cards,
+    card: { ...card, productImageSrcs },
     handleToggleLike,
   };
 };

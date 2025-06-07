@@ -3,7 +3,6 @@ import styled from 'styled-components';
 
 import Card from './Card';
 import NoSearchResult from './NoSearchResult';
-import { useCardsData } from '../hooks/useCardsData';
 
 const CardListWrapper = styled.div`
   width: 100%;
@@ -37,30 +36,16 @@ const StyledLink = styled(Link)`
   }
 `;
 
-function CardList({ cardData: initialCardData, $isLoading }) {
-  const { cards, handleToggleLike } = useCardsData(initialCardData);
-
-  if (!$isLoading && cards.length === 0) {
+function CardList({ cardData, $isLoading }) {
+  if (!$isLoading && cardData.length === 0) {
     return <NoSearchResult />;
   }
 
   return (
     <CardListWrapper>
-      {cards.map(cardItem => (
+      {cardData.map(cardItem => (
         <StyledLink key={cardItem.id} to={`/link/${cardItem.userId}`}>
-          <Card
-            id={cardItem.id}
-            name={cardItem.name}
-            userId={cardItem.userId}
-            imageUrl={cardItem.shop.imageUrl}
-            likes={cardItem.likes}
-            isLiked={cardItem.isLiked}
-            productsCount={cardItem.productsCount}
-            productImageSrcs={cardItem.products.map(
-              product => product.imageUrl,
-            )}
-            onToggleLike={handleToggleLike}
-          />
+          <Card cardData={cardItem} />
         </StyledLink>
       ))}
     </CardListWrapper>

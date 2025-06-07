@@ -8,6 +8,7 @@ import 'slick-carousel/slick/slick.css';
 import LinkshopProductImage from './LinkshopProductImage';
 import LinkshopProfileInfo from './LinkshopProfileInfo';
 import btn_back from '../assets/icon/btn_back.png';
+import { useCardData } from '../hooks/useCardsData';
 import { applyFontStyles } from '../styles/mixins';
 import { FontTypes } from '../styles/theme';
 
@@ -87,19 +88,24 @@ const CustomSliderWrapper = styled(Slider)`
 const TotalProducts = styled.div`
   ${({ $fontType = FontTypes.REGULAR16 }) => applyFontStyles($fontType)};
 `;
-function Card({
-  id,
-  name,
-  userId,
-  imageUrl,
-  likes,
-  isLiked,
-  productsCount,
-  productImageSrcs,
-  onToggleLike: handleToggleLike,
-}) {
+function Card({ cardData }) {
   const [showAmount, setShowAmount] = useState(1);
   const [isLargeScreen, setIsLargeScreen] = useState(false);
+
+  const {
+    card: {
+      id,
+      userId,
+      name,
+      shop: { imageUrl },
+      likes,
+      isLiked,
+      productsCount,
+      productImageSrcs,
+    },
+    handleToggleLike,
+  } = useCardData(cardData);
+
   const sliderRef = useRef(null);
   const wrapperRef = useRef(null);
 
