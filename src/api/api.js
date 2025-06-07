@@ -139,7 +139,7 @@ export const uploadImage = async file => {
         'Content-Type': 'multipart/form-data',
       },
     });
-    return res.data.imageUrl;
+    return res.data.url;
   } catch (error) {
     console.error('이미지 업로드 실패:', error);
     throw error.response?.data?.message || '이미지 업로드에 실패했습니다.';

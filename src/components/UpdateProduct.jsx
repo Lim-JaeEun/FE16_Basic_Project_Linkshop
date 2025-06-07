@@ -43,9 +43,9 @@ const AddItemCard = styled(PrimaryButton)`
   ${applyFontStyles(FontTypes.MEDIUM16, ColorTypes.PRIMARY)}
   background-color: transparent; // 배경색 투명하게
   color: ${theme.colors[ColorTypes.PRIMARY]}; // 텍스트 색상 설정
-  padding: 0; // 패딩 제거
-  height: auto; // 높이 자동
-  width: auto; // 너비 자동
+  padding: 0;
+  height: auto;
+  width: auto;
 `;
 
 const UpdateProduct = ({
@@ -70,16 +70,16 @@ const UpdateProduct = ({
           idKey={index}
           name={product.name}
           price={product.price}
-          onChange={onChange}
+          onChange={(field, value) => onChange(index, field, value)}
           hasError={
             productErrors[index]?.name.hasError ||
             productErrors[index]?.price.hasError ||
             productErrors[index]?.productImage.hasError
           }
-          onBlur={onBlur}
+          onBlur={(field, value) => onBlur(index, field, value)}
           productFieldErrors={productErrors[index]}
           currentImage={productImages[index]}
-          onImageChange={onImageChange}
+          onImageChange={file => onImageChange(index, file)}
           onDelete={onDeleteProduct}
         />
       ))}

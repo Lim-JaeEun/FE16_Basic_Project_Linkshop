@@ -88,12 +88,12 @@ const UpdateItemCard = ({
     if (file) {
       const newLocalUrl = URL.createObjectURL(file);
       setLocalItemImageUrl(newLocalUrl);
-      onImageChange(idKey, file);
-      onBlur(idKey, 'productImage', newLocalUrl);
+      onImageChange(file);
+      onBlur('productImage', newLocalUrl);
     } else {
       setLocalItemImageUrl(null);
-      onImageChange(idKey, null);
-      onBlur(idKey, 'productImage', null);
+      onImageChange(null);
+      onBlur('productImage', null);
     }
   };
 
@@ -103,8 +103,8 @@ const UpdateItemCard = ({
       URL.revokeObjectURL(localItemImageUrl);
     }
     setLocalItemImageUrl(null);
-    onImageChange(idKey, null);
-    onBlur(idKey, 'productImage', null);
+    onImageChange(null);
+    onBlur('productImage', null);
   };
 
   /** 개별 상품 삭제 핸들러 */
@@ -123,7 +123,10 @@ const UpdateItemCard = ({
             <ProductImg>상품 대표 이미지</ProductImg>
             <Description>상품 이미지를 첨부해주세요.</Description>
           </Wrapper>
-          <FileField onFileChange={handleFileSelect} />
+          <FileField
+            onFileChange={handleFileSelect}
+            inputId={`product-image-${idKey}`}
+          />
         </TextGroup>
         {displayImageUrl && (
           <ImgGroup>
