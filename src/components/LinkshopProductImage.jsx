@@ -5,9 +5,9 @@ import styled, { keyframes } from 'styled-components';
 const DEFAULT_PRODUCT_IMG = 'https://placehold.co/95x95';
 
 const skeletonPulse = keyframes`
-  0% { background-color: #eee; }
-  50% { background-color: #ddd; }
-  100% { background-color: #eee; }
+  0% { filter: brightness(1); }
+  50% { filter: brightness(0.9); }
+  100% { filter: brightness(1); }
 `;
 
 const ProductImgWrapper = styled.div`
@@ -37,10 +37,13 @@ const SkeletonOverlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
+  background-color: #eee;
   animation: ${skeletonPulse} 1.5s infinite ease-in-out;
   border-radius: 15px;
   z-index: 1;
-  display: ${({ $isLoading }) => ($isLoading ? 'block' : 'none')};
+  opacity: ${({ $isLoading }) => ($isLoading ? 1 : 0)};
+  transition: opacity 0.4s ease;
+  pointer-events: none;
 `;
 
 function LinkshopProductImage({ src, alt }) {
