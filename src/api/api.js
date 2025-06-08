@@ -12,8 +12,7 @@ const instance = axios.create({
   },
 });
 
-/**
- * LinkshopList를 가져오는 함수
+/** LinkshopList를 가져오는 함수
  *
  * @param {string} [keyword = ''] 키워드 기반 검색
  * @param {string} [orderBy = 'recent'] 리스트 정렬 기준 (Available values : recent || likes || productsCount)
@@ -94,6 +93,22 @@ export const getLinkshopDetail = async linkshopId => {
   } catch (error) {
     console.error('상세 조회 실패', error);
     throw error;
+  }
+};
+
+/**
+ * 링크샵을 생성하는 함수
+ * @param {Object} dataForSubmit - 생성할 링크샵 데이터
+ * @returns {JSON} 생성한 링크샵의 데이터
+ */
+export const createLinkshop = async dataForSubmit => {
+  try {
+    const res = await instance.post(`/linkshops`, dataForSubmit, {
+      headers: {},
+    });
+    return res.data;
+  } catch (error) {
+    console.error('링크샵 생성 실패', error);
   }
 };
 

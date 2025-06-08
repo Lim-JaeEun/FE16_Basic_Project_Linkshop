@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import styled from 'styled-components';
 
@@ -38,24 +38,28 @@ const AddButton = styled.button`
   ${applyFontStyles(FontTypes.BOLD16, ColorTypes.PRIMARY)};
 `;
 
-const EMPTY_PRODUCT = {
-  price: 0,
-  imageUrl: null,
-  name: '',
+const INITIAL_PRODUCT = {
   id: 0,
 };
 
-const CreateProducts = () => {
-  const [productList, setProductList] = useState([EMPTY_PRODUCT]);
+const CreateProducts = ({ setIsDisabled, onSaveCompleteData }) => {
+  const [productList, setProductList] = useState([INITIAL_PRODUCT]);
   const productKey = useRef(0);
 
   const handleAddProduct = () => {
     productKey.current += 1;
-    setProductList(prev => [
-      { ...EMPTY_PRODUCT, id: productKey.current },
-      ...prev,
-    ]);
+    setProductList(prev => [{ id: productKey.current }, ...prev]);
+    setIsDisabled(prev => true);
   };
+
+  useEffect(() => {
+    onSaveCompleteData(prev => {
+      return {
+        ...prev,
+        products: [...productList],
+      };
+    });
+  }, [productList]);
 
   return (
     <ProductListContainer>
@@ -69,7 +73,9 @@ const CreateProducts = () => {
             key={product.id}
             idKey={product.id}
             onDeleteProduct={setProductList}
+            onSaveProductList={setProductList}
             productListLength={productList.length}
+            setIsDisabled={setIsDisabled}
           />
         ); //idkey: input-label 1대1 대응 위한 키
       })}
