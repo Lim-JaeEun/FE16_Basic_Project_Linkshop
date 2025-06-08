@@ -31,7 +31,8 @@ const Likes = ({
 }) => {
   const src = isLiked ? filledHeartImg : emptyHeartImg;
 
-  const handleToggleLikeClick = () => {
+  const handleToggleLikeClick = e => {
+    e.preventDefault();
     handleToggleLike(id, isLiked);
   };
 
