@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 
@@ -6,6 +6,7 @@ import Field from './CreateField';
 import FileField, { ButtonX } from './CreateFileField';
 import closeBtn from '../assets/icon/btn_close.png';
 import theme from '../styles/theme';
+import isEmpty from '../utils/isEmpty';
 
 export const FormContainer = styled.form`
   position: relative;
@@ -17,8 +18,8 @@ export const FormContainer = styled.form`
   margin: 0 auto;
   gap: 30px;
   background-color: ${theme.colors.secWhite100};
-  border: ${({ isFormValid }) =>
-    isFormValid === false ? `1px solid ${theme.colors.err}` : 'none'};
+  border: ${({ className }) =>
+    className === 'invalid' ? `1px solid ${theme.colors.err}` : 'none'};
 
   @media (min-width: 768px) {
     width: 696px;
@@ -39,16 +40,50 @@ const DeleteFormButton = styled.button`
   }
 `;
 
-const CreateItemCard = ({ idKey, onDeleteProduct, productListLength }) => {
-  const [isFormValid, setIsFormValid] = useState();
+const CreateItemCard = ({
+  idKey,
+  onDeleteProduct,
+  onSaveProductList,
+  productListLength,
+  setIsDisabled,
+}) => {
+  const [productInfo, setProductInfo] = useState({
+    id: idKey,
+    imageUrl: null,
+    name: null,
+    price: null,
+  });
+  const [isFormValid, setIsFormValid] = useState(null);
   //다수의 form에서 쓰이니까 커스텀 훅 하는게 좋음
 
   const handleDeleteProduct = () => {
     onDeleteProduct(prev => prev.filter(product => product.id !== idKey));
   };
 
+  //!연산자로 빈 값을 감지하니까 id:0일 때도 감지가 되어버려서 isEmpty라는 유틸 함수 만들어줌
+  useEffect(() => {
+    for (const key in productInfo) {
+      if (isFormValid && isEmpty(productInfo[key])) {
+        setIsFormValid(prev => null);
+        // setIsDisabled(prev => true);
+        return;
+      }
+    }
+
+    //field의 유효성 검사 -> form의 유효성 검사 -> list에 정보 업데이트
+    onSaveProductList(prev => {
+      return prev.map(product => {
+        if (product.id === idKey) {
+          return { ...productInfo };
+        } else {
+          return { ...product };
+        }
+      });
+    });
+  }, [isFormValid, productInfo]);
+
   return (
-    <FormContainer isFormValid={isFormValid}>
+    <FormContainer className={isFormValid === false ? 'invalid' : 'valid'}>
       {productListLength === 1 ? undefined : (
         <DeleteFormButton type='button' onClick={handleDeleteProduct}>
           <ButtonX src={closeBtn} alt='상품 등록창을 삭제하는 버튼' />
@@ -58,18 +93,29 @@ const CreateItemCard = ({ idKey, onDeleteProduct, productListLength }) => {
         placeholder='상품 이미지를 첨부해주세요.'
         inputId={`productImage${idKey}`}
         label='상품 대표 이미지'
+        onCheckValidForm={setIsFormValid}
+        onSaveProductInfo={setProductInfo}
+        setIsDisabled={setIsDisabled}
       />
       <Field
         placeholder='상품 이름을 입력해주세요.'
         inputId={`productName${idKey}`}
         type='text'
         label='상품 이름'
+        name='name'
+        onCheckValidForm={setIsFormValid}
+        onSaveProductInfo={setProductInfo}
+        setIsDisabled={setIsDisabled}
       />
       <Field
         placeholder='원화로 표기해 주세요.'
         inputId={`productPrice${idKey}`}
         type='number'
         label='상품 가격'
+        name='price'
+        onCheckValidForm={setIsFormValid}
+        onSaveProductInfo={setProductInfo}
+        setIsDisabled={setIsDisabled}
       />
     </FormContainer>
   );
