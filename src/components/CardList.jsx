@@ -34,6 +34,7 @@ const StyledLink = styled(Link)`
     width: calc((100% - 24px) / 2);
     max-width: 589px;
   }
+  -webkit-tap-highlight-color: transparent;
 `;
 
 function CardList({ cardData, $isLoading }) {
@@ -44,7 +45,11 @@ function CardList({ cardData, $isLoading }) {
   return (
     <CardListWrapper>
       {cardData.map(cardItem => (
-        <StyledLink key={cardItem.id} to={`/link/${cardItem.userId}`}>
+        <StyledLink
+          key={cardItem.id}
+          to={`/link/${cardItem.userId}`}
+          draggable='false'
+        >
           <Card cardData={cardItem} />
         </StyledLink>
       ))}

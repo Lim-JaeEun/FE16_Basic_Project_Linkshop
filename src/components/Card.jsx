@@ -3,12 +3,13 @@ import { useRef, useEffect, useState } from 'react';
 import throttle from 'lodash.throttle';
 import Slider from 'react-slick';
 import styled, { keyframes } from 'styled-components';
-import 'slick-carousel/slick/slick.css';
 
+import 'slick-carousel/slick/slick.css';
 import LinkshopProductImage from './LinkshopProductImage';
 import LinkshopProfileInfo from './LinkshopProfileInfo';
 import btn_back from '../assets/icon/btn_back.png';
 import { useCardData } from '../hooks/useCardsData';
+import { useIsLargeScreen } from '../hooks/useIsLargeScreen';
 import { applyFontStyles } from '../styles/mixins';
 import { FontTypes } from '../styles/theme';
 
@@ -31,9 +32,21 @@ const CardWrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.secWhite100};
   border-radius: 25px;
   padding: 24px;
-  &:hover {
-    animation: ${fadeInShadow} 0.6s forwards;
+
+  &.on {
+    animation: ${fadeInShadow} 0.1s forwards;
+    .slick-prev:before,
+    .slick-next:before {
+      opacity: 1;
+    }
   }
+
+  // 터치 인터페이스에 hover 효과를 없애주는 분기처리
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      animation: ${fadeInShadow} 0.6s forwards;
+      cursor: pointer;
+    }  
 `;
 
 const ProductImgWrapper = styled.div`
@@ -41,28 +54,19 @@ const ProductImgWrapper = styled.div`
 `;
 
 const CustomSliderWrapper = styled(Slider)`
+
   .slick-prev,
   .slick-next {
     position: absolute;
     top: 50%;
-    transform: translateY(-50%);
     font-size: 0;
-  }
-  .slick-next.slick-disabled {
-    background-color: red;
-  }
-  /* 이전 버튼 */
-  .slick-prev {
-    display: none important;
-  }
-  /* 다음 버튼 */
-  .slick-next {
-    right: -5px;
     background-color: #eee;
     width: 30px;
     height: 30px;
     border-radius: 50%;
-
+    z-index: 10;
+    transition: .5s opacity;
+    opacity: 1;
     &:before {
       content: '';
       display: block;
@@ -71,18 +75,39 @@ const CustomSliderWrapper = styled(Slider)`
       height: 20px;
       background-repeat: no-repeat;
       background-position: -3px center;
-      transform: rotate(180deg);
+    }
+    &:active {
+      &:before {
+        opacity: 1;
+      }
+    }
+  }
+
+  
+  .slick-disabled {
+    opacity:0;
+  }
+    /* 이전 버튼 */
+  .slick-prev {
+    left:0;
+    transform: translate(-50%, -50%);
+    &:before {
+        background-position: 7px center;
+    }
+  }
+  /* 다음 버튼 */
+  .slick-next {
+    right: 0;
+    transform:translate(50%, -50%) rotate(180deg);
+    &:before {
+        background-position: 7px center;
     }
   }
   .slick-track {
     margin-left: inherit;
   }
-  @media (min-width: 1024px) {
-    padding-right: 0;
-    .slick-next {
-      display: none !important;
-    }
-  }
+  
+}
 `;
 
 const TotalProducts = styled.div`
@@ -90,8 +115,8 @@ const TotalProducts = styled.div`
 `;
 function Card({ cardData }) {
   const [showAmount, setShowAmount] = useState(1);
-  const [isLargeScreen, setIsLargeScreen] = useState(false);
-
+  const isLargeScreen = useIsLargeScreen(768);
+  const [isTouched, setIsTouched] = useState(false); //모바일, 태블릿모드 감지
   const {
     card: {
       id,
@@ -115,12 +140,20 @@ function Card({ cardData }) {
     speed: 500, // 슬라이드 전환 속도
     slidesToShow: showAmount, // 한 번에 보여줄 슬라이드 개수
     slidesToScroll: 1, // 한 번 스크롤/슬라이드 시 넘어갈 슬라이드 개수
-    arrows: true, // 좌우 화살표 내비게이션 표시
+    arrows: false, // 좌우 화살표 내비게이션 표시
     draggable: true,
     cssEase: 'linear',
     autoplay: false, // 초기 자동 재생은 false로 설정합니다.
     autoplaySpeed: 1000,
     pauseOnHover: true,
+    responsive: [
+      {
+        breakpoint: 1024, // 화면 너비가 1024px 이하일 때, (아이패드프로기준)
+        settings: {
+          arrows: true,
+        },
+      },
+    ],
   };
 
   const handleAutoPlay = () => {
@@ -154,18 +187,17 @@ function Card({ cardData }) {
 
     return Math.max(1, calculatedSlides); // 최소 1개 보장
   };
-
+  const handlerTouchStart = () => {
+    setIsTouched(true);
+  };
+  const handlerTouchEnd = () => {
+    setIsTouched(false);
+  };
   useEffect(() => {
-    const checkScreenSizeAndResetSlider = () => {
-      setIsLargeScreen(window.innerWidth >= 768);
-      // 슬라이더가 마운트되어 있으면 첫 번째 요소로 돌아가기
-      if (sliderRef.current) {
-        sliderRef.current.slickGoTo(0, true); // 0번째 슬라이드로 이동, true는 즉시 전환
-      }
-    };
-    checkScreenSizeAndResetSlider();
-    window.addEventListener('resize', checkScreenSizeAndResetSlider);
-  }, []); // ⭐️ 의존성 배열은 빈 배열: 컴포넌트 마운트 시 한 번만 실행되도록 합니다.
+    if (sliderRef.current) {
+      sliderRef.current.slickGoTo(0, true);
+    }
+  }, [isLargeScreen]);
 
   useEffect(() => {
     const updateListWidthAndShowAmount = () => {
@@ -190,11 +222,15 @@ function Card({ cardData }) {
 
   return (
     <CardWrapper
+      className={!isLargeScreen && isTouched ? 'on' : ''}
       {...(isLargeScreen && {
         // 1024이상 사이즈 에서만 호버시 오토플레이 & 벗어낫을지 오토플레이 해제 이벤트 적용
         onMouseEnter: handleAutoPlay,
         onMouseLeave: handleRemoveAutoPlay,
       })}
+      onTouchMove={handlerTouchStart}
+      onTouchEnd={handlerTouchEnd}
+      onTouchCancel={handlerTouchEnd}
     >
       <LinkshopProfileInfo
         onToggleLike={handleToggleLike}
