@@ -20,11 +20,22 @@ const StLabel = styled.label`
   cursor: pointer;
 `;
 
-const FileField = () => {
+const FileField = ({ onFileChange, inputId }) => {
+  const handleChange = e => {
+    if (onFileChange) {
+      onFileChange(e.target.files[0]);
+    }
+  };
+
   return (
     <div>
-      <StLabel htmlFor='upload'>파일 첨부</StLabel>
-      <StInput id='upload' />
+      <StLabel htmlFor={inputId}>파일 첨부</StLabel>
+      <StInput
+        id={inputId}
+        type='file'
+        accept='image/*'
+        onChange={handleChange}
+      />
     </div>
   );
 };

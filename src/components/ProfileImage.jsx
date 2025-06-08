@@ -16,6 +16,7 @@ const ProfileImage = ({ src = defaultProfileImg, size = DEFAULT_SIZE }) => {
     <StProfileImage
       src={src}
       alt='링크샵 프로필 이미지'
+      loading='lazy'
       width={size}
       height={'auto'}
     />

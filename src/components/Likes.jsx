@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
-import emptyHeartImg from '../assets/icon/btn_empty_heart.png';
-import filledHeartImg from '../assets/icon/btn_fill_heart.png';
+import emptyHeartImg from '../assets/icon/btn_empty_heart.png'; // svg가 나을까 싶습니다.
+import filledHeartImg from '../assets/icon/btn_fill_heart.png'; // svg가 나을까 싶습니다.
 import { FontTypes } from '../styles/theme';
 import { applyFontStyles } from './../styles/mixins';
 
@@ -11,7 +11,7 @@ const StLikesWrapper = styled.div`
   display: inline-flex;
   justify-content: space-between;
   align-items: center;
-  gap: 5px;
+  gap: 0.3125rem; // 5px
   cursor: pointer;
 `;
 
@@ -22,15 +22,26 @@ const StLikesCount = styled.p`
   ${applyFontStyles(FontTypes.BOLD16)}
 `;
 
-const Likes = ({ onClick: handleClick, likes, isLiked = false }) => {
+const Likes = ({
+  className,
+  id,
+  isLiked,
+  onToggleLike: handleToggleLike,
+  likes,
+}) => {
   const src = isLiked ? filledHeartImg : emptyHeartImg;
 
+  const handleToggleLikeClick = () => {
+    handleToggleLike(id, isLiked);
+  };
+
   return (
-    <StLikesWrapper onClick={handleClick}>
+    <StLikesWrapper className={className} onClick={handleToggleLikeClick}>
       <StHeartImg
         src={src}
         alt={'좋아요 이미지 버튼'}
         width={DEFAULT_HEART_SIZE}
+        loading='lazy'
       />
       <StLikesCount>{likes}</StLikesCount>
     </StLikesWrapper>
