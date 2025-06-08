@@ -13,7 +13,11 @@ const FlexDiv = styled.div`
   ${applyFontStyles(FontTypes.REGULAR17)};
 `;
 
-const ConfirmCreateModal = ({ isOpen, onConfirm, message }) => {
+const ConfirmCreateModal = ({
+  isOpen,
+  onConfirm,
+  message = '등록이 완료되었습니다.',
+}) => {
   return (
     <BaseModal
       isOpen={isOpen}

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { FieldContainer, NoneValidMessage } from './CreateField';
-import { uploadImg } from '../api/api';
+import { uploadImage } from '../api/api';
 import closeBtn from '../assets/icon/btn_close.png';
 import defaultProductImg from '../assets/img/img_product.png';
 import defaultShopImg from '../assets/img/img_profile_full.svg';
@@ -87,13 +87,7 @@ const FileField = ({
     const res = await fetch(defaultImg);
     const blob = await res.blob();
     const file = new File([blob], 'default-image.png', { type: blob.type });
-    const formData = new FormData();
-    formData.append('image', file);
-    const { url, error } = await uploadImg(formData);
-    if (error) {
-      alert('이미지 업로드중 에러가 발생했습니다. 다시 시도해 주세요.');
-      return;
-    }
+    const url = await uploadImage(file);
     setSelectedFileUrl(prev => url);
     onCheckValidForm(prev => true);
   });
@@ -110,13 +104,7 @@ const FileField = ({
       return;
     }
 
-    const formData = new FormData();
-    formData.append('image', file);
-    const { url, error } = await uploadImg(formData);
-    if (error) {
-      alert('이미지 업로드중 에러가 발생했습니다. 다시 시도해 주세요.');
-      return;
-    }
+    const url = await uploadImage(file);
     const preview = URL.createObjectURL(file);
     setPreviewImage(prev => preview);
     setSelectedFileUrl(prev => url);

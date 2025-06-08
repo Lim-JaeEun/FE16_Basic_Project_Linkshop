@@ -18,6 +18,7 @@ const GlobalStyle = createGlobalStyle`
     font-family: Pretendard ,'Noto Sans KR', sans-serif;
     ${applyFontStyles(FontTypes.REGULAR16, ColorTypes.SECONDARY_BLACK)}
     line-height: 1.5;
+    word-break: keep-all;
   }
 
   a {
