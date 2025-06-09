@@ -7,6 +7,7 @@ import visibilityOnIcon from '../assets/icon/btn_visibility_on.svg';
 import { applyFontStyles } from '../styles/mixins';
 import { FontTypes, ColorTypes } from '../styles/theme';
 import theme from '../styles/theme';
+import formatNumberWithCommas from '../utils/formatNumberWithCommas';
 
 export const FieldContainer = styled.div`
   width: 100%;
@@ -50,6 +51,8 @@ const Field = ({
   setIsDisabled,
 }) => {
   const [value, setValue] = useState('');
+  const [displayedValue, setDisplayedValue] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
   const [passwordType, setpasswordType] = useState('password');
   const [isFieldValid, setIsFieldValid] = useState();
   const [noneValidMessage, setNoneValidMessage] = useState(
@@ -63,15 +66,23 @@ const Field = ({
   };
 
   const handleInputValue = e => {
-    setValue(prev => {
-      if (type === 'number') {
-        return Number(e.target.value);
+    if (name === 'price') {
+      let input = e.target.value;
+
+      input = input.replace(/[^0-9]/g, '');
+
+      if (input.length > 1 && input.startsWith('0')) {
+        input = input.replace(/^0+/, '');
       }
-      return e.target.value;
-    });
+
+      setValue(prev => (input === '' ? '' : Number(input)));
+    } else {
+      setValue(prev => e.target.value);
+    }
   };
 
   const handleValidation = e => {
+    setIsFocused(prev => false);
     if (!e.target.value) {
       setNoneValidMessage(prev => '항목이 비어있거나 잘못된 형식입니다.');
       setIsFieldValid(prev => false);
@@ -79,6 +90,7 @@ const Field = ({
       setIsDisabled(prev => true);
       return;
     }
+
     if (validation) {
       const message = validation(e.target.value);
       if (message !== 'valid') {
@@ -95,10 +107,17 @@ const Field = ({
     setIsDisabled(prev => false);
   };
 
+  const handlePriceOnFocus = e => {
+    setIsFocused(prev => true);
+  };
+
   useEffect(() => {
     if (!onSaveProductInfo) {
       return;
     }
+    setDisplayedValue(prev =>
+      value === '' ? '' : formatNumberWithCommas(value),
+    );
     onSaveProductInfo(prev => {
       if (name === 'shopUrl') {
         return {
@@ -130,8 +149,9 @@ const Field = ({
         type={type === 'password' ? passwordType : type}
         name={name}
         placeholder={placeholder}
-        value={value}
+        value={name === 'price' && !isFocused ? displayedValue : value}
         onChange={handleInputValue}
+        onFocus={handlePriceOnFocus}
         onBlur={handleValidation}
       />
       {hasButton && (
