@@ -46,7 +46,8 @@ const CardWrapper = styled.div`
     &:hover {
       animation: ${fadeInShadow} 0.6s forwards;
       cursor: pointer;
-    }  
+    }
+  }
 `;
 
 const ProductImgWrapper = styled.div`
