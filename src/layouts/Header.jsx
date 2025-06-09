@@ -1,5 +1,9 @@
-import { Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
+
+import { HEADER_BUTTON_TYPES } from '../constants/headerButtonTypes';
+import { FontTypes } from '../styles/theme';
+import BaseButton from './../components/PrimaryButton';
 
 // --- Styled Components ---
 
@@ -20,11 +24,10 @@ const Stheader = styled.header`
 
   /* 데스크탑 (1024px 이상으로 가정) */
   padding: 0 1.5rem; /* 상하 패딩 0, 좌우 패딩으로 내부 여백 확보 */
-  max-width: 1199px;
+  max-width: 1248px;
 
   /* 태블릿 (768px ~ 1023px) */
   @media (max-width: 1023px) {
-    padding: 0 1rem;
     max-width: 100%;
     margin-left: 0;
     margin-right: 0;
@@ -33,8 +36,8 @@ const Stheader = styled.header`
 
   /* 모바일 (767px 이하) */
   @media (max-width: 767px) {
+    padding: 0 1rem;
     margin-top: 28px;
-    padding: 0 0.75rem;
   }
 `;
 
@@ -62,7 +65,7 @@ const Logo = styled.a`
 `;
 
 // 버튼을 담는 컨테이너
-const ButtonContainer = styled.div`
+const StLink = styled(Link)`
   display: flex;
   align-items: center; /* 내부 버튼(들)을 수직 중앙 정렬 */
   gap: 10px; /* 여러 버튼이 올 경우 버튼 사이의 간격 */
@@ -70,14 +73,24 @@ const ButtonContainer = styled.div`
 `;
 
 const Header = () => {
+  const location = useLocation();
+
+  const { text, to: linkTo } =
+    HEADER_BUTTON_TYPES[location.pathname] || HEADER_BUTTON_TYPES.default;
+
   return (
     <>
       <Stheader>
         <Logo href='/list'>LINK SHOP</Logo>
-        <ButtonContainer>
-          버튼
-          {/* 다른 팀원이 여기에 버튼 컴포넌트를 추가할 예정입니다.*/}
-        </ButtonContainer>
+        <StLink to={linkTo}>
+          <BaseButton
+            width='98px'
+            height='36px'
+            $fontType={FontTypes.SEMIBOLD15}
+          >
+            {text}
+          </BaseButton>
+        </StLink>
       </Stheader>
       <main>
         <Outlet />
