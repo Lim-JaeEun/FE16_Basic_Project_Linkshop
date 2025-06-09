@@ -9,6 +9,7 @@ import LoadingIndicator from '../components/LoadingIndicator';
 import BaseButton from '../components/PrimaryButton';
 import UpdateProduct from '../components/UpdateProduct';
 import UpdateShop from '../components/UpdateShop';
+import renameFile from '../utils/renameFile';
 import theme from '../styles/theme';
 
 const Container = styled.form`
@@ -92,7 +93,9 @@ const UpdateShopPage = ({ onSuccess }) => {
     setError(null);
 
     try {
-      const imageUrl = await uploadImage(file);
+      const renamedFile = renameFile(file);
+
+      const imageUrl = await uploadImage(renamedFile);
       setProductImages(prev => {
         const updated = [...prev];
         updated[index] = imageUrl;
@@ -125,7 +128,9 @@ const UpdateShopPage = ({ onSuccess }) => {
     setError(null);
 
     try {
-      const imageUrl = await uploadImage(file);
+      const renamedFile = renameFile(file);
+
+      const imageUrl = await uploadImage(renamedFile);
       setShopImageUrl(imageUrl);
       handleShopBlur('shopImage', imageUrl);
     } catch (err) {
