@@ -11,14 +11,14 @@ export const validateUrl = value => {
 
 export const validateUserId = value => {
   if (!userIdRegex.test(value)) {
-    return '띄어쓰기와 특수기호를 사용할 수 없습니다.';
+    return '아이디에 한글, 띄어쓰기, 특수기호를 사용할 수 없습니다.';
   }
   return 'valid';
 };
 
 export const validatePassword = value => {
   if (!passwordRegex.test(value)) {
-    return '영문과 숫자를 조합한 6자이상의 비밀번호를 설정해 주세요.';
+    return '비밀번호는 영문+숫자 6자 이상을 입력해야 합니다.';
   }
   return 'valid';
 };

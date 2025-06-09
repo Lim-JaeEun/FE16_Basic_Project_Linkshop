@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { data, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { createLinkshop } from '../api/api';
@@ -48,6 +48,9 @@ function CreateShopPage({ onSuccess }) {
   const [completeData, setCompleteData] = useState(INITIAL_DATA);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
+  const [disabled, setDisabled] = useState(true);
+  //isDisabled => ui에 영향을 주지 않고 필드의 데이터값이 유효한지 확인하는 용도
+  //disabled => 실제 버튼이 활성화ui에 영향을 주는 상태, isDisabled와 completeData를 교차검증하여 최종적으로 상태가 변경
   const navigate = useNavigate();
 
   const handleConfirm = () => {
@@ -69,6 +72,8 @@ function CreateShopPage({ onSuccess }) {
       products: [...copiedList],
     };
 
+    console.log(dataForSubmit);
+
     const { responseData, error } = await createLinkshop(dataForSubmit);
     if (error) {
       alert(error.message);
@@ -86,9 +91,15 @@ function CreateShopPage({ onSuccess }) {
   useEffect(() => {
     if (!isDisabled && deepIsEmpty(completeData)) {
       setIsDisabled(prev => true);
+      setDisabled(prev => true);
+    } else if (isDisabled) {
+      setDisabled(prev => true);
+    } else if (!isDisabled && !deepIsEmpty(completeData)) {
+      setDisabled(prev => false);
     }
   }, [isDisabled]);
 
+  console.log(completeData);
   return (
     <PageContainer>
       <CreateProducts
@@ -99,7 +110,7 @@ function CreateShopPage({ onSuccess }) {
         setIsDisabled={setIsDisabled}
         onSaveCompleteData={setCompleteData}
       />
-      <CreateButton type='button' onClick={handleCreate} disabled={isDisabled}>
+      <CreateButton type='button' onClick={handleCreate} disabled={disabled}>
         생성하기
       </CreateButton>
       <ConfirmCreateModal
