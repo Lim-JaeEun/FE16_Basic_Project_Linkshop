@@ -26,8 +26,7 @@ const App = () => {
             <Route index element={<Navigate to={'/list'} replace={true} />} />
 
             {/* 메인 페이지 */}
-            <Route path='/list' element={<MainPage />} />
-
+            <Route path='/list' element={<MainPage />}></Route>
             {/* 생성 페이지 */}
             <Route
               path='/linkpost'
@@ -36,8 +35,7 @@ const App = () => {
                   onSuccess={() => setToastMessage('생성 완료')}
                 />
               }
-            />
-
+            ></Route>
             {/* 수정 페이지 */}
             <Route
               path='/link/:URLid/edit'
@@ -46,12 +44,10 @@ const App = () => {
                   onSuccess={() => setToastMessage('수정 완료')}
                 />
               }
-            />
+            ></Route>
           </Route>
-          {/* --- Header 레이아웃 그룹 끝 --- */}
-
           {/* 상세 페이지 */}
-          <Route path='/link/:URLid' element={<DetailShopPage />} />
+          <Route path='/link/:URLid' element={<DetailShopPage />}></Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
