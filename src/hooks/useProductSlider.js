@@ -38,11 +38,13 @@ export const useSlider = (isLargeScreen, itemWidth = 95, gap = 8) => {
 
     return Math.max(1, calculatedSlides); // 최소 1개 보장
   };
-
-  useEffect(() => {
+  function gotoFirstSlideItem() {
     if (sliderRef.current) {
       sliderRef.current.slickGoTo(0, true);
     }
+  }
+  useEffect(() => {
+    gotoFirstSlideItem();
   }, [isLargeScreen]);
 
   useEffect(() => {
@@ -50,8 +52,8 @@ export const useSlider = (isLargeScreen, itemWidth = 95, gap = 8) => {
       if (wrapperRef.current) {
         setShowAmount(calcHowManySlides(wrapperRef.current.offsetWidth, 95, 8));
       }
+      gotoFirstSlideItem();
     };
-
     const throttleEvent = throttle(updateListWidthAndShowAmount, 200, {
       leading: true,
       trailing: true,

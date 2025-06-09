@@ -70,7 +70,12 @@ function LinkshopProductImage({ src, alt }) {
         width='95'
         height='95'
         loading='lazy'
-        onLoad={() => setIsLoading(false)}
+        onLoad={() => {
+          // 캐시문제로 상세페이지에서 상품이미지가 안뜨는 현상발생 => 타임아웃으로 수정완료
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 100);
+        }}
         onError={handleImageError}
         $isLoading={isLoading}
       />
