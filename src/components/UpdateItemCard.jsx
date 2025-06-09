@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import styled from 'styled-components';
 
-import Field from './Field';
+import Field, { ErrorMessage } from './Field';
 import FileField from './FileField';
 import {
   TextGroup,
@@ -128,6 +128,11 @@ const UpdateItemCard = ({
             inputId={`product-image-${idKey}`}
           />
         </TextGroup>
+        {productFieldErrors?.productImage.hasError && (
+          <ErrorMessage>
+            {productFieldErrors?.productImage.message}
+          </ErrorMessage>
+        )}
         {displayImageUrl && (
           <ImgGroup>
             <PreviewImg src={displayImageUrl} alt='상품 이미지' />

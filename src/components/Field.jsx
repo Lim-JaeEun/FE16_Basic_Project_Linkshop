@@ -19,9 +19,15 @@ const StLabel = styled.label`
 const StInput = styled.input`
   ${applyFontStyles(FontTypes.REGULAR17, ColorTypes.SECONDARY_GRAY_300)}
   color: ${props => props.theme.colors[ColorTypes.SECONDARY_BLACK]};
+
+  &[type='number']::-webkit-outer-spin-button,
+  &[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 `;
 
-const ErrorMessage = styled.div`
+export const ErrorMessage = styled.div`
   font-size: 14px;
   font-weight: 400;
   color: ${theme.colors.err};
