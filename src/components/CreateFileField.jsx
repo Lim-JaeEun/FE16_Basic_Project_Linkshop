@@ -6,10 +6,11 @@ import { FieldContainer, NoneValidMessage } from './CreateField';
 import { uploadImage } from '../api/api';
 import closeBtn from '../assets/icon/btn_close.png';
 import defaultProductImg from '../assets/img/img_product.png';
-import defaultShopImg from '../assets/img/img_profile_full.svg';
+import defaultShopImg from '../assets/img/img_profile.png';
 import { applyFontStyles } from '../styles/mixins';
 import { FontTypes, ColorTypes } from '../styles/theme';
 import theme from '../styles/theme';
+import renameFile from '../utils/renameFile';
 
 const AddFileButton = styled.label`
   position: absolute;
@@ -103,9 +104,10 @@ const FileField = ({
       alert('이미지 파일만 업로드할 수 있습니다.');
       return;
     }
+    const renamedFile = renameFile(file);
 
-    const url = await uploadImage(file);
-    const preview = URL.createObjectURL(file);
+    const url = await uploadImage(renamedFile);
+    const preview = URL.createObjectURL(renamedFile);
     setPreviewImage(prev => preview);
     setSelectedFileUrl(prev => url);
     setIsFileSelected(prev => true);
@@ -145,7 +147,7 @@ const FileField = ({
       <STFileInput
         id={inputId}
         type='file'
-        accept='image/png image/jpeg'
+        accept='image/png image/jpeg' //여기
         onChange={handleChangeImage}
       />
       <STTitle>{label}</STTitle>
