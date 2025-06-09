@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
+
 import { ToastContainer, toast } from 'react-toastify';
+import styled from 'styled-components';
 import 'react-toastify/dist/ReactToastify.css';
 
 const StyledToastContainer = styled(ToastContainer)`

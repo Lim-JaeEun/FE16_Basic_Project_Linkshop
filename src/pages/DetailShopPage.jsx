@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
-
+import Toast from '../Toast';
 import DeskTopBackgroundImg from '../assets/img/img_detailpage_bg_desktop.png';
 import BackgroundImg from '../assets/img/img_detailpage_bg_mobile.png';
 import TabletBackgroundImg from '../assets/img/img_detailpage_bg_tablet.png';
@@ -57,6 +57,9 @@ const DetailShopPage = () => {
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
   const [passwordError, setPasswordError] = useState('');
 
+
+  const [toastMessage, setToastMessage] = useState('');
+  
   const initialShopData = {
     shopId: 1,
     shopName: '너구리 직구상점',
@@ -121,6 +124,7 @@ const DetailShopPage = () => {
       await navigator.clipboard.writeText(window.location.href);
       alert('URL이 복사되었습니다!');
     } catch {
+  
       alert('URL 복사에 실패했습니다.');
     }
   };
@@ -131,20 +135,43 @@ const DetailShopPage = () => {
     navigate(`/link/${URLid}/edit`);
   };
   const handleDeleteClick = () => {
-    console.log('DetailShopPage의 handleDeleteClick 함수 실행됨!'); // <<< 로그 추가
+    console.log('DetailShopPage의 handleDeleteClick 함수 실행됨!');
     setIsActionMenuOpen(false);
     setPasswordError('');
     setIsPasswordModalOpen(true);
   };
-  const handlePasswordSubmit = password => {
-    if (password === '1234') {
+  const handlePasswordSubmit = async password => {
+    try {
+      const response = await fetch(
+        `https://linkshop-api.vercel.app/16-5/linkshops/${URLid}`, 
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ currentPassword: password }),
+        },
+      );
+
+      if (!response.ok) {
+
+        const errorData = await response.json(); 
+        setPasswordError(errorData.message || '비밀번호가 일치하지 않습니다.');
+        return;
+      }
+      
       setIsPasswordModalOpen(false);
-      alert('삭제되었습니다.');
-      navigate('/list');
-    } else {
-      setPasswordError('비밀번호가 틀립니다.');
-    }
-  };
+      setToastMessage('정상적으로 삭제되었습니다.'); 
+
+      setTimeout(() => {
+        navigate('/list');
+      }, 1000);
+
+    } catch (error) {
+      console.error('삭제 요청 중 에러 발생:', error);
+      setPasswordError('삭제 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }  };
+
   const handleCloseModal = () => {
     setIsPasswordModalOpen(false);
     setPasswordError('');
@@ -189,6 +216,7 @@ const DetailShopPage = () => {
           submitButtonText='삭제하기'
         />
       )}
+      <Toast message={toastMessage} />
     </PageWrapper>
   );
 };
