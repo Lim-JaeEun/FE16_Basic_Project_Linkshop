@@ -179,7 +179,7 @@ const UpdateShopPage = ({ onSuccess }) => {
     return { hasError: false, message: '' };
   };
 
-  /** 폼 전체 유효성 검사 (순수 함수) */
+  /** 폼 전체 유효성 검사 */
   const checkFormValidity = (
     currentFormData,
     currentProductFormData,
@@ -483,6 +483,11 @@ const UpdateShopPage = ({ onSuccess }) => {
       tempProductErrors[idx] = itemErrors;
     });
 
+    if (productFormData.length === 0) {
+      setError('최소 한 개의 상품이 등록되어야 합니다.');
+      overallValidForSubmission = false;
+    }
+
     // 3. currentPassword 유효성 검사
     const currentPasswordValidation =
       formData.password.trim() === ''
@@ -535,7 +540,14 @@ const UpdateShopPage = ({ onSuccess }) => {
       }}
     >
       {isLoading && !shopData && (
-        <LoadingIndicator isLoading={isLoading} $isInitialLoad={true} />
+        <LoadingIndicator
+          $isLoading={isLoading}
+          $isInitialLoad={true}
+          $hasMore={true}
+        />
+      )}
+      {isLoading && shopData && (
+        <LoadingIndicator $isLoading={isLoading} $hasMore={true} />
       )}
       {!isLoading && shopData && (
         <>
