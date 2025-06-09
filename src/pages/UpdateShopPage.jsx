@@ -59,6 +59,8 @@ const UpdateShopPage = ({ onSuccess }) => {
   const [productErrors, setProductErrors] = useState([]);
   const [isFormValid, setIsFormValid] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPasswordErrorModalOpen, setIsPasswordErrorModalOpen] =
+    useState(false);
 
   const navigate = useNavigate();
   const { URLid } = useParams();
@@ -412,12 +414,22 @@ const UpdateShopPage = ({ onSuccess }) => {
     navigate(`/link/${URLid}`);
   };
 
+  /** 비밀번호 오류 모달 확인 버튼 핸들러 */
+  const handlePasswordErrorConfirm = () => {
+    setIsPasswordErrorModalOpen(false);
+    setFormErrors(prevErrors => ({
+      ...prevErrors,
+      password: { hasError: true, message: '비밀번호가 일치하지 않습니다.' },
+    }));
+  };
+
   /** 링크샵 수정 최종 제출 핸들러 */
   const handleUpdate = async () => {
     if (isSubmitting || isLoading) return;
 
     setError(null);
     setIsSubmitting(true);
+    setIsPasswordErrorModalOpen(false);
 
     let overallValidForSubmission = true;
     const tempFormErrors = { ...formErrors };
@@ -512,7 +524,7 @@ const UpdateShopPage = ({ onSuccess }) => {
       currentPassword: formData.password,
       shop: {
         shopUrl: formData.url,
-        urlName: formData.url,
+        urlName: formData.userId,
         imageUrl: shopImageUrl || null,
       },
       products: productFormData.map((p, index) => ({
@@ -527,6 +539,11 @@ const UpdateShopPage = ({ onSuccess }) => {
       setIsModalOpen(true);
     } catch (err) {
       console.error('링크샵 수정 실패 (API 응답):', err);
+      if (err.response && err.response.status === 400) {
+        setIsPasswordErrorModalOpen(true);
+      } else {
+        setError(err.message || '링크샵 수정에 실패했습니다.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -585,6 +602,11 @@ const UpdateShopPage = ({ onSuccess }) => {
         onConfirm={handleConfirm}
         isOpen={isModalOpen}
         message='수정이 완료되었습니다.'
+      />
+      <UpdateModal
+        onConfirm={handlePasswordErrorConfirm}
+        isOpen={isPasswordErrorModalOpen}
+        message='비밀번호가 일치하지 않습니다.'
       />
     </Container>
   );

@@ -165,7 +165,7 @@ const UpdateItemCard = ({
         onChange={e => onChange?.('price', e.target.value)}
         hasError={productFieldErrors.price.hasError}
         errorMessage={productFieldErrors.price.message}
-        onBlur={() => onBlur('price', price.toLocalString())}
+        onBlur={() => onBlur('price', price.toString())}
       />
       {!isLastItem && (
         <>
