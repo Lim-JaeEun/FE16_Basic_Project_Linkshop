@@ -23,7 +23,12 @@ const NoSearchResultWrapper = styled.div`
 const NoSearchResult = () => {
   return (
     <NoSearchResultWrapper>
-      <NoResultImg src={noResultImg} alt='검색 결과가 없음을 알리는 이미지' />
+      <NoResultImg
+        src={noResultImg}
+        alt='검색 결과가 없음을 알리는 이미지'
+        width={375}
+        height={'auto'}
+      />
       <p>
         검색 결과가 없어요
         <br />
