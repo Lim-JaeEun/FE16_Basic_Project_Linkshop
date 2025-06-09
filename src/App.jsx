@@ -24,6 +24,7 @@ const App = () => {
           <Route path='/' element={<Header />}>
             {/* 메인 페이지로 리다이렉트 */}
             <Route index element={<Navigate to={'/list'} replace={true} />} />
+
             {/* 메인 페이지 */}
             <Route path='/list' element={<MainPage />}></Route>
             {/* 생성 페이지 */}
