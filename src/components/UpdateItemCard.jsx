@@ -62,6 +62,7 @@ const UpdateItemCard = ({
   currentImage,
   onImageChange,
   onDelete,
+  isLastItem,
 }) => {
   const [localItemImageUrl, setLocalItemImageUrl] = useState(null);
   const [displayImageUrl, setDisplayImageUrl] = useState(currentImage);
@@ -166,10 +167,13 @@ const UpdateItemCard = ({
         errorMessage={productFieldErrors.price.message}
         onBlur={() => onBlur('price', price.toLocalString())}
       />
-      <DeleteProduct onClick={handleDeleteProduct} />
-      <XImg onClick={handleDeleteProduct} src={DeleteImg} alt='품목 삭제' />
+      {!isLastItem && (
+        <>
+          <DeleteProduct onClick={handleDeleteProduct} />
+          <XImg onClick={handleDeleteProduct} src={DeleteImg} alt='품목 삭제' />
+        </>
+      )}
     </Container>
   );
 };
-
 export default UpdateItemCard;

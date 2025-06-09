@@ -57,6 +57,8 @@ const UpdateProduct = ({
   onImageChange, // 이미지 파일 변경 핸들러
   onDeleteProduct, // 상품 목록 삭제 핸들러
 }) => {
+  const canDeleteProduct = products.length > 1;
+
   return (
     <Container>
       <ProductGroupHeader>
@@ -79,7 +81,8 @@ const UpdateProduct = ({
           productFieldErrors={productErrors[index]}
           currentImage={productImages[index]}
           onImageChange={file => onImageChange(index, file)}
-          onDelete={onDeleteProduct}
+          onDelete={canDeleteProduct ? onDeleteProduct : undefined}
+          isLastItem={products.length === 1}
         />
       ))}
     </Container>
