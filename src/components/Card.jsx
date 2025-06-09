@@ -65,7 +65,7 @@ const CustomSliderWrapper = styled(Slider)`
     height: 30px;
     border-radius: 50%;
     z-index: 10;
-    transition: .5s opacity;
+    transition: 0.5s opacity;
     opacity: 1;
     &:before {
       content: '';
@@ -84,29 +84,27 @@ const CustomSliderWrapper = styled(Slider)`
   }
 
   .slick-disabled {
-    opacity:0;
+    opacity: 0;
   }
-    /* 이전 버튼 */
+  /* 이전 버튼 */
   .slick-prev {
-    left:0;
+    left: 0;
     transform: translate(-50%, -50%);
     &:before {
-        background-position: 7px center;
+      background-position: 7px center;
     }
   }
   /* 다음 버튼 */
   .slick-next {
     right: 0;
-    transform:translate(50%, -50%) rotate(180deg);
+    transform: translate(50%, -50%) rotate(180deg);
     &:before {
-        background-position: 7px center;
+      background-position: 7px center;
     }
   }
   .slick-track {
-    margin-left: inherit;
+    margin: 0;
   }
-  
-}
 `;
 
 const TotalProducts = styled.div`
