@@ -101,7 +101,6 @@ const ErrorText = styled.p`
   text-align: left;
 `;
 
-// 버튼은 하나만 있으므로 ButtonGroup 불필요, 버튼 스타일만 수정
 const SubmitButton = styled.button`
   width: 100%;
   padding: 14px 16px; /* 패딩 조정 */
@@ -125,9 +124,9 @@ const PasswordModal = ({
   onClose,
   onSubmit,
   error,
-  title, // prop 추가
-  description, // prop 추가
-  submitButtonText, // prop 추가
+  title,
+  description,
+  submitButtonText,
 }) => {
   const [password, setPassword] = useState('');
 
