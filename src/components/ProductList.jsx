@@ -29,13 +29,14 @@ const StyledProductList = styled.div`
   }
 `;
 
-const ProductList = ({ title, products }) => {
+const ProductList = ({ title, shopInfo }) => {
+  if (shopInfo === null) return null;
   return (
     <StyledProductListSection>
       <SectionTitle>{title}</SectionTitle>
       <StyledProductList>
-        {products.map(product => (
-          <ProductCard key={product.productId} product={product} />
+        {shopInfo.products.map(product => (
+          <ProductCard key={product.id} product={product} />
         ))}
         {/* {products.length === 0 && <p>등록된 상품이 없습니다.</p>} */}
       </StyledProductList>

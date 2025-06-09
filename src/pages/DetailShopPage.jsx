@@ -1,9 +1,10 @@
 // src/pages/DetailShopPage.jsx
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { getLinkshopDetail } from '../api/api';
 import DeskTopBackgroundImg from '../assets/img/img_detailpage_bg_desktop.png';
 import BackgroundImg from '../assets/img/img_detailpage_bg_mobile.png';
 import TabletBackgroundImg from '../assets/img/img_detailpage_bg_tablet.png';
@@ -12,6 +13,7 @@ import PasswordModal from '../components/PasswordModal';
 import ProductList from '../components/ProductList';
 import ShopProfileCard from '../components/ShopProfileCard';
 import Toast from '../Toast';
+import { useAsync } from './../hooks/useAsync';
 
 // --- 페이지 레벨 Styled Components ---
 const PageWrapper = styled.div`
@@ -60,6 +62,10 @@ const DetailShopPage = () => {
 
   const [toastMessage, setToastMessage] = useState('');
 
+  const { data: shopInfo, execute: getLinkshop } = useAsync(getLinkshopDetail, {
+    delayLoadingTransition: false,
+  });
+
   const initialShopData = {
     shopId: 1,
     shopName: '너구리 직구상점',
@@ -76,45 +82,9 @@ const DetailShopPage = () => {
     initialShopData.likeCount,
   );
 
-  const sampleProducts = [
-    {
-      productId: 1,
-      productName: '아디다스 가젤 HP5379',
-      price: 134000,
-      productUrl: 'null',
-    },
-    {
-      productId: 2,
-      productName: '아디다스 가젤 HP5379',
-      price: 104000,
-      productUrl: 'null',
-    },
-    {
-      productId: 3,
-      productName: '나이키 바람막이',
-      price: 154000,
-      productUrl: 'null',
-    },
-    {
-      productId: 4,
-      productName: '나이키 신발',
-      price: 124000,
-      productUrl: 'null',
-    },
-    {
-      productId: 5,
-      productName: '나이키 신발',
-      price: 124000,
-      productUrl: 'null',
-    },
-
-    {
-      productId: 6,
-      productName: '나이키 신발',
-      price: 124000,
-      productUrl: 'null',
-    },
-  ];
+  useEffect(() => {
+    getLinkshop(URLid);
+  }, []);
 
   const handleGoBack = () => {
     navigate('/list');
@@ -190,9 +160,8 @@ const DetailShopPage = () => {
         <LinkHeader onGoBack={handleGoBack} />
         <ContentContainer>
           <ShopProfileCard
-            shopInfo={initialShopData}
+            shopInfo={shopInfo}
             isLiked={isLiked}
-            likeCount={currentLikeCount}
             onLikeClick={handleLikeClick}
             onShareClick={handleShareLink}
             onMoreOptionsClick={handleToggleActionMenu}
@@ -200,7 +169,7 @@ const DetailShopPage = () => {
             onEditActionClick={handleEditClick}
             onDeleteActionClick={handleDeleteClick}
           />
-          <ProductList title='대표 상품' products={sampleProducts} />
+          <ProductList title='대표 상품' shopInfo={shopInfo} />
         </ContentContainer>
       </MainContentLayoutWrapper>
       {isPasswordModalOpen && (
