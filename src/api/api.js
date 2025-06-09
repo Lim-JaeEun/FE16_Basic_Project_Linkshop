@@ -131,8 +131,6 @@ export const updateLinkshop = async (linkshopId, formData) => {
   }
 };
 
-const IMAGE_UPLOAD_FULL_URL = 'https://linkshop-api.vercel.app/images/upload';
-
 const imageUploadInstance = axios.create({
   baseURL: 'https://linkshop-api.vercel.app',
   timeout: 15000,

@@ -46,7 +46,8 @@ const CardWrapper = styled.div`
     &:hover {
       animation: ${fadeInShadow} 0.6s forwards;
       cursor: pointer;
-    }  
+    }
+  }
 `;
 
 const ProductImgWrapper = styled.div`
@@ -54,7 +55,6 @@ const ProductImgWrapper = styled.div`
 `;
 
 const CustomSliderWrapper = styled(Slider)`
-
   .slick-prev,
   .slick-next {
     position: absolute;
@@ -65,7 +65,7 @@ const CustomSliderWrapper = styled(Slider)`
     height: 30px;
     border-radius: 50%;
     z-index: 10;
-    transition: .5s opacity;
+    transition: 0.5s opacity;
     opacity: 1;
     &:before {
       content: '';
@@ -83,31 +83,28 @@ const CustomSliderWrapper = styled(Slider)`
     }
   }
 
-  
   .slick-disabled {
-    opacity:0;
+    opacity: 0;
   }
-    /* 이전 버튼 */
+  /* 이전 버튼 */
   .slick-prev {
-    left:0;
+    left: 0;
     transform: translate(-50%, -50%);
     &:before {
-        background-position: 7px center;
+      background-position: 7px center;
     }
   }
   /* 다음 버튼 */
   .slick-next {
     right: 0;
-    transform:translate(50%, -50%) rotate(180deg);
+    transform: translate(50%, -50%) rotate(180deg);
     &:before {
-        background-position: 7px center;
+      background-position: 7px center;
     }
   }
   .slick-track {
-    margin-left: inherit;
+    margin: 0;
   }
-  
-}
 `;
 
 const TotalProducts = styled.div`
@@ -142,7 +139,7 @@ function Card({ cardData }) {
     slidesToScroll: 1, // 한 번 스크롤/슬라이드 시 넘어갈 슬라이드 개수
     arrows: false, // 좌우 화살표 내비게이션 표시
     draggable: true,
-    cssEase: 'linear',
+    cssEase: 'ease-in-out',
     autoplay: false, // 초기 자동 재생은 false로 설정합니다.
     autoplaySpeed: 1000,
     pauseOnHover: true,
@@ -202,7 +199,11 @@ function Card({ cardData }) {
   useEffect(() => {
     const updateListWidthAndShowAmount = () => {
       if (wrapperRef.current) {
-        setShowAmount(calcHowManySlides(wrapperRef.current.offsetWidth, 95, 8));
+        setTimeout(() => {
+          setShowAmount(
+            calcHowManySlides(wrapperRef.current.offsetWidth, 95, 8),
+          );
+        }, 50);
       }
     };
 

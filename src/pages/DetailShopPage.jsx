@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import Toast from '../Toast';
+
 import DeskTopBackgroundImg from '../assets/img/img_detailpage_bg_desktop.png';
 import BackgroundImg from '../assets/img/img_detailpage_bg_mobile.png';
 import TabletBackgroundImg from '../assets/img/img_detailpage_bg_tablet.png';
@@ -11,6 +11,7 @@ import LinkHeader from '../components/LinkHeader';
 import PasswordModal from '../components/PasswordModal';
 import ProductList from '../components/ProductList';
 import ShopProfileCard from '../components/ShopProfileCard';
+import Toast from '../Toast';
 
 // --- 페이지 레벨 Styled Components ---
 const PageWrapper = styled.div`
@@ -57,9 +58,8 @@ const DetailShopPage = () => {
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
   const [passwordError, setPasswordError] = useState('');
 
-
   const [toastMessage, setToastMessage] = useState('');
-  
+
   const initialShopData = {
     shopId: 1,
     shopName: '너구리 직구상점',
@@ -124,7 +124,6 @@ const DetailShopPage = () => {
       await navigator.clipboard.writeText(window.location.href);
       alert('URL이 복사되었습니다!');
     } catch {
-  
       alert('URL 복사에 실패했습니다.');
     }
   };
@@ -143,7 +142,7 @@ const DetailShopPage = () => {
   const handlePasswordSubmit = async password => {
     try {
       const response = await fetch(
-        `https://linkshop-api.vercel.app/16-5/linkshops/${URLid}`, 
+        `https://linkshop-api.vercel.app/16-5/linkshops/${URLid}`,
         {
           method: 'DELETE',
           headers: {
@@ -154,23 +153,22 @@ const DetailShopPage = () => {
       );
 
       if (!response.ok) {
-
-        const errorData = await response.json(); 
+        const errorData = await response.json();
         setPasswordError(errorData.message || '비밀번호가 일치하지 않습니다.');
         return;
       }
-      
+
       setIsPasswordModalOpen(false);
-      setToastMessage('정상적으로 삭제되었습니다.'); 
+      setToastMessage('정상적으로 삭제되었습니다.');
 
       setTimeout(() => {
         navigate('/list');
       }, 1000);
-
     } catch (error) {
       console.error('삭제 요청 중 에러 발생:', error);
       setPasswordError('삭제 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
-    }  };
+    }
+  };
 
   const handleCloseModal = () => {
     setIsPasswordModalOpen(false);

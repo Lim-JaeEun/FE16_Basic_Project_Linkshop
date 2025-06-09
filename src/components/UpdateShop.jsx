@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
+
 import styled from 'styled-components';
 
-import { applyFontStyles } from '../styles/mixins';
-import theme, { FontTypes, ColorTypes } from '../styles/theme';
-
-import FileField from './FileField';
 import Field from './Field';
+import FileField from './FileField';
+import DeleteImg from '../assets/icon/btn_close.png';
 import closeEyeIcon from '../assets/icon/btn_visibility_off.svg';
 import openEyeIcon from '../assets/icon/btn_visibility_on.svg';
-import DeleteImg from '../assets/icon/btn_close.png';
+import { applyFontStyles } from '../styles/mixins';
+import theme, { FontTypes, ColorTypes } from '../styles/theme';
 
 const DEFAULT_EYE_SIZE = '20px';
 

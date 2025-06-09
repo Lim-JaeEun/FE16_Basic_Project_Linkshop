@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react';
+
 import styled from 'styled-components';
 
-import { applyFontStyles } from '../styles/mixins';
-import theme, { FontTypes, ColorTypes } from '../styles/theme';
-
-import FileField from './FileField';
 import Field from './Field';
-import DeleteImg from '../assets/icon/btn_close.png';
+import FileField from './FileField';
 import {
   TextGroup,
   Wrapper,
@@ -17,6 +14,9 @@ import {
   DeleteBtn,
   ButtonX,
 } from './UpdateShop';
+import DeleteImg from '../assets/icon/btn_close.png';
+import { applyFontStyles } from '../styles/mixins';
+import theme, { FontTypes, ColorTypes } from '../styles/theme';
 
 const Container = styled.div`
   position: relative;

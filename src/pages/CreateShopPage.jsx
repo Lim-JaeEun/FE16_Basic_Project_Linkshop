@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { data, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { createLinkshop } from '../api/api';
@@ -74,7 +74,7 @@ function CreateShopPage({ onSuccess }) {
 
     console.log(dataForSubmit);
 
-    const { responseData, error } = await createLinkshop(dataForSubmit);
+    const { error } = await createLinkshop(dataForSubmit);
     if (error) {
       alert(error.message);
       return;

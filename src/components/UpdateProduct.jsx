@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
+import PrimaryButton from './PrimaryButton';
+import UpdateItemCard from './UpdateItemCard';
 import { applyFontStyles } from '../styles/mixins';
 import theme, { FontTypes, ColorTypes } from '../styles/theme';
-import UpdateItemCard from './UpdateItemCard';
-import PrimaryButton from './PrimaryButton';
 
 const Container = styled.div`
   display: flex;
