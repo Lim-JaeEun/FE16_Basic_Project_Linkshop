@@ -11,6 +11,7 @@ import { applyFontStyles } from '../styles/mixins';
 import { FontTypes, ColorTypes } from '../styles/theme';
 import theme from '../styles/theme';
 import renameFile from '../utils/renameFile';
+import { validateImage } from '../utils/validations';
 
 const AddFileButton = styled.label`
   position: absolute;
@@ -100,8 +101,8 @@ const FileField = ({
   const handleChangeImage = async e => {
     const file = e.target.files[0];
     //유효성 검사
-    if (!file.type.startsWith('image/')) {
-      alert('이미지 파일만 업로드할 수 있습니다.');
+    if (!validateImage(file)) {
+      alert('jpg, jpeg, png, webp, avif형식의 이미지만 업로드할 수 있습니다.');
       return;
     }
     const renamedFile = renameFile(file);

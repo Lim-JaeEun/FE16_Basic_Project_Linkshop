@@ -22,3 +22,19 @@ export const validatePassword = value => {
   }
   return 'valid';
 };
+
+export const validateImage = file => {
+  const validExtensions = ['jpg', 'jpeg', 'png', 'webp', 'avif'];
+  const validMimeTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/avif',
+  ];
+
+  const extension = file.name.split('.').pop().toLowerCase();
+  const isExtValid = validExtensions.includes(extension);
+  const isMimeValid = validMimeTypes.includes(file.type);
+
+  return isExtValid && isMimeValid && file.type.startsWith('image/');
+};

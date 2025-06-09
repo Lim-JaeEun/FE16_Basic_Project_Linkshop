@@ -55,6 +55,7 @@ function CreateShopPage({ onSuccess }) {
 
   const handleConfirm = () => {
     setIsModalOpen(false);
+    onSuccess?.();
     navigate('/list');
   };
 
@@ -72,18 +73,12 @@ function CreateShopPage({ onSuccess }) {
       products: [...copiedList],
     };
 
-    console.log(dataForSubmit);
-
     const { error } = await createLinkshop(dataForSubmit);
     if (error) {
       alert(error.message);
       return;
     }
 
-    // 2. 성공 시 토스트 띄우기
-    onSuccess?.();
-
-    // 3. 모달 띄우기
     setIsModalOpen(true);
   };
 
@@ -99,7 +94,6 @@ function CreateShopPage({ onSuccess }) {
     }
   }, [isDisabled]);
 
-  console.log(completeData);
   return (
     <PageContainer>
       <CreateProducts
