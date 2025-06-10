@@ -35,7 +35,7 @@ const FileField = ({ onFileChange, inputId }) => {
         <StInput
           id={inputId}
           type='file'
-          accept='image/*'
+          accept='image/jpeg, image/png, image/webp, image/avif'
           onChange={handleChange}
         />
       </div>

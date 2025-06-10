@@ -4,7 +4,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { getLinkshopDetail, updateLinkshop, uploadImage } from '../api/api';
+import { validateImage } from '../utils/validations';
 import UpdateModal from '../components/ConfirmCreateModal';
+import ImageFormatErrorModal from '../components/ImageFormatErrorModal';
 import LoadingIndicator from '../components/LoadingIndicator';
 import BaseButton from '../components/PrimaryButton';
 import UpdateProduct from '../components/UpdateProduct';
@@ -61,6 +63,9 @@ const UpdateShopPage = ({ onSuccess }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPasswordErrorModalOpen, setIsPasswordErrorModalOpen] =
     useState(false);
+  const [isImageFormatErrorModalOpen, setIsImageFormatErrorModalOpen] =
+    useState(false);
+  const [imageFormatErrorMessage, setImageFormatErrorMessage] = useState('');
 
   const navigate = useNavigate();
   const { URLid } = useParams();
@@ -81,6 +86,8 @@ const UpdateShopPage = ({ onSuccess }) => {
 
   /** 이미지 파일 변경 및 업로드 핸들러 */
   const handleImageChange = async (index, file) => {
+    setIsImageFormatErrorModalOpen(false);
+
     if (!file) {
       setProductImages(prev => {
         const updated = [...prev];
@@ -88,6 +95,20 @@ const UpdateShopPage = ({ onSuccess }) => {
         return updated;
       });
       handleProductBlur(index, 'productImage', null);
+      return;
+    }
+
+    // 파일 유효성 검사 추가
+    const validationResult = validateImage(file);
+    if (validationResult.hasError) {
+      setImageFormatErrorMessage(validationResult.message);
+      setIsImageFormatErrorModalOpen(true);
+      setProductImages(prev => {
+        const updated = [...prev];
+        updated[index] = null;
+        return updated;
+      });
+      handleProductBlur(index, 'productImage', null, validationResult.message);
       return;
     }
 
@@ -120,9 +141,21 @@ const UpdateShopPage = ({ onSuccess }) => {
 
   /** 상점 대표 이미지 변경 및 업로드 핸들러 */
   const handleShopImageChange = async file => {
+    setIsImageFormatErrorModalOpen(false);
+
     if (!file) {
       setShopImageUrl(null);
       handleShopBlur('shopImage', null);
+      return;
+    }
+
+    // 파일 유효성 검사 추가
+    const validationResult = validateImage(file);
+    if (validationResult.hasError) {
+      setImageFormatErrorMessage(validationResult.message);
+      setIsImageFormatErrorModalOpen(true);
+      setShopImageUrl(null);
+      handleShopBlur('shopImage', null, validationResult.message);
       return;
     }
 
@@ -149,6 +182,7 @@ const UpdateShopPage = ({ onSuccess }) => {
   const handleRemoveShopImage = () => {
     setShopImageUrl(null);
     handleShopBlur('shopImage', null);
+    setIsImageFormatErrorModalOpen(false);
   };
 
   /** 유저 ID 유효성 검사 */
@@ -393,9 +427,6 @@ const UpdateShopPage = ({ onSuccess }) => {
 
   /** 개별 상품 삭제 핸들러 */
   const handleDeleteProduct = indexToDelete => {
-    if (!window.confirm('정말로 이 상품을 삭제하시겠습니까?')) {
-      return;
-    }
     setProductFormData(prev =>
       prev.filter((_, index) => index !== indexToDelete),
     );
@@ -423,6 +454,12 @@ const UpdateShopPage = ({ onSuccess }) => {
     }));
   };
 
+  /** 이미지 형식 오류 모달 확인 버튼 핸들러 */
+  const handleImageFormatErrorConfirm = () => {
+    setIsImageFormatErrorModalOpen(false);
+    setImageFormatErrorMessage(''); // 메시지 초기화
+  };
+
   /** 링크샵 수정 최종 제출 핸들러 */
   const handleUpdate = async () => {
     if (isSubmitting || isLoading) return;
@@ -430,6 +467,8 @@ const UpdateShopPage = ({ onSuccess }) => {
     setError(null);
     setIsSubmitting(true);
     setIsPasswordErrorModalOpen(false);
+    setIsImageFormatErrorModalOpen(false);
+    setImageFormatErrorMessage('');
 
     let overallValidForSubmission = true;
     const tempFormErrors = { ...formErrors };
@@ -607,6 +646,11 @@ const UpdateShopPage = ({ onSuccess }) => {
         onConfirm={handlePasswordErrorConfirm}
         isOpen={isPasswordErrorModalOpen}
         message='비밀번호가 일치하지 않습니다.'
+      />
+      <ImageFormatErrorModal
+        onConfirm={handleImageFormatErrorConfirm}
+        isOpen={isImageFormatErrorModalOpen}
+        message={imageFormatErrorMessage}
       />
     </Container>
   );
