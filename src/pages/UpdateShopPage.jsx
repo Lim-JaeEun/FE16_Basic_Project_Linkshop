@@ -393,9 +393,6 @@ const UpdateShopPage = ({ onSuccess }) => {
 
   /** 개별 상품 삭제 핸들러 */
   const handleDeleteProduct = indexToDelete => {
-    if (!window.confirm('정말로 이 상품을 삭제하시겠습니까?')) {
-      return;
-    }
     setProductFormData(prev =>
       prev.filter((_, index) => index !== indexToDelete),
     );
