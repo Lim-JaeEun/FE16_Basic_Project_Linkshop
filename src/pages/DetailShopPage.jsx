@@ -34,15 +34,18 @@ const MainContentLayoutWrapper = styled.div`
 
 const HeroSection = styled.div`
   width: 100%;
-  height: 80px;
+  padding-top: 18.6667%;
+
   background-image: url(${BackgroundImg});
   background-size: 100%;
   background-repeat: repeat-x;
   background-position: top center;
   @media (min-width: 768px) {
+    padding-top: 10.335%;
     background-image: url(${TabletBackgroundImg});
   }
   @media (min-width: 1024px) {
+    padding-top: 3.9764%;
     background-image: url(${DeskTopBackgroundImg});
   }
 `;
@@ -110,6 +113,11 @@ const DetailShopPage = () => {
     setIsPasswordModalOpen(true);
   };
   const handlePasswordSubmit = async password => {
+    if (!password) {
+      setPasswordError('비밀번호를 입력해주세요.');
+      return; // 요청을 보내지 않고 함수를 여기서 종료합니다.
+    }
+    setPasswordError('');
     try {
       const response = await fetch(
         `https://linkshop-api.vercel.app/16-5/linkshops/${URLid}`,
@@ -124,19 +132,27 @@ const DetailShopPage = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        setPasswordError(errorData.message || '비밀번호가 일치하지 않습니다.');
+        // 서버가 보낸 메시지 내용을 확인하고, 직접 정의한 한글 메시지를 설정합니다.
+        if (errorData.message === 'Validation Failed') {
+          setPasswordError('비밀번호가 올바르지 않습니다.');
+        } else {
+          // 'Validation Failed' 외 다른 에러가 발생할 경우를 대비한 기본 메시지
+          setPasswordError(
+            errorData.message || '삭제에 실패했습니다. 다시 시도해주세요.',
+          );
+        }
         return;
       }
 
       setIsPasswordModalOpen(false);
-      setToastMessage('정상적으로 삭제되었습니다.');
+      setToastMessage('삭제 완료!');
 
       setTimeout(() => {
         navigate('/list');
       }, 1000);
     } catch (error) {
       console.error('삭제 요청 중 에러 발생:', error);
-      setPasswordError('삭제 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
+      setPasswordError('오류 발생!');
     }
   };
 
@@ -151,6 +167,14 @@ const DetailShopPage = () => {
       : currentLikeCount - 1;
     setIsLiked(newLikedState);
     setCurrentLikeCount(newLikesCount);
+
+    fetch(`https://linkshop-api.vercel.app/16-5/linkshops/${URLid}/like`, {
+      method: 'POST',
+      body: JSON.stringify({ liked: newLikedState }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   };
 
   return (
@@ -162,7 +186,7 @@ const DetailShopPage = () => {
           <ShopProfileCard
             shopInfo={shopInfo}
             isLiked={isLiked}
-            onLikeClick={handleLikeClick}
+            handleToggleLike={handleLikeClick}
             onShareClick={handleShareLink}
             onMoreOptionsClick={handleToggleActionMenu}
             isActionMenuOpen={isActionMenuOpen}

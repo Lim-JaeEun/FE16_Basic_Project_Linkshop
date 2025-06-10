@@ -95,20 +95,26 @@ const ActionMenuItem = styled.button`
 
 const ShopProfileCard = ({
   shopInfo,
-  isLiked,
-  onLikeClick,
+  handleToggleLike,
   onShareClick,
   onMoreOptionsClick,
   isActionMenuOpen,
   onEditActionClick,
   onDeleteActionClick,
 }) => {
+  console.log('[ShopProfileCard] handleToggleLike 값:', handleToggleLike);
+
   if (!shopInfo) return null;
 
   return (
     <StyledShopInfoWrapper>
       <ShopTopControls>
-        <Likes onClick={onLikeClick} likes={shopInfo.likes} isLiked={isLiked} />
+        <Likes
+          onToggleLike={handleToggleLike}
+          likes={shopInfo.likes}
+          isLiked={shopInfo.isLiked}
+          id={shopInfo.id}
+        />
         <ActionIconsGroup>
           <IconButton onClick={onShareClick} aria-label='공유하기'>
             <img src={ShareIcon} alt='공유' />
