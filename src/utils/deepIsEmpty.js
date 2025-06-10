@@ -5,6 +5,7 @@ function deepIsEmpty(obj) {
 
   if (typeof obj === 'object' && obj !== null) {
     for (const key in obj) {
+      if (key === 'webkitRelativePath') continue;
       if (deepIsEmpty(obj[key])) return true;
     }
   }
