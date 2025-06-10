@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { FieldContainer, NoneValidMessage } from './CreateField';
-import { uploadImage } from '../api/api';
 import closeBtn from '../assets/icon/btn_close.png';
 import defaultProductImg from '../assets/img/img_product.png';
 import defaultShopImg from '../assets/img/img_profile.png';
@@ -26,6 +25,7 @@ const AddFileButton = styled.label`
   font-weight: 500;
   color: ${theme.colors.pri};
   white-space: nowrap;
+  cursor: pointer;
 `;
 
 const STFileInput = styled.input`
@@ -73,7 +73,7 @@ export const ButtonX = styled.img`
   height: 70%;
 `;
 
-const NONE_VALID_MESSAGE = '이미지를 업로드해 주세요.';
+const NONE_VALID_MESSAGE = '이미지를 업로드해 주세요';
 
 const FileField = ({
   placeholder,
@@ -83,41 +83,51 @@ const FileField = ({
   onSaveProductInfo,
   setIsDisabled,
 }) => {
-  const [selectedFileUrl, setSelectedFileUrl] = useState(async () => {
-    const defaultImg =
-      label === '프로필 이미지' ? defaultShopImg : defaultProductImg;
-    const res = await fetch(defaultImg);
-    const blob = await res.blob();
-    const file = new File([blob], 'default-image.png', { type: blob.type });
-    const url = await uploadImage(file);
-    setSelectedFileUrl(prev => url);
-    onCheckValidForm(prev => true);
-  });
+  const [selectedFileUrl, setSelectedFileUrl] = useState(null);
+
   const [previewImage, setPreviewImage] = useState(() => {
     return label === '프로필 이미지' ? defaultShopImg : defaultProductImg;
   });
   const [isFileSelected, setIsFileSelected] = useState(true);
 
-  const handleChangeImage = async e => {
+  const loadDefaultFile = async () => {
+    const defaultImg =
+      label === '프로필 이미지' ? defaultShopImg : defaultProductImg;
+    const res = await fetch(defaultImg);
+    const blob = await res.blob();
+    const file = new File([blob], 'default-image.png', { type: blob.type });
+    setSelectedFileUrl(prev => file);
+    onCheckValidForm(prev => true);
+  };
+
+  const handleChangeImage = e => {
     const file = e.target.files[0];
+
+    e.target.value = null;
+
     //유효성 검사
-    if (!validateImage(file)) {
-      alert('jpg, jpeg, png, webp, avif형식의 이미지만 업로드할 수 있습니다.');
+    const { hasError, message } = validateImage(file);
+    if (hasError) {
+      alert(message);
       return;
     }
     const renamedFile = renameFile(file);
 
-    const url = await uploadImage(renamedFile);
     const preview = URL.createObjectURL(renamedFile);
     setPreviewImage(prev => preview);
-    setSelectedFileUrl(prev => url);
+    setSelectedFileUrl(prev => renamedFile);
     setIsFileSelected(prev => true);
     onCheckValidForm(prev => true);
     setIsDisabled(prev => false);
   };
 
   const handleDeleteImage = () => {
-    setPreviewImage(prev => null);
+    setPreviewImage(prev => {
+      if (prev) {
+        URL.revokeObjectURL(prev);
+      }
+      return null;
+    });
     setSelectedFileUrl(prev => null);
     setIsFileSelected(prev => false);
     onCheckValidForm(prev => false);
@@ -142,13 +152,17 @@ const FileField = ({
     });
   }, [selectedFileUrl]);
 
+  useEffect(() => {
+    loadDefaultFile();
+  }, []);
+
   return (
     <FieldContainer>
       <AddFileButton htmlFor={inputId}>파일 첨부</AddFileButton>
       <STFileInput
         id={inputId}
         type='file'
-        accept='image/png image/jpeg' //여기
+        accept='image/png image/jpeg image/webp image/avif' //여기
         onChange={handleChangeImage}
       />
       <STTitle>{label}</STTitle>
