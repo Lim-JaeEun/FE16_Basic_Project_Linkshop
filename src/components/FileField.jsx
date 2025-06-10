@@ -30,13 +30,15 @@ const FileField = ({ onFileChange, inputId }) => {
 
   return (
     <div>
-      <StLabel htmlFor={inputId}>파일 첨부</StLabel>
-      <StInput
-        id={inputId}
-        type='file'
-        accept='image/*'
-        onChange={handleChange}
-      />
+      <div>
+        <StLabel htmlFor={inputId}>파일 첨부</StLabel>
+        <StInput
+          id={inputId}
+          type='file'
+          accept='image/*'
+          onChange={handleChange}
+        />
+      </div>
     </div>
   );
 };

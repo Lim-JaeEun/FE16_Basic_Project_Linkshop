@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import styled from 'styled-components';
 
-import Field from './Field';
+import Field, { ErrorMessage } from './Field';
 import FileField from './FileField';
 import {
   TextGroup,
@@ -62,6 +62,7 @@ const UpdateItemCard = ({
   currentImage,
   onImageChange,
   onDelete,
+  isLastItem,
 }) => {
   const [localItemImageUrl, setLocalItemImageUrl] = useState(null);
   const [displayImageUrl, setDisplayImageUrl] = useState(currentImage);
@@ -128,6 +129,11 @@ const UpdateItemCard = ({
             inputId={`product-image-${idKey}`}
           />
         </TextGroup>
+        {productFieldErrors?.productImage.hasError && (
+          <ErrorMessage>
+            {productFieldErrors?.productImage.message}
+          </ErrorMessage>
+        )}
         {displayImageUrl && (
           <ImgGroup>
             <PreviewImg src={displayImageUrl} alt='상품 이미지' />
@@ -159,12 +165,15 @@ const UpdateItemCard = ({
         onChange={e => onChange?.('price', e.target.value)}
         hasError={productFieldErrors.price.hasError}
         errorMessage={productFieldErrors.price.message}
-        onBlur={() => onBlur('price', price.toLocalString())}
+        onBlur={() => onBlur('price', price.toString())}
       />
-      <DeleteProduct onClick={handleDeleteProduct} />
-      <XImg onClick={handleDeleteProduct} src={DeleteImg} alt='품목 삭제' />
+      {!isLastItem && (
+        <>
+          <DeleteProduct onClick={handleDeleteProduct} />
+          <XImg onClick={handleDeleteProduct} src={DeleteImg} alt='품목 삭제' />
+        </>
+      )}
     </Container>
   );
 };
-
 export default UpdateItemCard;

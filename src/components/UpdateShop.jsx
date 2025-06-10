@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import styled from 'styled-components';
 
-import Field from './Field';
+import Field, { ErrorMessage } from './Field';
 import FileField from './FileField';
 import DeleteImg from '../assets/icon/btn_close.png';
 import closeEyeIcon from '../assets/icon/btn_visibility_off.svg';
@@ -201,6 +201,9 @@ const UpdateShop = ({
               inputId='shop-image-upload'
             />
           </TextGroup>
+          {formErrors?.shopImage.hasError && (
+            <ErrorMessage>{formErrors?.shopImage.message}</ErrorMessage>
+          )}{' '}
           {displayImageUrl && (
             <ImgGroup>
               <PreviewImg src={displayImageUrl} alt='상점 이미지' />
