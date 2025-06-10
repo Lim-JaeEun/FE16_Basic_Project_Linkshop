@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { getLinkshopDetail, updateLinkshop, uploadImage } from '../api/api';
+import { validateImage } from '../utils/validations';
 import UpdateModal from '../components/ConfirmCreateModal';
 import LoadingIndicator from '../components/LoadingIndicator';
 import BaseButton from '../components/PrimaryButton';
@@ -91,6 +92,19 @@ const UpdateShopPage = ({ onSuccess }) => {
       return;
     }
 
+    // 파일 유효성 검사 추가
+    const validationResult = validateImage(file);
+    if (validationResult.hasError) {
+      setError(validationResult.message);
+      setProductImages(prev => {
+        const updated = [...prev];
+        updated[index] = null;
+        return updated;
+      });
+      handleProductBlur(index, 'productImage', null, validationResult.message);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -123,6 +137,15 @@ const UpdateShopPage = ({ onSuccess }) => {
     if (!file) {
       setShopImageUrl(null);
       handleShopBlur('shopImage', null);
+      return;
+    }
+
+    // 파일 유효성 검사 추가
+    const validationResult = validateImage(file);
+    if (validationResult.hasError) {
+      setError(validationResult.message);
+      setShopImageUrl(null);
+      handleShopBlur('shopImage', null, validationResult.message);
       return;
     }
 

@@ -36,5 +36,8 @@ export const validateImage = file => {
   const isExtValid = validExtensions.includes(extension);
   const isMimeValid = validMimeTypes.includes(file.type);
 
-  return isExtValid && isMimeValid && file.type.startsWith('image/');
+  return {
+    hasError: !(isExtValid && isMimeValid && file.type.startsWith('image/')),
+    message: 'jpg, jpeg, png, webp, avif형식의 이미지만 업로드할 수 있습니다.',
+  };
 };
