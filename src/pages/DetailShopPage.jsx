@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { getLinkshopDetail } from '../api/api';
+import { createLike, getLinkshopDetail } from '../api/api';
 import DeskTopBackgroundImg from '../assets/img/img_detailpage_bg_desktop.png';
 import BackgroundImg from '../assets/img/img_detailpage_bg_mobile.png';
 import TabletBackgroundImg from '../assets/img/img_detailpage_bg_tablet.png';
@@ -12,6 +12,7 @@ import LinkHeader from '../components/LinkHeader';
 import PasswordModal from '../components/PasswordModal';
 import ProductList from '../components/ProductList';
 import ShopProfileCard from '../components/ShopProfileCard';
+import { useOptimisticUpdate } from '../hooks/useOptimisticUpdate';
 import Toast from '../Toast';
 import { useAsync } from './../hooks/useAsync';
 
@@ -69,29 +70,34 @@ const DetailShopPage = () => {
     delayLoadingTransition: false,
   });
 
-  const initialShopData = {
-    shopId: 1,
-    shopName: '너구리 직구상점',
-    shopUrl: null,
-    category: '해외직구',
-    likeCount: 0,
-    isInitiallyLiked: false,
-    userId: 101,
-    handle: '@pumpkinraccoon',
-  };
-
-  const [isLiked, setIsLiked] = useState(initialShopData.isInitiallyLiked);
-  const [currentLikeCount, setCurrentLikeCount] = useState(
-    initialShopData.likeCount,
+  const { execute: toggleLike } = useOptimisticUpdate(
+    createLike,
+    () => {
+      setIsLiked(prev => !prev);
+      setCurrentLikeCount(prev => (!isLiked ? prev + 1 : prev - 1));
+    },
+    () => {
+      setIsLiked(prev => !prev);
+      setCurrentLikeCount(prev => (!isLiked ? prev - 1 : prev + 1));
+    },
   );
 
+  const [isLiked, setIsLiked] = useState(false);
+  const [currentLikeCount, setCurrentLikeCount] = useState(0);
+
   useEffect(() => {
-    getLinkshop(URLid);
+    loadData();
   }, []);
+
+  const loadData = async () => {
+    const data = await getLinkshop(URLid);
+    setCurrentLikeCount(data.likes);
+  };
 
   const handleGoBack = () => {
     navigate('/list');
   };
+
   const handleShareLink = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
@@ -100,18 +106,22 @@ const DetailShopPage = () => {
       alert('URL 복사에 실패했습니다.');
     }
   };
+
   const handleToggleActionMenu = () => {
     setIsActionMenuOpen(prev => !prev);
   };
+
   const handleEditClick = () => {
     navigate(`/link/${URLid}/edit`);
   };
+
   const handleDeleteClick = () => {
     console.log('DetailShopPage의 handleDeleteClick 함수 실행됨!');
     setIsActionMenuOpen(false);
     setPasswordError('');
     setIsPasswordModalOpen(true);
   };
+
   const handlePasswordSubmit = async password => {
     if (!password) {
       setPasswordError('비밀번호를 입력해주세요.');
@@ -160,21 +170,9 @@ const DetailShopPage = () => {
     setIsPasswordModalOpen(false);
     setPasswordError('');
   };
-  const handleLikeClick = () => {
-    const newLikedState = !isLiked;
-    const newLikesCount = newLikedState
-      ? currentLikeCount + 1
-      : currentLikeCount - 1;
-    setIsLiked(newLikedState);
-    setCurrentLikeCount(newLikesCount);
 
-    fetch(`https://linkshop-api.vercel.app/16-5/linkshops/${URLid}/like`, {
-      method: 'POST',
-      body: JSON.stringify({ liked: newLikedState }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+  const handleLikeClick = () => {
+    toggleLike(URLid);
   };
 
   return (
@@ -185,6 +183,7 @@ const DetailShopPage = () => {
         <ContentContainer>
           <ShopProfileCard
             shopInfo={shopInfo}
+            currentLikeCount={currentLikeCount}
             isLiked={isLiked}
             handleToggleLike={handleLikeClick}
             onShareClick={handleShareLink}

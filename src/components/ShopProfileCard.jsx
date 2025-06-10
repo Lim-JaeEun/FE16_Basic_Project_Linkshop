@@ -95,6 +95,8 @@ const ActionMenuItem = styled.button`
 
 const ShopProfileCard = ({
   shopInfo,
+  isLiked,
+  currentLikeCount,
   handleToggleLike,
   onShareClick,
   onMoreOptionsClick,
@@ -102,8 +104,6 @@ const ShopProfileCard = ({
   onEditActionClick,
   onDeleteActionClick,
 }) => {
-  console.log('[ShopProfileCard] handleToggleLike 값:', handleToggleLike);
-
   if (!shopInfo) return null;
 
   return (
@@ -111,8 +111,8 @@ const ShopProfileCard = ({
       <ShopTopControls>
         <Likes
           onToggleLike={handleToggleLike}
-          likes={shopInfo.likes}
-          isLiked={shopInfo.isLiked}
+          likes={currentLikeCount}
+          isLiked={isLiked}
           id={shopInfo.id}
         />
         <ActionIconsGroup>
