@@ -193,7 +193,7 @@ const UpdateShop = ({
         <PreviewGroup>
           <TextGroup>
             <Wrapper>
-              <ShopImg>상품 대표 이미지</ShopImg>
+              <ShopImg>프로필 이미지</ShopImg>
               <Description>상품 이미지를 첨부해주세요.</Description>
             </Wrapper>
             <FileField
