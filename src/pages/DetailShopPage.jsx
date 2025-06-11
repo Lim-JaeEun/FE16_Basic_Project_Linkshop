@@ -19,6 +19,7 @@ import ProductList from '../components/ProductList';
 import ShopProfileCard from '../components/ShopProfileCard';
 import { useOptimisticUpdate } from '../hooks/useOptimisticUpdate';
 import Toast from '../Toast';
+import LoadingIndicator from './../components/LoadingIndicator';
 import { useAsync } from './../hooks/useAsync';
 
 // --- 페이지 레벨 Styled Components ---
@@ -75,7 +76,11 @@ const DetailShopPage = () => {
 
   const [toastMessage, setToastMessage] = useState('');
 
-  const { data: shopInfo, execute: getLinkshop } = useAsync(getLinkshopDetail, {
+  const {
+    data: shopInfo,
+    isLoading,
+    execute: getLinkshop,
+  } = useAsync(getLinkshopDetail, {
     delayLoadingTransition: false,
   });
 
@@ -222,6 +227,11 @@ const DetailShopPage = () => {
           submitButtonText='삭제하기'
         />
       )}
+      <LoadingIndicator
+        $isLoading={isLoading}
+        $hasMore={true}
+        $isInitialLoad={true}
+      />
       <Toast message={toastMessage} />
     </PageWrapper>
   );
