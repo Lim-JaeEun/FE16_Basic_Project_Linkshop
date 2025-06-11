@@ -24,6 +24,15 @@ export const validatePassword = value => {
 };
 
 export const validateImage = file => {
+  const maxSizeInMB = 3;
+  const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+  if (file.size > maxSizeInBytes) {
+    return {
+      hasError: true,
+      message: `\n이미지 용량은 ${maxSizeInMB}MB 이하만 업로드 가능합니다.`,
+    };
+  }
+
   const validExtensions = ['jpg', 'jpeg', 'png', 'webp', 'avif'];
   const validMimeTypes = [
     'image/jpeg',
