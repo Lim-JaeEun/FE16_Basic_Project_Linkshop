@@ -11,6 +11,7 @@ const FlexDiv = styled.div`
   align-items: center;
   gap: 24px;
   ${applyFontStyles(FontTypes.REGULAR17)};
+  white-space: pre-wrap;
 `;
 
 const ImageFormatErrorModal = ({
