@@ -106,7 +106,6 @@ export const createLinkshop = async dataForSubmit => {
     const res = await instance.post(`/linkshops`, dataForSubmit, {
       headers: {},
     });
-    console.log(res.data);
     return res.data;
   } catch (error) {
     console.error('링크샵 생성 실패', error);
