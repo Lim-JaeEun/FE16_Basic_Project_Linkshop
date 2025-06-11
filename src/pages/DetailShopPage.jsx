@@ -1,7 +1,7 @@
 // src/pages/DetailShopPage.jsx
 import { useEffect, useState } from 'react';
 
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { createLike, getLinkshopDetail } from '../api/api';
@@ -60,7 +60,9 @@ const ContentContainer = styled.main`
 const DetailShopPage = () => {
   // --- 상태 관리 및 핸들러, 데이터는 이전과 동일하게 유지 ---
   const navigate = useNavigate();
-  const { URLid } = useParams();
+  const {
+    state: { id },
+  } = useLocation();
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
   const [passwordError, setPasswordError] = useState('');
@@ -95,7 +97,7 @@ const DetailShopPage = () => {
   }, []);
 
   const loadData = async () => {
-    const data = await getLinkshop(URLid);
+    const data = await getLinkshop(id);
     setCurrentLikeCount(data.likes);
   };
 
@@ -117,7 +119,7 @@ const DetailShopPage = () => {
   };
 
   const handleEditClick = () => {
-    navigate(`/link/${URLid}/edit`);
+    navigate(`/link/${shopInfo.userId}/edit`, { state: { id: id } });
   };
 
   const handleDeleteClick = () => {
@@ -135,7 +137,7 @@ const DetailShopPage = () => {
     setPasswordError('');
     try {
       const response = await fetch(
-        `https://linkshop-api.vercel.app/16-5/linkshops/${URLid}`,
+        `https://linkshop-api.vercel.app/16-5/linkshops/${id}`,
         {
           method: 'DELETE',
           headers: {
@@ -177,7 +179,7 @@ const DetailShopPage = () => {
   };
 
   const handleLikeClick = () => {
-    toggleLike(URLid);
+    toggleLike(id);
   };
 
   return (

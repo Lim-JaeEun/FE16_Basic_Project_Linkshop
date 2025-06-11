@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
 
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { getLinkshopDetail, updateLinkshop, uploadImage } from '../api/api';
-import { validateImage } from '../utils/validations';
 import UpdateModal from '../components/ConfirmCreateModal';
 import ImageFormatErrorModal from '../components/ImageFormatErrorModal';
 import LoadingIndicator from '../components/LoadingIndicator';
 import BaseButton from '../components/PrimaryButton';
 import UpdateProduct from '../components/UpdateProduct';
 import UpdateShop from '../components/UpdateShop';
-import renameFile from '../utils/renameFile';
 import theme from '../styles/theme';
+import renameFile from '../utils/renameFile';
+import { validateImage } from '../utils/validations';
 
 const Container = styled.form`
   margin-top: 124px;
@@ -68,7 +68,9 @@ const UpdateShopPage = ({ onSuccess }) => {
   const [imageFormatErrorMessage, setImageFormatErrorMessage] = useState('');
 
   const navigate = useNavigate();
-  const { URLid } = useParams();
+  const {
+    state: { id },
+  } = useLocation();
 
   /** 상품 추가 핸들러 */
   const handleAddProduct = () => {
@@ -277,14 +279,14 @@ const UpdateShopPage = ({ onSuccess }) => {
       setIsLoading(true);
 
       try {
-        if (!URLid) {
+        if (!id) {
           setError(
             '상세 정보를 불러올 수 없습니다: 페이지 ID가 누락되었습니다.',
           );
           return;
         }
 
-        const data = await getLinkshopDetail(URLid);
+        const data = await getLinkshopDetail(id);
         setShopData(data);
         setFormdata({
           name: data.name,
@@ -316,7 +318,7 @@ const UpdateShopPage = ({ onSuccess }) => {
       }
     };
     fetchDetail();
-  }, [URLid]);
+  }, [id]);
 
   /** 폼 유효성 자동 확인 */
   useEffect(() => {
@@ -442,7 +444,7 @@ const UpdateShopPage = ({ onSuccess }) => {
   const handleConfirm = () => {
     setIsModalOpen(false);
     onSuccess?.();
-    navigate(`/link/${URLid}`);
+    navigate(`/link/${shopData.userId}`, { state: { id: id } });
   };
 
   /** 비밀번호 오류 모달 확인 버튼 핸들러 */
@@ -574,7 +576,7 @@ const UpdateShopPage = ({ onSuccess }) => {
     };
 
     try {
-      await updateLinkshop(URLid, dataToSubmit);
+      await updateLinkshop(id, dataToSubmit);
       setIsModalOpen(true);
     } catch (err) {
       console.error('링크샵 수정 실패 (API 응답):', err);
