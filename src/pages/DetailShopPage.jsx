@@ -38,7 +38,7 @@ const HeroSection = styled.div`
   padding-top: 18.6667%;
 
   background-image: url(${BackgroundImg});
-  background-size: auto%;
+  background-size: 100%;
   background-repeat: repeat-x;
   background-position: top center;
   @media (min-width: 768px) {
