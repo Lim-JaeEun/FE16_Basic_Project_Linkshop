@@ -131,6 +131,26 @@ export const updateLinkshop = async (linkshopId, formData) => {
   }
 };
 
+/**
+ * 링크샵을 비밀번호와 함께 삭제하는 함수
+ * @param {number} linkshopId - 삭제할 링크샵의 ID
+ * @param {string} password - 삭제 확인을 위한 비밀번호
+ * @returns {Promise<object>} 삭제 성공 시 서버 응답 데이터
+ */
+export const deleteLinkshop = async (linkshopId, password) => {
+  try {
+    const response = await instance.delete(`/linkshops/${linkshopId}`, {
+      data: {
+        currentPassword: password,
+      },
+    });
+    return response.data; // 성공 시 응답 데이터 반환
+  } catch (error) {
+    console.error('링크샵 삭제 API 요청 실패:', error);
+    throw error;
+  }
+};
+
 const imageUploadInstance = axios.create({
   baseURL: 'https://linkshop-api.vercel.app',
   timeout: 15000,

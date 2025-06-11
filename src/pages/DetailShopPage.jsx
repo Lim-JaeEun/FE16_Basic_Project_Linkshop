@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { createLike, getLinkshopDetail } from '../api/api';
+import { createLike, getLinkshopDetail, deleteLinkshop } from '../api/api';
 import DeskTopBackgroundImg from '../assets/img/img_detailpage_bg_desktop.png';
 import BackgroundImg from '../assets/img/img_detailpage_bg_mobile.png';
 import TabletBackgroundImg from '../assets/img/img_detailpage_bg_tablet.png';
@@ -14,7 +14,6 @@ import ProductList from '../components/ProductList';
 import ShopProfileCard from '../components/ShopProfileCard';
 import { useOptimisticUpdate } from '../hooks/useOptimisticUpdate';
 import Toast from '../Toast';
-import LoadingIndicator from './../components/LoadingIndicator';
 import { useAsync } from './../hooks/useAsync';
 
 // --- 페이지 레벨 Styled Components ---
@@ -53,6 +52,8 @@ const HeroSection = styled.div`
 `;
 
 const ContentContainer = styled.main`
+  margin: 0 auto;
+  padding: 0 25px;
   width: 100%;
 `;
 // --- End of 페이지 레벨 Styled Components ---
@@ -69,11 +70,7 @@ const DetailShopPage = () => {
 
   const [toastMessage, setToastMessage] = useState('');
 
-  const {
-    data: shopInfo,
-    isLoading,
-    execute: getLinkshop,
-  } = useAsync(getLinkshopDetail, {
+  const { data: shopInfo, execute: getLinkshop } = useAsync(getLinkshopDetail, {
     delayLoadingTransition: false,
   });
 
@@ -123,56 +120,34 @@ const DetailShopPage = () => {
   };
 
   const handleDeleteClick = () => {
-    console.log('DetailShopPage의 handleDeleteClick 함수 실행됨!');
     setIsActionMenuOpen(false);
     setPasswordError('');
     setIsPasswordModalOpen(true);
   };
 
   const handlePasswordSubmit = async password => {
-    if (!password) {
-      setPasswordError('비밀번호를 입력해주세요.');
-      return; // 요청을 보내지 않고 함수를 여기서 종료합니다.
-    }
-    setPasswordError('');
+    // ... (비밀번호 유효성 검사) ...
     try {
-      const response = await fetch(
-        `https://linkshop-api.vercel.app/16-5/linkshops/${id}`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ currentPassword: password }),
-        },
-      );
+      await deleteLinkshop(URLid, password);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        // 서버가 보낸 메시지 내용을 확인하고, 직접 정의한 한글 메시지를 설정합니다.
-        if (errorData.message === 'Validation Failed') {
-          setPasswordError('비밀번호가 올바르지 않습니다.');
-        } else {
-          // 'Validation Failed' 외 다른 에러가 발생할 경우를 대비한 기본 메시지
-          setPasswordError(
-            errorData.message || '삭제에 실패했습니다. 다시 시도해주세요.',
-          );
-        }
-        return;
-      }
-
+      // --- 성공했을 때 실행될 코드 ---
       setIsPasswordModalOpen(false);
       setToastMessage('삭제 완료!');
-
       setTimeout(() => {
         navigate('/list');
       }, 1000);
     } catch (error) {
-      console.error('삭제 요청 중 에러 발생:', error);
-      setPasswordError('오류 발생!');
+      // --- 실패했을 때 실행될 코드 ---
+      const errorMessage = error.response?.data?.message;
+      if (errorMessage === 'Validation Failed') {
+        setPasswordError('비밀번호가 올바르지 않습니다.');
+      } else {
+        setPasswordError(
+          errorMessage || '삭제에 실패했습니다. 다시 시도해주세요.',
+        );
+      }
     }
   };
-
   const handleCloseModal = () => {
     setIsPasswordModalOpen(false);
     setPasswordError('');
@@ -184,8 +159,8 @@ const DetailShopPage = () => {
 
   return (
     <PageWrapper>
+      <HeroSection />
       <MainContentLayoutWrapper>
-        <HeroSection />
         <LinkHeader onGoBack={handleGoBack} />
         <ContentContainer>
           <ShopProfileCard
@@ -214,11 +189,6 @@ const DetailShopPage = () => {
         />
       )}
       <Toast message={toastMessage} />
-      <LoadingIndicator
-        $isLoading={isLoading}
-        $hasMore={true}
-        $isInitialLoad={true}
-      />
     </PageWrapper>
   );
 };
