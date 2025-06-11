@@ -15,11 +15,13 @@ import { ColorTypes } from '../styles/theme';
 import deepIsEmpty from '../utils/deepIsEmpty';
 
 const PageContainer = styled.div`
-  width: 375px;
+  min-width: 375px;
   margin: 0 auto;
-
+  width: 100%;
+  padding: 0 16px;
   @media (min-width: 768px) {
     width: 744px;
+    padding: 0 24px;
   }
 `;
 

@@ -34,6 +34,7 @@ const StUserId = styled.span`
 
 const StLikes = styled(Likes)`
   align-self: flex-start;
+  flex-shrink: 0; // 작은화면에서 상품이름이 너무 긴 경우 좋아요버튼영역이 넘치는 거 방지
 `;
 
 const LinkshopProfileInfo = ({

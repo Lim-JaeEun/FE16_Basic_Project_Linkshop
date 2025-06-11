@@ -7,34 +7,35 @@ import { applyFontStyles } from '../styles/mixins';
 import { ColorTypes, FontTypes } from '../styles/theme';
 
 const ProductListContainer = styled.div`
-  width: 344px;
+  width: 100%;
+  min-width: 344px;
   position: relative;
   display: flex;
   flex-direction: column;
-  margin: 168px 16px 75px;
+  margin: 168px auto 75px;
   gap: 16px;
 
   @media (min-width: 768px) {
-    width: 696px;
+    width: 100%;
   }
 `;
-
+const FormHeader = styled.div`
+  display: flex;Add commentMore actions
+  justify-content: space-between;
+`;
 export const FormTitle = styled.div`
-  position: absolute;
-  left: 0;
-  top: -45px;
   display: none;
   ${applyFontStyles(FontTypes.SEMIBOLD16)};
 
   @media (min-width: 768px) {
     display: block;
+    flex-shrink: 0;
   }
 `;
 
 const AddButton = styled.button`
-  position: absolute;
-  right: 0;
-  top: -45px;
+  width: 100%;
+  text-align: right;
   ${applyFontStyles(FontTypes.BOLD16, ColorTypes.PRIMARY)};
 `;
 
@@ -63,10 +64,13 @@ const CreateProducts = ({ setIsDisabled, onSaveCompleteData }) => {
 
   return (
     <ProductListContainer>
-      <FormTitle>대표 상품</FormTitle>
-      <AddButton type='button' onClick={handleAddProduct}>
-        추가
-      </AddButton>
+      <FormHeader>
+        <FormTitle>대표 상품</FormTitle>
+        <AddButton type='button' onClick={handleAddProduct}>
+          추가
+        </AddButton>
+      </FormHeader>
+
       {productList.map(product => {
         return (
           <CreateItemCard
