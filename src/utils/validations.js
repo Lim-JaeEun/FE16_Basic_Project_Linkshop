@@ -22,3 +22,22 @@ export const validatePassword = value => {
   }
   return 'valid';
 };
+
+export const validateImage = file => {
+  const validExtensions = ['jpg', 'jpeg', 'png', 'webp', 'avif'];
+  const validMimeTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/avif',
+  ];
+
+  const extension = file.name.split('.').pop().toLowerCase();
+  const isExtValid = validExtensions.includes(extension);
+  const isMimeValid = validMimeTypes.includes(file.type);
+
+  return {
+    hasError: !(isExtValid && isMimeValid && file.type.startsWith('image/')),
+    message: 'jpg, jpeg, png, webp, avif 형식의 이미지만 업로드할 수 있습니다.',
+  };
+};

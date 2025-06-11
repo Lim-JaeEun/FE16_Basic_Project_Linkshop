@@ -110,7 +110,7 @@ const CreateItemCard = ({
       <Field
         placeholder='원화로 표기해 주세요.'
         inputId={`productPrice${idKey}`}
-        type='number'
+        type='text'
         label='상품 가격'
         name='price'
         onCheckValidForm={setIsFormValid}

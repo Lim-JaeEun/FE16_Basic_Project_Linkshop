@@ -47,7 +47,8 @@ function CardList({ cardData, $isLoading }) {
       {cardData.map(cardItem => (
         <StyledLink
           key={cardItem.id}
-          to={`/link/${cardItem.id}`}
+          to={`/link/${cardItem.userId}`}
+          state={{ id: cardItem.id }}
           draggable='false'
         >
           <Card cardData={cardItem} />

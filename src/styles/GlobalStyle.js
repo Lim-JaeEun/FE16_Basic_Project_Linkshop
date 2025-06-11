@@ -76,6 +76,13 @@ const GlobalStyle = createGlobalStyle`
     height: 172px;
     padding-top: 54px;
   }
+
+  .image-format-error-modal {
+    width: 343px;
+    height: 172px;
+    padding-top: 33px;
+    text-align: center;
+  }
 `;
 
 export default GlobalStyle;

@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
 
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { getLinkshopDetail, updateLinkshop, uploadImage } from '../api/api';
 import UpdateModal from '../components/ConfirmCreateModal';
+import ImageFormatErrorModal from '../components/ImageFormatErrorModal';
 import LoadingIndicator from '../components/LoadingIndicator';
 import BaseButton from '../components/PrimaryButton';
 import UpdateProduct from '../components/UpdateProduct';
 import UpdateShop from '../components/UpdateShop';
 import theme from '../styles/theme';
+import renameFile from '../utils/renameFile';
+import { validateImage } from '../utils/validations';
 
 const Container = styled.form`
   margin-top: 124px;
@@ -58,9 +61,16 @@ const UpdateShopPage = ({ onSuccess }) => {
   const [productErrors, setProductErrors] = useState([]);
   const [isFormValid, setIsFormValid] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPasswordErrorModalOpen, setIsPasswordErrorModalOpen] =
+    useState(false);
+  const [isImageFormatErrorModalOpen, setIsImageFormatErrorModalOpen] =
+    useState(false);
+  const [imageFormatErrorMessage, setImageFormatErrorMessage] = useState('');
 
   const navigate = useNavigate();
-  const { URLid } = useParams();
+  const {
+    state: { id },
+  } = useLocation();
 
   /** 상품 추가 핸들러 */
   const handleAddProduct = () => {
@@ -78,6 +88,8 @@ const UpdateShopPage = ({ onSuccess }) => {
 
   /** 이미지 파일 변경 및 업로드 핸들러 */
   const handleImageChange = async (index, file) => {
+    setIsImageFormatErrorModalOpen(false);
+
     if (!file) {
       setProductImages(prev => {
         const updated = [...prev];
@@ -88,11 +100,27 @@ const UpdateShopPage = ({ onSuccess }) => {
       return;
     }
 
+    // 파일 유효성 검사 추가
+    const validationResult = validateImage(file);
+    if (validationResult.hasError) {
+      setImageFormatErrorMessage(validationResult.message);
+      setIsImageFormatErrorModalOpen(true);
+      setProductImages(prev => {
+        const updated = [...prev];
+        updated[index] = null;
+        return updated;
+      });
+      handleProductBlur(index, 'productImage', null, validationResult.message);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
-      const imageUrl = await uploadImage(file);
+      const renamedFile = renameFile(file);
+
+      const imageUrl = await uploadImage(renamedFile);
       setProductImages(prev => {
         const updated = [...prev];
         updated[index] = imageUrl;
@@ -115,9 +143,21 @@ const UpdateShopPage = ({ onSuccess }) => {
 
   /** 상점 대표 이미지 변경 및 업로드 핸들러 */
   const handleShopImageChange = async file => {
+    setIsImageFormatErrorModalOpen(false);
+
     if (!file) {
       setShopImageUrl(null);
       handleShopBlur('shopImage', null);
+      return;
+    }
+
+    // 파일 유효성 검사 추가
+    const validationResult = validateImage(file);
+    if (validationResult.hasError) {
+      setImageFormatErrorMessage(validationResult.message);
+      setIsImageFormatErrorModalOpen(true);
+      setShopImageUrl(null);
+      handleShopBlur('shopImage', null, validationResult.message);
       return;
     }
 
@@ -125,7 +165,9 @@ const UpdateShopPage = ({ onSuccess }) => {
     setError(null);
 
     try {
-      const imageUrl = await uploadImage(file);
+      const renamedFile = renameFile(file);
+
+      const imageUrl = await uploadImage(renamedFile);
       setShopImageUrl(imageUrl);
       handleShopBlur('shopImage', imageUrl);
     } catch (err) {
@@ -142,6 +184,7 @@ const UpdateShopPage = ({ onSuccess }) => {
   const handleRemoveShopImage = () => {
     setShopImageUrl(null);
     handleShopBlur('shopImage', null);
+    setIsImageFormatErrorModalOpen(false);
   };
 
   /** 유저 ID 유효성 검사 */
@@ -174,7 +217,7 @@ const UpdateShopPage = ({ onSuccess }) => {
     return { hasError: false, message: '' };
   };
 
-  /** 폼 전체 유효성 검사 (순수 함수) */
+  /** 폼 전체 유효성 검사 */
   const checkFormValidity = (
     currentFormData,
     currentProductFormData,
@@ -236,14 +279,14 @@ const UpdateShopPage = ({ onSuccess }) => {
       setIsLoading(true);
 
       try {
-        if (!URLid) {
+        if (!id) {
           setError(
             '상세 정보를 불러올 수 없습니다: 페이지 ID가 누락되었습니다.',
           );
           return;
         }
 
-        const data = await getLinkshopDetail(URLid);
+        const data = await getLinkshopDetail(id);
         setShopData(data);
         setFormdata({
           name: data.name,
@@ -275,7 +318,7 @@ const UpdateShopPage = ({ onSuccess }) => {
       }
     };
     fetchDetail();
-  }, [URLid]);
+  }, [id]);
 
   /** 폼 유효성 자동 확인 */
   useEffect(() => {
@@ -386,9 +429,6 @@ const UpdateShopPage = ({ onSuccess }) => {
 
   /** 개별 상품 삭제 핸들러 */
   const handleDeleteProduct = indexToDelete => {
-    if (!window.confirm('정말로 이 상품을 삭제하시겠습니까?')) {
-      return;
-    }
     setProductFormData(prev =>
       prev.filter((_, index) => index !== indexToDelete),
     );
@@ -404,7 +444,22 @@ const UpdateShopPage = ({ onSuccess }) => {
   const handleConfirm = () => {
     setIsModalOpen(false);
     onSuccess?.();
-    navigate(`/link/${URLid}`);
+    navigate(`/link/${shopData.userId}`, { state: { id: id } });
+  };
+
+  /** 비밀번호 오류 모달 확인 버튼 핸들러 */
+  const handlePasswordErrorConfirm = () => {
+    setIsPasswordErrorModalOpen(false);
+    setFormErrors(prevErrors => ({
+      ...prevErrors,
+      password: { hasError: true, message: '비밀번호가 일치하지 않습니다.' },
+    }));
+  };
+
+  /** 이미지 형식 오류 모달 확인 버튼 핸들러 */
+  const handleImageFormatErrorConfirm = () => {
+    setIsImageFormatErrorModalOpen(false);
+    setImageFormatErrorMessage(''); // 메시지 초기화
   };
 
   /** 링크샵 수정 최종 제출 핸들러 */
@@ -413,6 +468,9 @@ const UpdateShopPage = ({ onSuccess }) => {
 
     setError(null);
     setIsSubmitting(true);
+    setIsPasswordErrorModalOpen(false);
+    setIsImageFormatErrorModalOpen(false);
+    setImageFormatErrorMessage('');
 
     let overallValidForSubmission = true;
     const tempFormErrors = { ...formErrors };
@@ -478,6 +536,11 @@ const UpdateShopPage = ({ onSuccess }) => {
       tempProductErrors[idx] = itemErrors;
     });
 
+    if (productFormData.length === 0) {
+      setError('최소 한 개의 상품이 등록되어야 합니다.');
+      overallValidForSubmission = false;
+    }
+
     // 3. currentPassword 유효성 검사
     const currentPasswordValidation =
       formData.password.trim() === ''
@@ -502,7 +565,7 @@ const UpdateShopPage = ({ onSuccess }) => {
       currentPassword: formData.password,
       shop: {
         shopUrl: formData.url,
-        urlName: formData.url,
+        urlName: formData.userId,
         imageUrl: shopImageUrl || null,
       },
       products: productFormData.map((p, index) => ({
@@ -513,10 +576,15 @@ const UpdateShopPage = ({ onSuccess }) => {
     };
 
     try {
-      await updateLinkshop(URLid, dataToSubmit);
+      await updateLinkshop(id, dataToSubmit);
       setIsModalOpen(true);
     } catch (err) {
       console.error('링크샵 수정 실패 (API 응답):', err);
+      if (err.response && err.response.status === 400) {
+        setIsPasswordErrorModalOpen(true);
+      } else {
+        setError(err.message || '링크샵 수정에 실패했습니다.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -530,7 +598,14 @@ const UpdateShopPage = ({ onSuccess }) => {
       }}
     >
       {isLoading && !shopData && (
-        <LoadingIndicator isLoading={isLoading} $isInitialLoad={true} />
+        <LoadingIndicator
+          $isLoading={isLoading}
+          $isInitialLoad={true}
+          $hasMore={true}
+        />
+      )}
+      {isLoading && shopData && (
+        <LoadingIndicator $isLoading={isLoading} $hasMore={true} />
       )}
       {!isLoading && shopData && (
         <>
@@ -568,6 +643,16 @@ const UpdateShopPage = ({ onSuccess }) => {
         onConfirm={handleConfirm}
         isOpen={isModalOpen}
         message='수정이 완료되었습니다.'
+      />
+      <UpdateModal
+        onConfirm={handlePasswordErrorConfirm}
+        isOpen={isPasswordErrorModalOpen}
+        message='비밀번호가 일치하지 않습니다.'
+      />
+      <ImageFormatErrorModal
+        onConfirm={handleImageFormatErrorConfirm}
+        isOpen={isImageFormatErrorModalOpen}
+        message={imageFormatErrorMessage}
       />
     </Container>
   );
