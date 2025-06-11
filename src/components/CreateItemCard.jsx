@@ -12,7 +12,8 @@ export const FormContainer = styled.form`
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 344px;
+  min-width: 344px;
+  width: 100%;
   padding: 22px 28px;
   border-radius: 25px;
   margin: 0 auto;
@@ -22,7 +23,7 @@ export const FormContainer = styled.form`
     className === 'invalid' ? `1px solid ${theme.colors.err}` : 'none'};
 
   @media (min-width: 768px) {
-    width: 696px;
+    min-width: 696px;
   }
 `;
 
