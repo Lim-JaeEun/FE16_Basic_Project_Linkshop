@@ -128,7 +128,6 @@ const UpdateShopPage = ({ onSuccess }) => {
       });
       handleProductBlur(index, 'productImage', imageUrl);
     } catch (err) {
-      console.error(`상품 ${index} 이미지 업로드 실패:`, err);
       setError(err.message || '이미지 업로드에 실패했습니다.');
       setProductImages(prev => {
         const updated = [...prev];
@@ -171,7 +170,6 @@ const UpdateShopPage = ({ onSuccess }) => {
       setShopImageUrl(imageUrl);
       handleShopBlur('shopImage', imageUrl);
     } catch (err) {
-      console.error('상점 이미지 업로드 실패:', err);
       setError(err.message || '상점 이미지 업로드에 실패했습니다.');
       setShopImageUrl(null);
       handleShopBlur('shopImage', null);
@@ -311,8 +309,6 @@ const UpdateShopPage = ({ onSuccess }) => {
           })),
         );
         setProductImages((data.products || []).map(p => p.imageUrl || null));
-      } catch (e) {
-        console.error('상세 정보 로드 실패:', e);
       } finally {
         setIsLoading(false);
       }
@@ -590,7 +586,6 @@ const UpdateShopPage = ({ onSuccess }) => {
       await updateLinkshop(id, dataToSubmit);
       setIsModalOpen(true);
     } catch (err) {
-      console.error('링크샵 수정 실패 (API 응답):', err);
       if (err.response && err.response.status === 400) {
         setIsPasswordErrorModalOpen(true);
       } else {
