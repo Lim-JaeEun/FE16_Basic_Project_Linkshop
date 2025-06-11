@@ -1,10 +1,15 @@
 // src/pages/DetailShopPage.jsx
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { createLike, getLinkshopDetail, deleteLinkshop } from '../api/api';
+import {
+  createLike,
+  getLinkshopDetail,
+  deleteLinkshop,
+  deleteLike,
+} from '../api/api';
 import DeskTopBackgroundImg from '../assets/img/img_detailpage_bg_desktop.png';
 import BackgroundImg from '../assets/img/img_detailpage_bg_mobile.png';
 import TabletBackgroundImg from '../assets/img/img_detailpage_bg_tablet.png';
@@ -74,29 +79,62 @@ const DetailShopPage = () => {
     delayLoadingTransition: false,
   });
 
-  const { execute: toggleLike } = useOptimisticUpdate(
-    createLike,
-    () => {
-      setIsLiked(prev => !prev);
-      setCurrentLikeCount(prev => (!isLiked ? prev + 1 : prev - 1));
-    },
-    () => {
-      setIsLiked(prev => !prev);
-      setCurrentLikeCount(prev => (!isLiked ? prev - 1 : prev + 1));
-    },
-  );
-
-  const [isLiked, setIsLiked] = useState(false);
+  const storedValue =
+    window.localStorage.getItem(`cardIsLiked_${id}`) ?? 'false';
+  const [isLiked, setIsLiked] = useState(storedValue === 'true');
   const [currentLikeCount, setCurrentLikeCount] = useState(0);
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  const { execute: addLike } = useOptimisticUpdate(
+    createLike,
+    useCallback(() => {
+      setIsLiked(true);
+      setCurrentLikeCount(prev => prev + 1);
+    }, []),
+    useCallback(() => {
+      setIsLiked(false);
+      setCurrentLikeCount(prev => prev - 1);
+    }, []),
+  );
+
+  const { execute: removeLike } = useOptimisticUpdate(
+    deleteLike,
+    useCallback(() => {
+      setIsLiked(false);
+      setCurrentLikeCount(prev => prev - 1);
+    }, []),
+    useCallback(() => {
+      setIsLiked(true);
+      setCurrentLikeCount(prev => prev + 1);
+    }, []),
+  );
+
+  const handleToggleLike = useCallback(
+    async (id, currentIsLiked) => {
+      try {
+        if (!currentIsLiked) {
+          await addLike(id);
+        } else {
+          await removeLike(id);
+        }
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+    [addLike, removeLike],
+  );
 
   const loadData = async () => {
     const data = await getLinkshop(id);
     setCurrentLikeCount(data.likes);
   };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem(`cardIsLiked_${id}`, String(isLiked));
+  }, [isLiked]);
 
   const handleGoBack = () => {
     navigate('/list');
@@ -128,7 +166,7 @@ const DetailShopPage = () => {
   const handlePasswordSubmit = async password => {
     // ... (비밀번호 유효성 검사) ...
     try {
-      await deleteLinkshop(URLid, password);
+      await deleteLinkshop(id, password);
 
       // --- 성공했을 때 실행될 코드 ---
       setIsPasswordModalOpen(false);
@@ -153,10 +191,6 @@ const DetailShopPage = () => {
     setPasswordError('');
   };
 
-  const handleLikeClick = () => {
-    toggleLike(id);
-  };
-
   return (
     <PageWrapper>
       <HeroSection />
@@ -167,7 +201,7 @@ const DetailShopPage = () => {
             shopInfo={shopInfo}
             currentLikeCount={currentLikeCount}
             isLiked={isLiked}
-            handleToggleLike={handleLikeClick}
+            handleToggleLike={() => handleToggleLike(id, isLiked)}
             onShareClick={handleShareLink}
             onMoreOptionsClick={handleToggleActionMenu}
             isActionMenuOpen={isActionMenuOpen}
