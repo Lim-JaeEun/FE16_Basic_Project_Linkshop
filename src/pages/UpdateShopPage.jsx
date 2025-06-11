@@ -383,7 +383,7 @@ const UpdateShopPage = ({ onSuccess }) => {
   /** 상점 정보 변경 핸들러 */
   const handleChange = e => {
     const { id, value } = e.target;
-    setFormdata(prev => ({ [id]: value, ...prev }));
+    setFormdata(prev => ({ ...prev, [id]: value }));
     let result =
       id === 'userId'
         ? validateUserId(value)
@@ -393,7 +393,7 @@ const UpdateShopPage = ({ onSuccess }) => {
               hasError: value.trim() === '',
               message: value.trim() === '' ? '필수 입력 항목입니다.' : '',
             };
-    setFormErrors(prev => ({ [id]: result, ...prev }));
+    setFormErrors(prev => ({ ...prev, [id]: result }));
   };
 
   /** 상점 필드 blur 시 유효성 검사 */
@@ -402,9 +402,8 @@ const UpdateShopPage = ({ onSuccess }) => {
     if (id === 'userId') {
       result = validateUserId(value);
     } else if (id === 'password') {
-      // 비밀번호가 비어있으면 유효성 에러를 발생시키지 않음 (수정 안 함으로 간주)
       if (value.trim() === '') {
-        result = { hasError: false, message: '' };
+        result = { hasError: true, message: '필수 입력 항목입니다.' };
       } else {
         result = validatePassword(value);
       }
@@ -433,7 +432,7 @@ const UpdateShopPage = ({ onSuccess }) => {
         message: value.trim() === '' ? '필수 입력 항목입니다.' : '',
       };
     }
-    setFormErrors(prev => ({ [id]: result, ...prev }));
+    setFormErrors(prev => ({ ...prev, [id]: result }));
   };
 
   /** 개별 상품 삭제 핸들러 */
@@ -485,14 +484,26 @@ const UpdateShopPage = ({ onSuccess }) => {
     const tempFormErrors = { ...formErrors };
     const tempProductErrors = [...productErrors];
 
-    // 1. 기본 폼 필드 유효성 검사 (제출 시점에 한 번 더)
+    // 1. 기본 폼 필드 유효성 검사
     for (const key in formData) {
+      if (key === 'password') continue;
       const value = formData[key];
       let result;
       if (key === 'userId') {
         result = validateUserId(value);
-      } else if (key === 'password') {
-        result = { hasError: false, message: '' };
+      } else if (key === 'url') {
+        const urlRegex =
+          /^https?:\/\/?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$/;
+        if (value.trim() === '') {
+          result = { hasError: true, message: '필수 입력 항목입니다.' };
+        } else if (!urlRegex.test(value)) {
+          result = {
+            hasError: true,
+            message: 'http:// 또는 https://로 시작한 주소를 사용해 주세요.',
+          };
+        } else {
+          result = { hasError: false, message: '' };
+        }
       } else {
         result = {
           hasError: value.trim() === '',
