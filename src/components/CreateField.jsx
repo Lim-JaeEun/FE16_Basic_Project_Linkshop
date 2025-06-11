@@ -55,9 +55,8 @@ const Field = ({
   const [isFocused, setIsFocused] = useState(false);
   const [passwordType, setpasswordType] = useState('password');
   const [isFieldValid, setIsFieldValid] = useState();
-  const [noneValidMessage, setNoneValidMessage] = useState(
-    '항목이 비어있거나 잘못된 형식입니다.',
-  );
+  const [noneValidMessage, setNoneValidMessage] =
+    useState('필수 입력 항목입니다.');
   const iconUrl =
     passwordType === 'password' ? visibilityOffIcon : visibilityOnIcon;
 
@@ -84,7 +83,7 @@ const Field = ({
   const handleValidation = e => {
     setIsFocused(prev => false);
     if (!e.target.value) {
-      setNoneValidMessage(prev => '항목이 비어있거나 잘못된 형식입니다.');
+      setNoneValidMessage(prev => '필수 입력 항목입니다.');
       setIsFieldValid(prev => false);
       onCheckValidForm(prev => false);
       setIsDisabled(prev => true);

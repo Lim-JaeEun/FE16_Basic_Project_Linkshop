@@ -11,13 +11,10 @@ const FlexDiv = styled.div`
   align-items: center;
   gap: 24px;
   ${applyFontStyles(FontTypes.REGULAR17)};
+  white-space: pre-wrap;
 `;
 
-const ImageFormatErrorModal = ({
-  isOpen,
-  onConfirm,
-  message = '등록이 완료되었습니다.',
-}) => {
+const ImageFormatErrorModal = ({ isOpen, onConfirm, message }) => {
   return (
     <BaseModal
       isOpen={isOpen}

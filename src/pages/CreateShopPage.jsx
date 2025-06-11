@@ -7,6 +7,7 @@ import { createLinkshop, uploadImage } from '../api/api';
 import ConfirmCreateModal from '../components/ConfirmCreateModal';
 import CreateProducts from '../components/CreateProducts';
 import CreateShop from '../components/CreateShop';
+import ErrorModal from '../components/ImageFormatErrorModal';
 import BaseButton from '../components/PrimaryButton';
 import { useAsync } from '../hooks/useAsync';
 import theme from '../styles/theme';
@@ -47,16 +48,18 @@ const INITIAL_DATA = {
 
 function CreateShopPage({ onSuccess }) {
   const [completeData, setCompleteData] = useState(INITIAL_DATA);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
   const [disabled, setDisabled] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   //isDisabled => ui에 영향을 주지 않고 필드의 데이터값이 유효한지 확인하는 용도
   //disabled => 실제 버튼이 활성화ui에 영향을 주는 상태, isDisabled와 completeData를 교차검증하여 최종적으로 상태가 변경
-  const { execute: asyncUploadImage, error: imageError } = useAsync(
-    uploadImage,
-    { delayLoadingTransition: true },
-  );
+  const {
+    execute: asyncUploadImage,
+    isLoading: imageLoading,
+    error: imageError,
+  } = useAsync(uploadImage, { delayLoadingTransition: true });
   const {
     execute: asyncCreateLinkshop,
     isLoading: createLoading,
@@ -65,20 +68,31 @@ function CreateShopPage({ onSuccess }) {
   const navigate = useNavigate();
 
   const handleConfirm = () => {
-    setIsModalOpen(false);
+    setIsConfirmModalOpen(false);
     onSuccess?.();
     navigate('/list');
   };
 
-  const onSuccsessCreate = () => {
-    if (!createError) {
-      setIsModalOpen(true);
+  const handleCloseModal = () => {
+    setIsErrorModalOpen(false);
+  };
+
+  const onSuccsessCreate = res => {
+    if (res) {
+      setIsConfirmModalOpen(true);
+    }
+  };
+
+  const onFailCreate = () => {
+    setIsErrorModalOpen(true);
+    setIsLoading(prev => false);
+    if (createError?.request?.response.includes('아이디입니다')) {
+      setDisabled(prev => true);
     }
   };
 
   const handleCreate = async () => {
     // 이미지 업로드 -> 데이터 전송 두 종류 api 순차 실행
-    setIsLoading(prev => true);
     const copiedList = completeData.products.map(product => {
       return { ...product };
     });
@@ -89,8 +103,6 @@ function CreateShopPage({ onSuccess }) {
 
     const copiedShop = { ...completeData.shop };
     copiedShop.imageUrl = await asyncUploadImage(copiedShop.imageUrl);
-    console.log(copiedList);
-    console.log(copiedShop);
 
     const dataForSubmit = {
       ...completeData,
@@ -99,7 +111,8 @@ function CreateShopPage({ onSuccess }) {
     };
 
     const res = await asyncCreateLinkshop(dataForSubmit);
-    onSuccsessCreate();
+
+    onSuccsessCreate(res);
   };
 
   //폼 하나의 검사가 통과하고, 나머지에 빈값이 없지만 오류값은 있는 경우 -> 해결하려면 모든 필드에서도 버튼 컨트롤을 해야함
@@ -115,14 +128,16 @@ function CreateShopPage({ onSuccess }) {
   }, [isDisabled, completeData]);
 
   useEffect(() => {
+    if (imageLoading) {
+      setIsLoading(prev => true);
+    }
     const current = createLoading;
     setIsLoading(prev => (prev !== current ? createLoading : prev));
   }, [createLoading]);
 
   useEffect(() => {
     if (imageError || createError) {
-      alert('다시시도해주세요');
-      setIsLoading(prev => false);
+      onFailCreate();
     }
   }, [imageError, createError]);
 
@@ -145,8 +160,17 @@ function CreateShopPage({ onSuccess }) {
       </CreateButton>
       <ConfirmCreateModal
         onConfirm={handleConfirm}
-        isOpen={isModalOpen}
+        isOpen={isConfirmModalOpen}
         message='등록이 완료되었습니다.'
+      />
+      <ErrorModal
+        onConfirm={handleCloseModal}
+        isOpen={isErrorModalOpen}
+        message={
+          createError?.request?.response?.includes('아이디입니다')
+            ? `이미 존재하는 아이디입니다.\n다른 아이디를 입력해 주세요.`
+            : `요청을 보내는중 문제가 발생했습니다.\n다시 시도해 주세요.`
+        }
       />
     </PageContainer>
   );

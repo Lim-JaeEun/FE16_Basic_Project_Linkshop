@@ -110,6 +110,7 @@ export const createLinkshop = async dataForSubmit => {
     return res.data;
   } catch (error) {
     console.error('링크샵 생성 실패', error);
+    throw error;
   }
 };
 
