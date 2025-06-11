@@ -54,8 +54,8 @@ const LinkHeader = ({ onGoBack }) => {
       <HeaderLeftSection>
         <IconButton onClick={onGoBack} aria-label='뒤로가기'>
           <img src={BackIcon} alt='뒤로가기' />
+          <HeaderText>돌아가기</HeaderText>
         </IconButton>
-        <HeaderText>돌아가기</HeaderText>
       </HeaderLeftSection>
     </StyledHeaderBar>
   );

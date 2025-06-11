@@ -67,9 +67,9 @@ const ProductCard = ({ product }) => {
 
   return (
     <StyledProductItemCard>
-      <LinkshopProductImage src={product.imageUrl} name={product.productName} />
+      <LinkshopProductImage src={product.imageUrl} alt={'상품 이미지'} />
       <ProductInfo>
-        <ProductName>{product.productName}</ProductName>
+        <ProductName>{product.name}</ProductName>
         <ProductPrice>{formatPrice(product.price)}</ProductPrice>
       </ProductInfo>
     </StyledProductItemCard>

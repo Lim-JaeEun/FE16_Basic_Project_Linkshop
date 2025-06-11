@@ -7,7 +7,7 @@ import ProfileImage from './ProfileImage';
 import MoreIcon from '../assets/icon/btn_kebap.png';
 import ShareIcon from '../assets/icon/btn_share.png';
 import { applyFontStyles } from '../styles/mixins'; // 경로 확인
-import { FontTypes } from '../styles/theme'; // 경로 확인
+import { ColorTypes, FontTypes } from '../styles/theme'; // 경로 확인
 
 const StyledShopInfoWrapper = styled.div`
   background-color: #fafafb;
@@ -49,26 +49,16 @@ const IconButton = styled.button`
 `;
 
 const ShopName = styled.h1`
-  ${applyFontStyles(FontTypes.BOLD20)}
   color: #1c1c1e;
   font-size: 32px;
-  font-weight: 700;
+  font-weight: 800;
   margin-top: 16px;
   margin-bottom: 4px;
 `;
 
 const ShopHandle = styled.p`
-  font-size: 14px;
-  color: #8e8e93;
+  ${applyFontStyles(FontTypes.REGULAR16, ColorTypes.SECONDARY_GRAY_300)}
   margin: 0 0 8px 0;
-`;
-
-const ShopDescription = styled.p`
-  font-size: 14px;
-  color: #555;
-  line-height: 1.5;
-  margin: 0;
-  white-space: pre-wrap;
 `;
 
 const ActionMenu = styled.div`
@@ -91,23 +81,23 @@ const ActionMenuItem = styled.button`
   text-align: center;
   background: none;
   cursor: pointer;
-    transition: background-color 0.2s ease;
-    border-bottom: 1px solid #DDDDDD;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #dddddd;
 
   &:hover {
-    background-color:rgb(231, 231, 231);
+    background-color: rgb(231, 231, 231);
   }
 
   &:last-child {
     border-bottom: none;
-
+  }
 `;
 
 const ShopProfileCard = ({
   shopInfo,
   isLiked,
-  likeCount,
-  onLikeClick,
+  currentLikeCount,
+  handleToggleLike,
   onShareClick,
   onMoreOptionsClick,
   isActionMenuOpen,
@@ -119,7 +109,12 @@ const ShopProfileCard = ({
   return (
     <StyledShopInfoWrapper>
       <ShopTopControls>
-        <Likes onClick={onLikeClick} likes={likeCount} isLiked={isLiked} />
+        <Likes
+          onToggleLike={handleToggleLike}
+          likes={currentLikeCount}
+          isLiked={isLiked}
+          id={shopInfo.id}
+        />
         <ActionIconsGroup>
           <IconButton onClick={onShareClick} aria-label='공유하기'>
             <img src={ShareIcon} alt='공유' />
@@ -140,12 +135,9 @@ const ShopProfileCard = ({
         </ActionIconsGroup>
       </ShopTopControls>
 
-      <ProfileImage src={shopInfo.imageUrl} size='88px' />
-      <ShopName>{shopInfo.shopName}</ShopName>
-      <ShopHandle>{shopInfo.handle}</ShopHandle>
-      {shopInfo.description && (
-        <ShopDescription>{shopInfo.description}</ShopDescription>
-      )}
+      <ProfileImage src={shopInfo.shop.imageUrl} size='88px' />
+      <ShopName>{shopInfo.name}</ShopName>
+      <ShopHandle>@{shopInfo.userId}</ShopHandle>
     </StyledShopInfoWrapper>
   );
 };

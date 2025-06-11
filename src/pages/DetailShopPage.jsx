@@ -1,9 +1,10 @@
 // src/pages/DetailShopPage.jsx
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { createLike, getLinkshopDetail } from '../api/api';
 import DeskTopBackgroundImg from '../assets/img/img_detailpage_bg_desktop.png';
 import BackgroundImg from '../assets/img/img_detailpage_bg_mobile.png';
 import TabletBackgroundImg from '../assets/img/img_detailpage_bg_tablet.png';
@@ -11,7 +12,10 @@ import LinkHeader from '../components/LinkHeader';
 import PasswordModal from '../components/PasswordModal';
 import ProductList from '../components/ProductList';
 import ShopProfileCard from '../components/ShopProfileCard';
+import { useOptimisticUpdate } from '../hooks/useOptimisticUpdate';
 import Toast from '../Toast';
+import LoadingIndicator from './../components/LoadingIndicator';
+import { useAsync } from './../hooks/useAsync';
 
 // --- 페이지 레벨 Styled Components ---
 const PageWrapper = styled.div`
@@ -32,15 +36,18 @@ const MainContentLayoutWrapper = styled.div`
 
 const HeroSection = styled.div`
   width: 100%;
-  height: 80px;
+  padding-top: 18.6667%;
+
   background-image: url(${BackgroundImg});
   background-size: 100%;
   background-repeat: repeat-x;
   background-position: top center;
   @media (min-width: 768px) {
+    padding-top: 10.335%;
     background-image: url(${TabletBackgroundImg});
   }
   @media (min-width: 1024px) {
+    padding-top: 3.9764%;
     background-image: url(${DeskTopBackgroundImg});
   }
 `;
@@ -60,65 +67,42 @@ const DetailShopPage = () => {
 
   const [toastMessage, setToastMessage] = useState('');
 
-  const initialShopData = {
-    shopId: 1,
-    shopName: '너구리 직구상점',
-    shopUrl: null,
-    category: '해외직구',
-    likeCount: 0,
-    isInitiallyLiked: false,
-    userId: 101,
-    handle: '@pumpkinraccoon',
-  };
+  const {
+    data: shopInfo,
+    isLoading,
+    execute: getLinkshop,
+  } = useAsync(getLinkshopDetail, {
+    delayLoadingTransition: false,
+  });
 
-  const [isLiked, setIsLiked] = useState(initialShopData.isInitiallyLiked);
-  const [currentLikeCount, setCurrentLikeCount] = useState(
-    initialShopData.likeCount,
+  const { execute: toggleLike } = useOptimisticUpdate(
+    createLike,
+    () => {
+      setIsLiked(prev => !prev);
+      setCurrentLikeCount(prev => (!isLiked ? prev + 1 : prev - 1));
+    },
+    () => {
+      setIsLiked(prev => !prev);
+      setCurrentLikeCount(prev => (!isLiked ? prev - 1 : prev + 1));
+    },
   );
 
-  const sampleProducts = [
-    {
-      productId: 1,
-      productName: '아디다스 가젤 HP5379',
-      price: 134000,
-      productUrl: 'null',
-    },
-    {
-      productId: 2,
-      productName: '아디다스 가젤 HP5379',
-      price: 104000,
-      productUrl: 'null',
-    },
-    {
-      productId: 3,
-      productName: '나이키 바람막이',
-      price: 154000,
-      productUrl: 'null',
-    },
-    {
-      productId: 4,
-      productName: '나이키 신발',
-      price: 124000,
-      productUrl: 'null',
-    },
-    {
-      productId: 5,
-      productName: '나이키 신발',
-      price: 124000,
-      productUrl: 'null',
-    },
+  const [isLiked, setIsLiked] = useState(false);
+  const [currentLikeCount, setCurrentLikeCount] = useState(0);
 
-    {
-      productId: 6,
-      productName: '나이키 신발',
-      price: 124000,
-      productUrl: 'null',
-    },
-  ];
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    const data = await getLinkshop(URLid);
+    setCurrentLikeCount(data.likes);
+  };
 
   const handleGoBack = () => {
     navigate('/list');
   };
+
   const handleShareLink = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
@@ -127,19 +111,28 @@ const DetailShopPage = () => {
       alert('URL 복사에 실패했습니다.');
     }
   };
+
   const handleToggleActionMenu = () => {
     setIsActionMenuOpen(prev => !prev);
   };
+
   const handleEditClick = () => {
     navigate(`/link/${URLid}/edit`);
   };
+
   const handleDeleteClick = () => {
     console.log('DetailShopPage의 handleDeleteClick 함수 실행됨!');
     setIsActionMenuOpen(false);
     setPasswordError('');
     setIsPasswordModalOpen(true);
   };
+
   const handlePasswordSubmit = async password => {
+    if (!password) {
+      setPasswordError('비밀번호를 입력해주세요.');
+      return; // 요청을 보내지 않고 함수를 여기서 종료합니다.
+    }
+    setPasswordError('');
     try {
       const response = await fetch(
         `https://linkshop-api.vercel.app/16-5/linkshops/${URLid}`,
@@ -154,19 +147,27 @@ const DetailShopPage = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        setPasswordError(errorData.message || '비밀번호가 일치하지 않습니다.');
+        // 서버가 보낸 메시지 내용을 확인하고, 직접 정의한 한글 메시지를 설정합니다.
+        if (errorData.message === 'Validation Failed') {
+          setPasswordError('비밀번호가 올바르지 않습니다.');
+        } else {
+          // 'Validation Failed' 외 다른 에러가 발생할 경우를 대비한 기본 메시지
+          setPasswordError(
+            errorData.message || '삭제에 실패했습니다. 다시 시도해주세요.',
+          );
+        }
         return;
       }
 
       setIsPasswordModalOpen(false);
-      setToastMessage('정상적으로 삭제되었습니다.');
+      setToastMessage('삭제 완료!');
 
       setTimeout(() => {
         navigate('/list');
       }, 1000);
     } catch (error) {
       console.error('삭제 요청 중 에러 발생:', error);
-      setPasswordError('삭제 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
+      setPasswordError('오류 발생!');
     }
   };
 
@@ -174,13 +175,9 @@ const DetailShopPage = () => {
     setIsPasswordModalOpen(false);
     setPasswordError('');
   };
+
   const handleLikeClick = () => {
-    const newLikedState = !isLiked;
-    const newLikesCount = newLikedState
-      ? currentLikeCount + 1
-      : currentLikeCount - 1;
-    setIsLiked(newLikedState);
-    setCurrentLikeCount(newLikesCount);
+    toggleLike(URLid);
   };
 
   return (
@@ -190,17 +187,17 @@ const DetailShopPage = () => {
         <LinkHeader onGoBack={handleGoBack} />
         <ContentContainer>
           <ShopProfileCard
-            shopInfo={initialShopData}
+            shopInfo={shopInfo}
+            currentLikeCount={currentLikeCount}
             isLiked={isLiked}
-            likeCount={currentLikeCount}
-            onLikeClick={handleLikeClick}
+            handleToggleLike={handleLikeClick}
             onShareClick={handleShareLink}
             onMoreOptionsClick={handleToggleActionMenu}
             isActionMenuOpen={isActionMenuOpen}
             onEditActionClick={handleEditClick}
             onDeleteActionClick={handleDeleteClick}
           />
-          <ProductList title='대표 상품' products={sampleProducts} />
+          <ProductList title='대표 상품' shopInfo={shopInfo} />
         </ContentContainer>
       </MainContentLayoutWrapper>
       {isPasswordModalOpen && (
@@ -215,6 +212,11 @@ const DetailShopPage = () => {
         />
       )}
       <Toast message={toastMessage} />
+      <LoadingIndicator
+        $isLoading={isLoading}
+        $hasMore={true}
+        $isInitialLoad={true}
+      />
     </PageWrapper>
   );
 };
