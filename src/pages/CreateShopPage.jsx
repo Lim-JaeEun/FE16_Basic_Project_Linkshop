@@ -55,11 +55,10 @@ function CreateShopPage({ onSuccess }) {
   const [isLoading, setIsLoading] = useState(false);
   //isDisabled => ui에 영향을 주지 않고 필드의 데이터값이 유효한지 확인하는 용도
   //disabled => 실제 버튼이 활성화ui에 영향을 주는 상태, isDisabled와 completeData를 교차검증하여 최종적으로 상태가 변경
-  const {
-    execute: asyncUploadImage,
-    isLoading: imageLoading,
-    error: imageError,
-  } = useAsync(uploadImage, { delayLoadingTransition: true });
+  const { execute: asyncUploadImage, error: imageError } = useAsync(
+    uploadImage,
+    { delayLoadingTransition: true },
+  );
   const {
     execute: asyncCreateLinkshop,
     isLoading: createLoading,
@@ -92,6 +91,7 @@ function CreateShopPage({ onSuccess }) {
   };
 
   const handleCreate = async () => {
+    setIsLoading(prev => true);
     // 이미지 업로드 -> 데이터 전송 두 종류 api 순차 실행
     const copiedList = completeData.products.map(product => {
       return { ...product };
@@ -128,9 +128,6 @@ function CreateShopPage({ onSuccess }) {
   }, [isDisabled, completeData]);
 
   useEffect(() => {
-    if (imageLoading) {
-      setIsLoading(prev => true);
-    }
     const current = createLoading;
     setIsLoading(prev => (prev !== current ? createLoading : prev));
   }, [createLoading]);
