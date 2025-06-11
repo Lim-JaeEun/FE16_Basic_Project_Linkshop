@@ -34,6 +34,7 @@ const StUserId = styled.span`
 
 const StLikes = styled(Likes)`
   align-self: flex-start;
+  flex-shrink: 0;
 `;
 
 const LinkshopProfileInfo = ({

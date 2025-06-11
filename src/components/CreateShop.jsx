@@ -13,8 +13,12 @@ import {
   validatePassword,
 } from '../utils/validations';
 
+const MyShopTitle = styled(FormTitle)`
+  margin-bottom: 16px;
+`;
+
 const ContainerWrapper = styled.div`
-  width: 344px;
+  min-width: 344px;
   position: relative;
   margin: 0 auto 75px;
 
@@ -58,7 +62,7 @@ const CreateShop = ({ setIsDisabled, onSaveCompleteData }) => {
 
   return (
     <ContainerWrapper>
-      <FormTitle>내 쇼핑몰</FormTitle>
+      <MyShopTitle>내 쇼핑몰</MyShopTitle>
       <FormContainer className={isFormValid === false ? 'invalid' : 'valid'}>
         <FileField
           placeholder='프로필 이미지를 첨부해주세요.'
