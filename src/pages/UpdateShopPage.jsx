@@ -418,6 +418,19 @@ const UpdateShopPage = ({ onSuccess }) => {
       } else {
         result = { hasError: false, message: '' };
       }
+    } else if (id === 'url') {
+      const urlRegex =
+        /^https?:\/\/?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$/;
+      if (value.trim() === '') {
+        result = { hasError: true, message: '필수 입력 항목입니다.' };
+      } else if (!urlRegex.test(value)) {
+        result = {
+          hasError: true,
+          message: 'http:// 또는 https://로 시작한 주소를 사용해 주세요.',
+        };
+      } else {
+        result = { hasError: false, message: '' };
+      }
     } else {
       result = {
         hasError: value.trim() === '',
