@@ -481,8 +481,6 @@ const UpdateShopPage = ({ onSuccess }) => {
       if (key === 'userId') {
         result = validateUserId(value);
       } else if (key === 'password') {
-        // password는 currentPassword이므로, 여기서는 에러 없도록 처리하고
-        // 아래 currentPasswordValidation에서 필수 검사를 진행합니다.
         result = { hasError: false, message: '' };
       } else {
         result = {
@@ -581,13 +579,15 @@ const UpdateShopPage = ({ onSuccess }) => {
       if (err.response && err.response.status === 400) {
         setIsPasswordErrorModalOpen(true);
       } else {
-        setError(err.message || '링크샵 수정에 실패했습니다.');
+        setImageFormatErrorMessage(
+          '요청을 보내는중 문제가 발생했습니다.\n다시 시도해 주세요.',
+        );
+        setIsImageFormatErrorModalOpen(true);
       }
     } finally {
       setIsSubmitting(false);
     }
   };
-
   return (
     <Container
       onSubmit={e => {
