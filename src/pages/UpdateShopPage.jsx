@@ -74,16 +74,16 @@ const UpdateShopPage = ({ onSuccess }) => {
 
   /** 상품 추가 핸들러 */
   const handleAddProduct = () => {
-    setProductFormData(prev => [...prev, { name: '', price: '' }]);
+    setProductFormData(prev => [{ name: '', price: '' }, ...prev]);
     setProductErrors(prev => [
-      ...prev,
       {
         name: { hasError: false, message: '' },
         price: { hasError: false, message: '' },
         productImage: { hasError: false, message: '' },
       },
+      ...prev,
     ]);
-    setProductImages(prev => [...prev, null]);
+    setProductImages(prev => [null, ...prev]);
   };
 
   /** 이미지 파일 변경 및 업로드 핸들러 */
@@ -387,7 +387,7 @@ const UpdateShopPage = ({ onSuccess }) => {
   /** 상점 정보 변경 핸들러 */
   const handleChange = e => {
     const { id, value } = e.target;
-    setFormdata(prev => ({ ...prev, [id]: value }));
+    setFormdata(prev => ({ [id]: value, ...prev }));
     let result =
       id === 'userId'
         ? validateUserId(value)
@@ -397,7 +397,7 @@ const UpdateShopPage = ({ onSuccess }) => {
               hasError: value.trim() === '',
               message: value.trim() === '' ? '필수 입력 항목입니다.' : '',
             };
-    setFormErrors(prev => ({ ...prev, [id]: result }));
+    setFormErrors(prev => ({ [id]: result, ...prev }));
   };
 
   /** 상점 필드 blur 시 유효성 검사 */
@@ -437,7 +437,7 @@ const UpdateShopPage = ({ onSuccess }) => {
         message: value.trim() === '' ? '필수 입력 항목입니다.' : '',
       };
     }
-    setFormErrors(prev => ({ ...prev, [id]: result }));
+    setFormErrors(prev => ({ [id]: result, ...prev }));
   };
 
   /** 개별 상품 삭제 핸들러 */
